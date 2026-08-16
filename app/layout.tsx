@@ -8,9 +8,9 @@ const vazirmatn = Vazirmatn({
 });
 
 export const metadata: Metadata = {
-  title: "۲۲ درجه — تماس رایگان ۲۲ دقیقه‌ای با یک مربی",
+  title: "۲۲ درجه — تماس رایگان ۲۲ دقیقه‌ای با یک متخصص",
   description:
-    "یک تماس رایگان ۲۲ دقیقه‌ای با یک مربی رزرو کن. بدون هزینه، بدون تعهد — فقط یک گفتگو.",
+    "یک تماس رایگان ۲۲ دقیقه‌ای با یک متخصص رزرو کن. بدون هزینه، بدون تعهد — فقط یک گفتگو.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

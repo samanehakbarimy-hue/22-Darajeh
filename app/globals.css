@@ -1,29 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  /* Placeholder brand palette — swap these for the real 22 Darajeh colors
-     whenever they're ready. */
-  --color-brand: #4338ca;
-  --color-brand-light: #eef2ff;
-  --color-brand-dark: #312e81;
+  /* Dark, MentorCruise-inspired palette — deep green/black background,
+     cream text, mint/teal accent. */
+  --background: #0b1712;
+  --foreground: #f3f1e7;
+  --card: #142720;
+  --card-border: #24392f;
+  --muted: #a9b8ae;
+  --color-brand: #34d399;
+  --color-brand-light: #16332a;
+  --color-brand-dark: #10b981;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-muted: var(--muted);
   --color-brand: var(--color-brand);
   --color-brand-light: var(--color-brand-light);
   --color-brand-dark: var(--color-brand-dark);
   --font-sans: var(--font-vazirmatn);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
