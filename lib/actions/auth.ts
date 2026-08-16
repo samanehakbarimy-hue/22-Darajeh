@@ -73,7 +73,8 @@ export async function login(
     return { error: "ایمیل یا رمز عبور اشتباه است." };
   }
 
-  redirect("/dashboard");
+  const next = String(formData.get("next") ?? "").trim();
+  redirect(next.startsWith("/") ? next : "/dashboard");
 }
 
 export async function logout() {
