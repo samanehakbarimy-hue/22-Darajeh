@@ -1,21 +1,23 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between px-6 py-4 sm:px-12">
         <span className="text-xl font-bold text-brand">۲۲ درجه</span>
-        <nav className="flex gap-4 text-sm font-medium">
+        <nav className="flex items-center gap-4 text-sm font-medium">
           <a href="#" className="text-foreground/70 hover:text-foreground">
             جستجوی مربی
           </a>
-          <a href="#" className="text-foreground/70 hover:text-foreground">
+          <Link href="/login" className="text-foreground/70 hover:text-foreground">
             ورود
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            href="/signup/mentor"
             className="rounded-full bg-brand px-4 py-2 text-white hover:bg-brand-dark"
           >
             مربی شوید
-          </a>
+          </Link>
         </nav>
       </header>
 
@@ -32,18 +34,18 @@ export default function Home() {
           این مسیر را رفته راهنمایی بگیر.
         </p>
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-          <a
-            href="#"
+          <Link
+            href="/signup/seeker"
             className="rounded-full bg-brand px-8 py-3 font-medium text-white hover:bg-brand-dark"
           >
             پیدا کردن مربی
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            href="/signup/mentor"
             className="rounded-full border border-foreground/20 px-8 py-3 font-medium hover:bg-foreground/5"
           >
             مربی شدن
-          </a>
+          </Link>
         </div>
       </main>
     </div>
