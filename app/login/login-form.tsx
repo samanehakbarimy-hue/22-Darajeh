@@ -2,14 +2,59 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { login } from "@/lib/actions/auth";
+import { login, resendConfirmation } from "@/lib/actions/auth";
 import PasswordInput from "@/components/PasswordInput";
 
-export default function LoginForm({ next }: { next: string }) {
+export default function LoginForm({
+  next,
+  confirmFailed,
+}: {
+  next: string;
+  confirmFailed: boolean;
+}) {
   const [state, action, pending] = useActionState(login, undefined);
+  const [resendState, resendAction, resendPending] = useActionState(
+    resendConfirmation,
+    undefined,
+  );
 
   return (
     <>
+      {confirmFailed && !resendState?.success && (
+        <div className="mt-6 rounded-lg border border-card-border bg-card p-4 text-sm">
+          <p className="text-red-400">
+            لینک تأیید ایمیل منقضی شده یا قبلاً استفاده شده.
+          </p>
+          <p className="mt-1 text-muted">
+            ایمیلت رو وارد کن تا یک لینک تازه برات بفرستیم:
+          </p>
+          <form action={resendAction} className="mt-3 flex gap-2">
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder="ایمیل"
+              className="flex-1 rounded-lg border border-card-border bg-background px-3 py-2 text-sm outline-none focus:border-brand"
+            />
+            <button
+              disabled={resendPending}
+              type="submit"
+              className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark disabled:opacity-60"
+            >
+              {resendPending ? "..." : "ارسال دوباره"}
+            </button>
+          </form>
+          {resendState?.error && (
+            <p className="mt-2 text-red-400">{resendState.error}</p>
+          )}
+        </div>
+      )}
+      {resendState?.success && (
+        <p className="mt-6 text-sm text-brand">
+          لینک تازه فرستاده شد، ایمیلت رو چک کن.
+        </p>
+      )}
+
       <form action={action} className="mt-8 flex flex-col gap-4">
         <input type="hidden" name="next" value={next} />
         <div>
