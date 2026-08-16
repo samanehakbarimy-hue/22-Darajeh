@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { login } from "@/lib/actions/auth";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function LoginForm({ next }: { next: string }) {
   const [state, action, pending] = useActionState(login, undefined);
@@ -27,10 +28,9 @@ export default function LoginForm({ next }: { next: string }) {
           <label htmlFor="password" className="mb-1 block text-sm font-medium">
             رمز عبور
           </label>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             required
             className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
           />
