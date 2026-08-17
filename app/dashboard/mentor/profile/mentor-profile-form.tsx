@@ -34,6 +34,23 @@ export default function MentorProfileForm({
   const [state, action, pending] = useActionState(saveMentorProfile, undefined);
   const [preview, setPreview] = useState(initialPhotoUrl);
   const [tags, setTags] = useState(initialTags);
+  const [photoError, setPhotoError] = useState("");
+
+  const MAX_PHOTO_MB = 3;
+
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > MAX_PHOTO_MB * 1024 * 1024) {
+      setPhotoError(`حجم عکس باید کمتر از ${MAX_PHOTO_MB} مگابایت باشد.`);
+      e.target.value = "";
+      return;
+    }
+
+    setPhotoError("");
+    setPreview(URL.createObjectURL(file));
+  }
 
   function addSuggestedTag(tag: string) {
     const current = tags
@@ -66,13 +83,11 @@ export default function MentorProfileForm({
             name="photo"
             type="file"
             accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) setPreview(URL.createObjectURL(file));
-            }}
+            onChange={handlePhotoChange}
             className="text-sm text-muted file:mr-3 file:rounded-full file:border-0 file:bg-brand-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand"
           />
         </div>
+        {photoError && <p className="mt-1 text-sm text-red-400">{photoError}</p>}
       </div>
 
       <div>
