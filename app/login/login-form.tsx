@@ -95,7 +95,7 @@ export default function LoginForm({
       <p className="mt-6 text-center text-sm text-muted">
         حساب نداری؟{" "}
         <Link href="/signup/seeker" className="font-medium text-brand">
-          ثبت‌نام به‌عنوان جویا
+          ثبت‌نام به‌عنوان منتی
         </Link>{" "}
         یا{" "}
         <Link href="/signup/mentor" className="font-medium text-brand">
