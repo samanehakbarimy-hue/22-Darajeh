@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
 export type AuthFormState = { error?: string } | undefined;
@@ -96,6 +97,26 @@ export async function resendConfirmation(
   }
 
   return { success: true };
+}
+
+export async function signInWithLinkedIn(role?: "mentor" | "seeker") {
+  const supabase = await createClient();
+  const origin = (await headers()).get("origin");
+
+  const callbackUrl = role
+    ? `${origin}/auth/callback?role=${role}`
+    : `${origin}/auth/callback`;
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "linkedin_oidc",
+    options: { redirectTo: callbackUrl },
+  });
+
+  if (error || !data.url) {
+    redirect("/login?error=linkedin_failed");
+  }
+
+  redirect(data.url);
 }
 
 export async function logout() {

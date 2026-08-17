@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { login, resendConfirmation } from "@/lib/actions/auth";
 import PasswordInput from "@/components/PasswordInput";
+import LinkedInButton from "@/components/LinkedInButton";
 
 export default function LoginForm({
   next,
@@ -55,7 +56,17 @@ export default function LoginForm({
         </p>
       )}
 
-      <form action={action} className="mt-8 flex flex-col gap-4">
+      <div className="mt-8">
+        <LinkedInButton label="ورود با لینکدین" />
+      </div>
+
+      <div className="my-6 flex items-center gap-3 text-xs text-muted">
+        <div className="h-px flex-1 bg-card-border" />
+        یا با ایمیل
+        <div className="h-px flex-1 bg-card-border" />
+      </div>
+
+      <form action={action} className="flex flex-col gap-4">
         <input type="hidden" name="next" value={next} />
         <div>
           <label htmlFor="email" className="mb-1 block text-sm font-medium">
