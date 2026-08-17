@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import Avatar from "@/components/Avatar";
 
 export default async function SpecialistPage({
   params,
@@ -12,7 +13,9 @@ export default async function SpecialistPage({
 
   const { data: specialist } = await supabase
     .from("mentor_profiles")
-    .select("id, bio, expertise_tags, linkedin_url, status, profiles(full_name)")
+    .select(
+      "id, headline, bio, expertise_tags, linkedin_url, status, profiles(full_name, photo_url)",
+    )
     .eq("id", id)
     .eq("status", "approved")
     .maybeSingle();
@@ -30,8 +33,11 @@ export default async function SpecialistPage({
     .order("start_time", { ascending: true })
     .limit(5);
 
-  const name =
-    (specialist.profiles as unknown as { full_name: string } | null)?.full_name ?? "";
+  const profile = specialist.profiles as unknown as {
+    full_name: string;
+    photo_url: string | null;
+  } | null;
+  const name = profile?.full_name ?? "";
 
   const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
     weekday: "long",
@@ -50,11 +56,12 @@ export default async function SpecialistPage({
       <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]">
         <div>
           <div className="flex items-center gap-5">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-light text-3xl font-bold text-brand">
-              {name.slice(0, 1)}
-            </div>
+            <Avatar photoUrl={profile?.photo_url} name={name} size={80} />
             <div>
               <h1 className="text-2xl font-bold">{name}</h1>
+              {specialist.headline && (
+                <p className="text-muted">{specialist.headline}</p>
+              )}
               {specialist.linkedin_url && (
                 <a
                   href={specialist.linkedin_url}

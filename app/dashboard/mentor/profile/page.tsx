@@ -14,7 +14,7 @@ export default async function MentorProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, photo_url")
     .eq("id", user.id)
     .single();
 
@@ -24,7 +24,7 @@ export default async function MentorProfilePage() {
 
   const { data: mentorProfile } = await supabase
     .from("mentor_profiles")
-    .select("bio, expertise_tags, linkedin_url, meeting_link")
+    .select("headline, bio, expertise_tags, linkedin_url, meeting_link")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -35,6 +35,8 @@ export default async function MentorProfilePage() {
         این اطلاعات بعد از تأیید ادمین، به‌صورت عمومی نمایش داده می‌شه.
       </p>
       <MentorProfileForm
+        initialPhotoUrl={profile?.photo_url ?? ""}
+        initialHeadline={mentorProfile?.headline ?? ""}
         initialBio={mentorProfile?.bio ?? ""}
         initialTags={(mentorProfile?.expertise_tags ?? []).join("، ")}
         initialLinkedin={mentorProfile?.linkedin_url ?? ""}

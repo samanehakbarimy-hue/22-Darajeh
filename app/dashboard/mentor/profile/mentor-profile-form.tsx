@@ -1,23 +1,70 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { saveMentorProfile } from "@/lib/actions/mentor";
 
 export default function MentorProfileForm({
+  initialPhotoUrl,
+  initialHeadline,
   initialBio,
   initialTags,
   initialLinkedin,
   initialMeetingLink,
 }: {
+  initialPhotoUrl: string;
+  initialHeadline: string;
   initialBio: string;
   initialTags: string;
   initialLinkedin: string;
   initialMeetingLink: string;
 }) {
   const [state, action, pending] = useActionState(saveMentorProfile, undefined);
+  const [preview, setPreview] = useState(initialPhotoUrl);
 
   return (
     <form action={action} className="mt-8 flex flex-col gap-4">
+      <div>
+        <label htmlFor="photo" className="mb-1 block text-sm font-medium">
+          عکس پروفایل
+        </label>
+        <div className="flex items-center gap-4">
+          {preview ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={preview}
+              alt=""
+              className="h-16 w-16 rounded-full object-cover"
+            />
+          ) : (
+            <div className="h-16 w-16 rounded-full bg-brand-light" />
+          )}
+          <input
+            id="photo"
+            name="photo"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) setPreview(URL.createObjectURL(file));
+            }}
+            className="text-sm text-muted file:mr-3 file:rounded-full file:border-0 file:bg-brand-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="headline" className="mb-1 block text-sm font-medium">
+          سمت فعلی (مثلاً «مدیر محصول ارشد در اسنپ»)
+        </label>
+        <input
+          id="headline"
+          name="headline"
+          defaultValue={initialHeadline}
+          placeholder="سمت و شرکت فعلی‌ت"
+          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
+        />
+      </div>
+
       <div>
         <label htmlFor="bio" className="mb-1 block text-sm font-medium">
           معرفی کوتاه
