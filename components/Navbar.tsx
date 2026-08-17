@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
+import Avatar from "@/components/Avatar";
 
 export default async function Navbar() {
   const supabase = await createClient();
@@ -9,13 +10,15 @@ export default async function Navbar() {
   } = await supabase.auth.getUser();
 
   let fullName: string | null = null;
+  let photoUrl: string | null = null;
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name")
+      .select("full_name, photo_url")
       .eq("id", user.id)
       .maybeSingle();
     fullName = profile?.full_name ?? null;
+    photoUrl = profile?.photo_url ?? null;
   }
 
   return (
@@ -34,9 +37,7 @@ export default async function Navbar() {
               href="/dashboard"
               className="flex items-center gap-2 text-muted hover:text-foreground"
             >
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-light text-xs font-bold text-brand">
-                {(fullName ?? "?").slice(0, 1)}
-              </span>
+              <Avatar photoUrl={photoUrl} name={fullName ?? "?"} size={28} />
               {fullName ?? "پروفایل من"}
             </Link>
             <form action={logout}>
