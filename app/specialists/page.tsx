@@ -11,15 +11,6 @@ export default async function SpecialistsPage() {
 
   return (
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
-      <header className="mb-10 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-brand">
-          ۲۲ درجه
-        </Link>
-        <Link href="/login" className="text-sm font-medium text-muted hover:text-foreground">
-          ورود
-        </Link>
-      </header>
-
       <h1 className="text-2xl font-bold">پیدا کردن متخصص</h1>
       <p className="mt-2 text-muted">
         یکی از متخصص‌های ۲۲ درجه رو انتخاب کن و یک تماس رایگان ۲۲ دقیقه‌ای رزرو

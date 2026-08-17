@@ -77,6 +77,27 @@ export async function login(
   redirect(next.startsWith("/") ? next : "/dashboard");
 }
 
+export type ResendState = { error?: string; success?: boolean } | undefined;
+
+export async function resendConfirmation(
+  _prevState: ResendState,
+  formData: FormData,
+): Promise<ResendState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) {
+    return { error: "ایمیلت را وارد کن." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({ type: "signup", email });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: true };
+}
+
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();

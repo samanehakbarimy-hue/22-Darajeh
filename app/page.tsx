@@ -12,24 +12,6 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="flex items-center justify-between border-b border-card-border px-6 py-4 sm:px-12">
-        <span className="text-xl font-bold text-brand">۲۲ درجه</span>
-        <nav className="flex items-center gap-4 text-sm font-medium">
-          <Link href="/specialists" className="text-muted hover:text-foreground">
-            پیدا کردن متخصص
-          </Link>
-          <Link href="/login" className="text-muted hover:text-foreground">
-            ورود
-          </Link>
-          <Link
-            href="/signup/mentor"
-            className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
-          >
-            متخصص شوید
-          </Link>
-        </nav>
-      </header>
-
       <main className="flex flex-1 flex-col items-center px-6 py-20 text-center">
         <span className="mb-4 rounded-full bg-brand-light px-4 py-1 text-sm font-medium text-brand">
           کاملاً رایگان برای شروع
