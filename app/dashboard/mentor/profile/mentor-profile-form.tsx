@@ -3,6 +3,19 @@
 import { useActionState, useState } from "react";
 import { saveMentorProfile } from "@/lib/actions/mentor";
 
+const SUGGESTED_TAGS = [
+  "مدیریت محصول",
+  "طراحی UX/UI",
+  "توسعه نرم‌افزار",
+  "بازاریابی دیجیتال",
+  "فروش",
+  "رشد کسب‌وکار",
+  "منابع انسانی",
+  "مدیریت مالی",
+  "کارآفرینی",
+  "داده و تحلیل",
+];
+
 export default function MentorProfileForm({
   initialPhotoUrl,
   initialHeadline,
@@ -20,6 +33,16 @@ export default function MentorProfileForm({
 }) {
   const [state, action, pending] = useActionState(saveMentorProfile, undefined);
   const [preview, setPreview] = useState(initialPhotoUrl);
+  const [tags, setTags] = useState(initialTags);
+
+  function addSuggestedTag(tag: string) {
+    const current = tags
+      .split(/[,،]/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+    if (current.includes(tag)) return;
+    setTags([...current, tag].join("، "));
+  }
 
   return (
     <form action={action} className="mt-8 flex flex-col gap-4">
@@ -54,13 +77,13 @@ export default function MentorProfileForm({
 
       <div>
         <label htmlFor="headline" className="mb-1 block text-sm font-medium">
-          سمت فعلی (مثلاً «مدیر محصول ارشد در اسنپ»)
+          سمت فعلی
         </label>
         <input
           id="headline"
           name="headline"
           defaultValue={initialHeadline}
-          placeholder="سمت و شرکت فعلی‌ت"
+          placeholder="مثلاً «مدیر محصول ارشد در اسنپ»"
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
       </div>
@@ -86,10 +109,23 @@ export default function MentorProfileForm({
           id="expertise_tags"
           name="expertise_tags"
           required
-          defaultValue={initialTags}
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
           placeholder="مثلاً طراحی محصول، مدیریت محصول"
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
+        <div className="mt-2 flex flex-wrap gap-2">
+          {SUGGESTED_TAGS.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => addSuggestedTag(tag)}
+              className="rounded-full border border-card-border px-3 py-1 text-xs text-muted hover:border-brand hover:text-brand"
+            >
+              + {tag}
+            </button>
+          ))}
+        </div>
       </div>
       <div>
         <label htmlFor="linkedin_url" className="mb-1 block text-sm font-medium">
@@ -113,7 +149,7 @@ export default function MentorProfileForm({
           name="meeting_link"
           type="url"
           defaultValue={initialMeetingLink}
-          placeholder="این لینک بعد از رزرو به جویا نشون داده می‌شه"
+          placeholder="این لینک بعد از رزرو به منتی نشون داده می‌شه"
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
       </div>

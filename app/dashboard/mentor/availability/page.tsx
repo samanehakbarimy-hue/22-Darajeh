@@ -42,7 +42,7 @@ export default async function MentorAvailabilityPage() {
     <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">زمان‌های آزاد من</h1>
       <p className="mt-2 text-muted">
-        زمان‌هایی که اینجا اضافه می‌کنی، برای جویاها به‌عنوان زمان قابل رزرو
+        زمان‌هایی که اینجا اضافه می‌کنی، برای منتی‌ها به‌عنوان زمان قابل رزرو
         برای تماس رایگان ۲۲ دقیقه‌ای نمایش داده می‌شه.
       </p>
 
