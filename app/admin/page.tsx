@@ -1,6 +1,39 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { approveMentor, rejectMentor } from "@/lib/actions/admin";
+import Avatar from "@/components/Avatar";
+
+type Member = {
+  id: string;
+  full_name: string;
+  email: string;
+  role: "mentor" | "seeker" | "admin";
+  photo_url: string | null;
+  status: "pending" | "approved" | "rejected" | null;
+  created_at: string;
+};
+
+const ROLE_LABEL: Record<Member["role"], string> = {
+  mentor: "متخصص",
+  seeker: "منتی",
+  admin: "ادمین",
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  pending: "در انتظار تأیید",
+  approved: "تأیید‌شده",
+  rejected: "رد‌شده",
+};
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-card-border bg-card px-4 py-3">
+      <div className="text-2xl font-bold">{value.toLocaleString("fa-IR")}</div>
+      <div className="mt-0.5 text-xs text-muted">{label}</div>
+    </div>
+  );
+}
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -22,64 +55,170 @@ export default async function AdminPage() {
     redirect("/dashboard");
   }
 
+  const { data: membersData, error: membersError } =
+    await supabase.rpc("admin_list_members");
+  const members = (membersData ?? []) as Member[];
+
   const { data: pendingMentors } = await supabase
     .from("mentor_profiles")
     .select("id, bio, expertise_tags, linkedin_url, profiles(full_name)")
     .eq("status", "pending")
     .order("created_at", { ascending: true });
 
-  return (
-    <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
-      <h1 className="text-2xl font-bold">تأیید متخصص‌ها</h1>
-      <p className="mt-2 text-muted">متخصص‌های در انتظار تأیید:</p>
+  const { count: bookingCount } = await supabase
+    .from("bookings")
+    .select("id", { count: "exact", head: true });
 
-      {(!pendingMentors || pendingMentors.length === 0) && (
-        <p className="mt-8 text-muted">فعلاً متخصصی در انتظار تأیید نیست.</p>
+  const mentors = members.filter((m) => m.role === "mentor");
+  const dateFormatter = new Intl.DateTimeFormat("fa-IR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  return (
+    <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
+      <h1 className="text-2xl font-bold">مدیریت</h1>
+      <p className="mt-2 text-muted">
+        همه کسانی که در ۲۲ درجه ثبت‌نام کرده‌اند.
+      </p>
+
+      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Stat label="کل اعضا" value={members.length} />
+        <Stat
+          label="متخصص تأیید‌شده"
+          value={mentors.filter((m) => m.status === "approved").length}
+        />
+        <Stat label="در انتظار تأیید" value={pendingMentors?.length ?? 0} />
+        <Stat label="رزروها" value={bookingCount ?? 0} />
+      </div>
+
+      {/* Pending approvals first — this is the only part that needs action. */}
+      {pendingMentors && pendingMentors.length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-lg font-bold">در انتظار تأیید</h2>
+          <ul className="mt-4 flex flex-col gap-4">
+            {pendingMentors.map((mentor) => (
+              <li
+                key={mentor.id}
+                className="rounded-xl border border-card-border bg-card p-6"
+              >
+                <h3 className="font-bold">
+                  {
+                    (mentor.profiles as unknown as { full_name: string } | null)
+                      ?.full_name
+                  }
+                </h3>
+                <p className="mt-2 text-sm text-muted">{mentor.bio}</p>
+                <p className="mt-2 text-sm text-muted">
+                  حوزه‌ها: {(mentor.expertise_tags ?? []).join("، ")}
+                </p>
+                {mentor.linkedin_url && (
+                  <a
+                    href={mentor.linkedin_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 block text-sm text-brand"
+                  >
+                    لینکدین
+                  </a>
+                )}
+                <div className="mt-4 flex gap-3">
+                  <form action={approveMentor}>
+                    <input type="hidden" name="mentor_id" value={mentor.id} />
+                    <button
+                      type="submit"
+                      className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
+                    >
+                      تأیید
+                    </button>
+                  </form>
+                  <form action={rejectMentor}>
+                    <input type="hidden" name="mentor_id" value={mentor.id} />
+                    <button
+                      type="submit"
+                      className="rounded-full border border-card-border px-4 py-2 text-sm font-medium hover:bg-background"
+                    >
+                      رد کردن
+                    </button>
+                  </form>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
-      <ul className="mt-8 flex flex-col gap-6">
-        {pendingMentors?.map((mentor) => (
-          <li key={mentor.id} className="rounded-xl border border-card-border bg-card p-6">
-            <h2 className="font-bold">
-              {(mentor.profiles as unknown as { full_name: string } | null)?.full_name}
-            </h2>
-            <p className="mt-2 text-sm text-muted">{mentor.bio}</p>
-            <p className="mt-2 text-sm text-muted">
-              حوزه‌ها: {(mentor.expertise_tags ?? []).join("، ")}
-            </p>
-            {mentor.linkedin_url && (
-              <a
-                href={mentor.linkedin_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 block text-sm text-brand"
-              >
-                لینکدین
-              </a>
-            )}
-            <div className="mt-4 flex gap-3">
-              <form action={approveMentor}>
-                <input type="hidden" name="mentor_id" value={mentor.id} />
-                <button
-                  type="submit"
-                  className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
-                >
-                  تأیید
-                </button>
-              </form>
-              <form action={rejectMentor}>
-                <input type="hidden" name="mentor_id" value={mentor.id} />
-                <button
-                  type="submit"
-                  className="rounded-full border border-card-border px-4 py-2 text-sm font-medium hover:bg-background"
-                >
-                  رد کردن
-                </button>
-              </form>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <section className="mt-12">
+        <h2 className="text-lg font-bold">اعضا</h2>
+
+        {membersError && (
+          <p className="mt-4 text-sm text-red-400">
+            خطا در خواندن فهرست اعضا: {membersError.message}
+          </p>
+        )}
+
+        {!membersError && members.length === 0 && (
+          <p className="mt-4 text-muted">هنوز کسی ثبت‌نام نکرده.</p>
+        )}
+
+        {members.length > 0 && (
+          <div className="mt-4 overflow-x-auto rounded-xl border border-card-border">
+            <table className="w-full text-right text-sm">
+              <thead className="bg-card text-muted">
+                <tr>
+                  <th className="px-4 py-3 font-medium">نام</th>
+                  <th className="px-4 py-3 font-medium">ایمیل</th>
+                  <th className="px-4 py-3 font-medium">نقش</th>
+                  <th className="px-4 py-3 font-medium">وضعیت</th>
+                  <th className="px-4 py-3 font-medium">تاریخ عضویت</th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map((member) => (
+                  <tr
+                    key={member.id}
+                    className="border-t border-card-border align-middle"
+                  >
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <Avatar
+                          photoUrl={member.photo_url}
+                          name={member.full_name}
+                          size={28}
+                        />
+                        {member.role === "mentor" &&
+                        member.status === "approved" ? (
+                          <Link
+                            href={`/specialists/${member.id}`}
+                            className="hover:text-brand"
+                          >
+                            {member.full_name}
+                          </Link>
+                        ) : (
+                          <span>{member.full_name}</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-muted" dir="ltr">
+                      {member.email}
+                    </td>
+                    <td className="px-4 py-3 text-muted">
+                      {ROLE_LABEL[member.role]}
+                    </td>
+                    <td className="px-4 py-3 text-muted">
+                      {member.status ? (STATUS_LABEL[member.status] ?? member.status) : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-muted">
+                      {dateFormatter.format(new Date(member.created_at))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
