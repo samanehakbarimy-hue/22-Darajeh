@@ -7,6 +7,17 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "5mb",
     },
   },
+  async redirects() {
+    return [
+      // Keep one canonical address: send www.22darajeh.com to the bare domain.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.22darajeh.com" }],
+        destination: "https://22darajeh.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
