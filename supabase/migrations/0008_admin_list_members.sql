@@ -17,9 +17,11 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
+  -- Alias the table: bare id/role would collide with this function's own
+  -- output column names and Postgres rejects it as ambiguous.
   if not exists (
-    select 1 from public.profiles
-    where id = auth.uid() and role = 'admin'
+    select 1 from public.profiles pr
+    where pr.id = auth.uid() and pr.role = 'admin'
   ) then
     raise exception 'Only an admin can list members';
   end if;
