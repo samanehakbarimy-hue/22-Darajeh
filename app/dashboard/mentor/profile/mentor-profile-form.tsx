@@ -236,7 +236,7 @@ export default function MentorProfileForm({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={handleTagKeyDown}
-          placeholder="بنویس تا پیشنهاد ببینی، مثلاً «نفت»"
+          placeholder="مثلاً «نفت و گاز»"
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
         {/* The real value the server reads. */}
