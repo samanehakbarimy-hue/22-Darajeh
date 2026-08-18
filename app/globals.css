@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  /* Dark, MentorCruise-inspired palette — deep green/black background,
-     cream text, mint/teal accent. */
-  --background: #0b1712;
-  --foreground: #f3f1e7;
-  --card: #142720;
-  --card-border: #24392f;
-  --muted: #a9b8ae;
-  --color-brand: #34d399;
-  --color-brand-light: #16332a;
-  --color-brand-dark: #10b981;
+  /* Deep pine green ground with cream text and a mint accent, so the page
+     reads as green rather than near-black. */
+  --background: #0c3327;
+  --card: #12402f;
+  --card-border: #1e5842;
+  --foreground: #f2ede1;
+  --muted: #9db9a9;
+  --color-brand: #35d99a;
+  --color-brand-light: #17452f;
+  --color-brand-dark: #23b981;
 }
 
 @theme inline {
@@ -29,4 +29,21 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Headlines carry the page: tighter leading than Vazirmatn's default, which
+   is set loose for running text. */
+h1,
+h2 {
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
