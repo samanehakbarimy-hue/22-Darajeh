@@ -11,7 +11,9 @@ export default async function Home({
   const supabase = await createClient();
   const { data: specialists } = await supabase
     .from("mentor_profiles")
-    .select("id, headline, bio, expertise_tags, profiles(full_name, photo_url)")
+    .select(
+      "id, headline, country, bio, expertise_tags, profiles(full_name, photo_url)",
+    )
     .eq("status", "approved")
     .order("created_at", { ascending: false })
     .limit(8);
@@ -72,6 +74,9 @@ export default async function Home({
                     <h3 className="font-bold">{name}</h3>
                     {specialist.headline && (
                       <p className="mt-0.5 text-sm text-muted">{specialist.headline}</p>
+                    )}
+                    {specialist.country && (
+                      <p className="mt-0.5 text-xs text-muted">📍 {specialist.country}</p>
                     )}
                     <p className="mt-2 line-clamp-2 text-sm text-muted">
                       {specialist.bio}

@@ -19,6 +19,7 @@ const SUGGESTED_TAGS = [
 export default function MentorProfileForm({
   initialPhotoUrl,
   initialHeadline,
+  initialCountry,
   initialBio,
   initialTags,
   initialLinkedin,
@@ -26,6 +27,7 @@ export default function MentorProfileForm({
 }: {
   initialPhotoUrl: string;
   initialHeadline: string;
+  initialCountry: string;
   initialBio: string;
   initialTags: string;
   initialLinkedin: string;
@@ -99,6 +101,19 @@ export default function MentorProfileForm({
           name="headline"
           defaultValue={initialHeadline}
           placeholder="مثلاً «مدیر محصول ارشد در اسنپ»"
+          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="country" className="mb-1 block text-sm font-medium">
+          کشور محل زندگی
+        </label>
+        <input
+          id="country"
+          name="country"
+          defaultValue={initialCountry}
+          placeholder="مثلاً «ایران» یا «آلمان»"
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
       </div>
