@@ -18,6 +18,7 @@ export async function saveMentorProfile(
   }
 
   const headline = String(formData.get("headline") ?? "").trim();
+  const country = String(formData.get("country") ?? "").trim();
   const bio = String(formData.get("bio") ?? "").trim();
   const tagsRaw = String(formData.get("expertise_tags") ?? "").trim();
   const linkedinUrl = String(formData.get("linkedin_url") ?? "").trim();
@@ -60,6 +61,7 @@ export async function saveMentorProfile(
   const { error } = await supabase.from("mentor_profiles").upsert({
     id: user.id,
     headline,
+    country,
     bio,
     expertise_tags: expertiseTags,
     linkedin_url: linkedinUrl || null,
