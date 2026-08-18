@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import Avatar from "@/components/Avatar";
+import SpecialistCard from "@/components/SpecialistCard";
 
 export default async function SpecialistsPage() {
   const supabase = await createClient();
@@ -26,41 +25,24 @@ export default async function SpecialistsPage() {
         </p>
       )}
 
-      <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 grid grid-cols-2 gap-5 lg:grid-cols-4">
         {specialists?.map((specialist) => {
           const profile = specialist.profiles as unknown as {
             full_name: string;
             photo_url: string | null;
           } | null;
-          const name = profile?.full_name ?? "";
           return (
-            <Link
+            <SpecialistCard
               key={specialist.id}
-              href={`/specialists/${specialist.id}`}
-              className="flex flex-col items-start rounded-2xl border border-card-border bg-card p-5 text-right transition hover:border-brand"
-            >
-              <div className="mb-4">
-                <Avatar photoUrl={profile?.photo_url} name={name} size={56} />
-              </div>
-              <h3 className="font-bold">{name}</h3>
-              {specialist.headline && (
-                <p className="mt-0.5 text-sm text-muted">{specialist.headline}</p>
-              )}
-              {specialist.country && (
-                <p className="mt-0.5 text-xs text-muted">📍 {specialist.country}</p>
-              )}
-              <p className="mt-2 line-clamp-3 text-sm text-muted">{specialist.bio}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {(specialist.expertise_tags ?? []).map((tag: string) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-brand-light px-2 py-1 text-xs text-brand"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </Link>
+              specialist={{
+                id: specialist.id,
+                headline: specialist.headline,
+                country: specialist.country,
+                expertise_tags: specialist.expertise_tags,
+                name: profile?.full_name ?? "",
+                photoUrl: profile?.photo_url,
+              }}
+            />
           );
         })}
       </div>
