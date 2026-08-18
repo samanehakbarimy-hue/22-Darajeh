@@ -1,13 +1,21 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SpecialistCard from "@/components/SpecialistCard";
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ deleted?: string }>;
+  searchParams: Promise<{ deleted?: string; code?: string }>;
 }) {
-  const { deleted } = await searchParams;
+  const { deleted, code } = await searchParams;
+
+  // Confirmation emails sent before emailRedirectTo was set land here carrying
+  // ?code=..., which only /auth/callback knows how to exchange for a session.
+  if (code) {
+    redirect(`/auth/callback?code=${encodeURIComponent(code)}`);
+  }
+
   const supabase = await createClient();
   const { data: specialists } = await supabase
     .from("mentor_profiles")

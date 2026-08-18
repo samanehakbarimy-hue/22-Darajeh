@@ -22,10 +22,17 @@ async function signUp(
   }
 
   const supabase = await createClient();
+  const origin = (await headers()).get("origin");
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName, role } },
+    options: {
+      data: { full_name: fullName, role },
+      // Without this the confirmation link lands on the site root carrying
+      // ?code=..., which nothing exchanges for a session, so the person
+      // arrives still logged out.
+      emailRedirectTo: `${origin}/auth/callback`,
+    },
   });
 
   if (error) {
