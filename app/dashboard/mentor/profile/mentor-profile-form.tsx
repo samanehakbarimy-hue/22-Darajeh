@@ -71,6 +71,7 @@ export default function MentorProfileForm({
   initialTags,
   initialLinkedin,
   initialMeetingLink,
+  initialPhone,
 }: {
   initialPhotoUrl: string;
   initialHeadline: string;
@@ -79,6 +80,7 @@ export default function MentorProfileForm({
   initialTags: string;
   initialLinkedin: string;
   initialMeetingLink: string;
+  initialPhone: string;
 }) {
   const [state, action, pending] = useActionState(saveMentorProfile, undefined);
   const [preview, setPreview] = useState(initialPhotoUrl);
@@ -90,6 +92,7 @@ export default function MentorProfileForm({
   const [bio, setBio] = useState(initialBio);
   const [linkedin, setLinkedin] = useState(initialLinkedin);
   const [meetingLink, setMeetingLink] = useState(initialMeetingLink);
+  const [phone, setPhone] = useState(initialPhone);
 
   const [tags, setTags] = useState<string[]>(parseTags(initialTags));
   const [draft, setDraft] = useState("");
@@ -281,6 +284,27 @@ export default function MentorProfileForm({
           placeholder="https://linkedin.com/in/..."
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
+      </div>
+
+      <div>
+        <label htmlFor="phone" className="mb-1 block text-sm font-medium">
+          شماره تماس (اختیاری)
+        </label>
+        <input
+          id="phone"
+          name="phone"
+          type="tel"
+          inputMode="tel"
+          dir="ltr"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="۰۹۱۲۳۴۵۶۷۸۹"
+          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 text-right outline-none focus:border-brand"
+        />
+        <p className="mt-1 text-xs text-muted">
+          روی پروفایل عمومی نشون داده نمی‌شه. فقط ادمین و کسی که جلسه‌ای با تو
+          رزرو کرده می‌تونه ببینه.
+        </p>
       </div>
 
       <div>

@@ -23,6 +23,7 @@ export async function saveMentorProfile(
   const tagsRaw = String(formData.get("expertise_tags") ?? "").trim();
   const linkedinUrl = String(formData.get("linkedin_url") ?? "").trim();
   const meetingLink = String(formData.get("meeting_link") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
 
   if (!bio || !tagsRaw) {
     return { error: "بیو و حوزه‌های تخصص الزامی هستند." };
@@ -65,11 +66,23 @@ export async function saveMentorProfile(
     bio,
     expertise_tags: expertiseTags,
     linkedin_url: linkedinUrl || null,
-    meeting_link: meetingLink || null,
   });
 
   if (error) {
     return { error: error.message };
+  }
+
+  // Phone and meeting link live apart from the public profile so they reach
+  // only the mentor, an admin, or a seeker who has booked them.
+  const { error: contactError } = await supabase.from("mentor_contacts").upsert({
+    id: user.id,
+    phone,
+    meeting_link: meetingLink || null,
+    updated_at: new Date().toISOString(),
+  });
+
+  if (contactError) {
+    return { error: contactError.message };
   }
 
   return { success: true };
