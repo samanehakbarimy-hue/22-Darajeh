@@ -76,17 +76,32 @@ export default async function DashboardPage({
     id: string;
     slot: { start_time: string } | null;
     mentor: { full_name: string } | null;
+    contact: { phone: string | null; meeting_link: string | null } | null;
   }[] = [];
 
   if (profile?.role === "seeker") {
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, availability_slots(start_time), mentor_profiles(profiles(full_name))",
+        "id, mentor_id, availability_slots(start_time), mentor_profiles(profiles(full_name))",
       )
       .eq("seeker_id", user.id)
       .eq("status", "confirmed")
       .order("created_at", { ascending: false });
+
+    // Booking someone is pointless without a way to reach them. RLS only
+    // returns these rows for mentors this person has actually booked.
+    const mentorIds = (data ?? []).map((b) => b.mentor_id);
+    const { data: contacts } = mentorIds.length
+      ? await supabase
+          .from("mentor_contacts")
+          .select("id, phone, meeting_link")
+          .in("id", mentorIds)
+      : { data: [] };
+
+    const contactById = new Map(
+      (contacts ?? []).map((c) => [c.id, c] as const),
+    );
 
     seekerBookings = (data ?? []).map((b) => ({
       id: b.id,
@@ -97,6 +112,7 @@ export default async function DashboardPage({
             profiles: { full_name: string } | null;
           } | null
         )?.profiles ?? null,
+      contact: contactById.get(b.mentor_id) ?? null,
     }));
   }
 
@@ -179,6 +195,36 @@ export default async function DashboardPage({
                 {b.slot && (
                   <p className="mt-1 text-sm text-muted">
                     {timeFormatter.format(new Date(b.slot.start_time))}
+                  </p>
+                )}
+
+                {(b.contact?.meeting_link || b.contact?.phone) && (
+                  <div className="mt-3 border-t border-card-border pt-3 text-sm">
+                    {b.contact.meeting_link && (
+                      <a
+                        href={b.contact.meeting_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block rounded-full bg-brand px-4 py-2 font-semibold text-background hover:bg-brand-dark"
+                      >
+                        ورود به جلسه
+                      </a>
+                    )}
+                    {b.contact.phone && (
+                      <p className="mt-2 text-muted">
+                        شماره تماس:{" "}
+                        <a href={`tel:${b.contact.phone}`} dir="ltr" className="text-brand">
+                          {b.contact.phone}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {!b.contact?.meeting_link && !b.contact?.phone && (
+                  <p className="mt-3 border-t border-card-border pt-3 text-sm text-muted">
+                    این متخصص هنوز راه ارتباطی ثبت نکرده. به‌زودی اینجا نمایش
+                    داده می‌شه.
                   </p>
                 )}
               </li>
