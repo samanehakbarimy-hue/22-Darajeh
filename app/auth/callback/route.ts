@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isProviderAvatarUrl, storeRemoteAvatar } from "@/lib/avatar";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -55,9 +56,30 @@ export async function GET(request: NextRequest) {
           .maybeSingle();
 
         const patch: { photo_url?: string; full_name?: string } = {};
-        if (photoUrl && !existingProfile?.photo_url) {
-          patch.photo_url = photoUrl;
+
+        // Provider avatar URLs are signed and expire, so the photo would
+        // vanish later. Keep our own copy instead — both when there is no
+        // photo yet, and when the stored one still points at the provider.
+        const needsOwnCopy =
+          !existingProfile?.photo_url ||
+          isProviderAvatarUrl(existingProfile.photo_url);
+
+        if (photoUrl && needsOwnCopy) {
+          const storedUrl = await storeRemoteAvatar(
+            supabase,
+            data.user.id,
+            photoUrl,
+          );
+          // Fall back to the provider URL only when we have nothing already;
+          // a working expiring photo beats no photo, but never replace a
+          // stored copy with one.
+          if (storedUrl) {
+            patch.photo_url = storedUrl;
+          } else if (!existingProfile?.photo_url) {
+            patch.photo_url = photoUrl;
+          }
         }
+
         if (fullName && !existingProfile?.full_name) {
           patch.full_name = fullName;
         }
