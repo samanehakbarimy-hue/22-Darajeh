@@ -2,7 +2,12 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ deleted?: string }>;
+}) {
+  const { deleted } = await searchParams;
   const supabase = await createClient();
   const { data: specialists } = await supabase
     .from("mentor_profiles")
@@ -14,6 +19,11 @@ export default async function Home() {
   return (
     <div className="flex flex-1 flex-col">
       <main className="flex flex-1 flex-col items-center px-6 py-20 text-center">
+        {deleted === "1" && (
+          <div className="mb-6 w-full max-w-md rounded-xl border border-card-border bg-card px-4 py-3 text-sm text-muted">
+            حسابت با موفقیت حذف شد.
+          </div>
+        )}
         <span className="mb-4 rounded-full bg-brand-light px-4 py-1 text-sm font-medium text-brand">
           کاملاً رایگان برای شروع
         </span>

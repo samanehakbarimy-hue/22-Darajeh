@@ -196,14 +196,22 @@ export default async function DashboardPage({
         </Link>
       )}
 
-      <form action={logout} className="mt-8">
-        <button
-          type="submit"
+      <div className="mt-8 flex items-center gap-3">
+        <Link
+          href="/dashboard/account"
           className="rounded-full border border-card-border px-6 py-3 font-medium hover:bg-card"
         >
-          خروج از حساب
-        </button>
-      </form>
+          تنظیمات حساب
+        </Link>
+        <form action={logout}>
+          <button
+            type="submit"
+            className="rounded-full border border-card-border px-6 py-3 font-medium hover:bg-card"
+          >
+            خروج از حساب
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
