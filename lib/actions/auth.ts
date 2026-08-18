@@ -119,6 +119,22 @@ export async function signInWithLinkedIn(role?: "mentor" | "seeker") {
   redirect(data.url);
 }
 
+export async function linkLinkedIn() {
+  const supabase = await createClient();
+  const origin = (await headers()).get("origin");
+
+  const { data, error } = await supabase.auth.linkIdentity({
+    provider: "linkedin_oidc",
+    options: { redirectTo: `${origin}/auth/callback?next=/dashboard/account` },
+  });
+
+  if (error || !data.url) {
+    redirect("/dashboard/account?error=link_failed");
+  }
+
+  redirect(data.url);
+}
+
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
