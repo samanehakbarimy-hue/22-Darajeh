@@ -4,17 +4,64 @@ import { useActionState, useState } from "react";
 import { saveMentorProfile } from "@/lib/actions/mentor";
 
 const SUGGESTED_TAGS = [
-  "مدیریت محصول",
-  "طراحی UX/UI",
+  // فناوری
   "توسعه نرم‌افزار",
+  "طراحی UX/UI",
+  "داده و تحلیل",
+  "هوش مصنوعی",
+  "امنیت سایبری",
+  "شبکه و زیرساخت",
+  // کسب‌وکار
+  "مدیریت محصول",
+  "مدیریت پروژه",
   "بازاریابی دیجیتال",
   "فروش",
   "رشد کسب‌وکار",
-  "منابع انسانی",
-  "مدیریت مالی",
   "کارآفرینی",
-  "داده و تحلیل",
+  "مدیریت مالی",
+  "حسابداری",
+  "منابع انسانی",
+  "لجستیک و زنجیره تأمین",
+  // صنعت و مهندسی
+  "نفت و گاز",
+  "پتروشیمی",
+  "مهندسی مکانیک",
+  "مهندسی برق",
+  "مهندسی عمران",
+  "معماری",
+  "ساختمان و املاک",
+  "انرژی و تجدیدپذیر",
+  "کشاورزی",
+  "صنایع غذایی",
+  // سلامت و علوم
+  "پزشکی و سلامت",
+  "پرستاری",
+  "داروسازی",
+  "روان‌شناسی",
+  "زیست‌فناوری",
+  // خدمات و سایر
+  "حقوق",
+  "آموزش و تدریس",
+  "ترجمه و محتوا",
+  "رسانه و تولید محتوا",
+  "گردشگری",
+  "بیمه",
+  "بانکداری",
+  // مسیر شغلی
+  "مهاجرت تحصیلی",
+  "مهاجرت کاری",
+  "رزومه و مصاحبه",
+  "مسیر شغلی",
 ];
+
+const MAX_PHOTO_MB = 3;
+
+function parseTags(raw: string): string[] {
+  return raw
+    .split(/[,،]/)
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
 
 export default function MentorProfileForm({
   initialPhotoUrl,
@@ -35,10 +82,42 @@ export default function MentorProfileForm({
 }) {
   const [state, action, pending] = useActionState(saveMentorProfile, undefined);
   const [preview, setPreview] = useState(initialPhotoUrl);
-  const [tags, setTags] = useState(initialTags);
   const [photoError, setPhotoError] = useState("");
 
-  const MAX_PHOTO_MB = 3;
+  // Controlled so nothing typed is lost when the form re-renders after saving.
+  const [headline, setHeadline] = useState(initialHeadline);
+  const [country, setCountry] = useState(initialCountry);
+  const [bio, setBio] = useState(initialBio);
+  const [linkedin, setLinkedin] = useState(initialLinkedin);
+  const [meetingLink, setMeetingLink] = useState(initialMeetingLink);
+
+  const [tags, setTags] = useState<string[]>(parseTags(initialTags));
+  const [draft, setDraft] = useState("");
+
+  const query = draft.trim().toLowerCase();
+  const matches = SUGGESTED_TAGS.filter(
+    (tag) => !tags.includes(tag) && tag.toLowerCase().includes(query),
+  ).slice(0, 8);
+
+  function addTag(tag: string) {
+    const clean = tag.trim();
+    if (!clean || tags.includes(clean)) return;
+    setTags([...tags, clean]);
+    setDraft("");
+  }
+
+  function removeTag(tag: string) {
+    setTags(tags.filter((t) => t !== tag));
+  }
+
+  function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" || e.key === "," || e.key === "،") {
+      e.preventDefault();
+      addTag(draft);
+    } else if (e.key === "Backspace" && draft === "" && tags.length > 0) {
+      removeTag(tags[tags.length - 1]);
+    }
+  }
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -52,15 +131,6 @@ export default function MentorProfileForm({
 
     setPhotoError("");
     setPreview(URL.createObjectURL(file));
-  }
-
-  function addSuggestedTag(tag: string) {
-    const current = tags
-      .split(/[,،]/)
-      .map((t) => t.trim())
-      .filter(Boolean);
-    if (current.includes(tag)) return;
-    setTags([...current, tag].join("، "));
   }
 
   return (
@@ -99,7 +169,8 @@ export default function MentorProfileForm({
         <input
           id="headline"
           name="headline"
-          defaultValue={initialHeadline}
+          value={headline}
+          onChange={(e) => setHeadline(e.target.value)}
           placeholder="مثلاً «مدیر محصول ارشد در اسنپ»"
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
@@ -112,7 +183,8 @@ export default function MentorProfileForm({
         <input
           id="country"
           name="country"
-          defaultValue={initialCountry}
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
           placeholder="مثلاً «ایران» یا «آلمان»"
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
@@ -127,36 +199,75 @@ export default function MentorProfileForm({
           name="bio"
           rows={4}
           required
-          defaultValue={initialBio}
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
       </div>
+
       <div>
-        <label htmlFor="expertise_tags" className="mb-1 block text-sm font-medium">
-          حوزه‌های تخصص (با ، از هم جدا کن)
+        <label htmlFor="tag_draft" className="mb-1 block text-sm font-medium">
+          حوزه‌های تخصص
         </label>
+
+        {tags.length > 0 && (
+          <div className="mb-2 flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="flex items-center gap-1 rounded-full bg-brand-light px-3 py-1 text-sm text-brand"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  aria-label={`حذف ${tag}`}
+                  className="text-brand/70 hover:text-brand"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+
         <input
-          id="expertise_tags"
-          name="expertise_tags"
-          required
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          placeholder="مثلاً طراحی محصول، مدیریت محصول"
+          id="tag_draft"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={handleTagKeyDown}
+          placeholder="بنویس تا پیشنهاد ببینی، مثلاً «نفت»"
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
-        <div className="mt-2 flex flex-wrap gap-2">
-          {SUGGESTED_TAGS.map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              onClick={() => addSuggestedTag(tag)}
-              className="rounded-full border border-card-border px-3 py-1 text-xs text-muted hover:border-brand hover:text-brand"
-            >
-              + {tag}
-            </button>
-          ))}
-        </div>
+        {/* The real value the server reads. */}
+        <input type="hidden" name="expertise_tags" value={tags.join("، ")} />
+
+        {matches.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {matches.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => addTag(tag)}
+                className="rounded-full border border-card-border px-3 py-1 text-xs text-muted hover:border-brand hover:text-brand"
+              >
+                + {tag}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {draft.trim() && !SUGGESTED_TAGS.includes(draft.trim()) && (
+          <button
+            type="button"
+            onClick={() => addTag(draft)}
+            className="mt-2 text-xs text-brand hover:underline"
+          >
+            افزودن «{draft.trim()}» به‌عنوان تخصص جدید
+          </button>
+        )}
       </div>
+
       <div>
         <label htmlFor="linkedin_url" className="mb-1 block text-sm font-medium">
           لینک لینکدین (اختیاری)
@@ -165,29 +276,35 @@ export default function MentorProfileForm({
           id="linkedin_url"
           name="linkedin_url"
           type="url"
-          defaultValue={initialLinkedin}
+          value={linkedin}
+          onChange={(e) => setLinkedin(e.target.value)}
           placeholder="https://linkedin.com/in/..."
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
       </div>
+
       <div>
         <label htmlFor="meeting_link" className="mb-1 block text-sm font-medium">
-          لینک تماس تصویری (مثلاً Google Meet یا Zoom)
+          لینک تماس تصویری (اختیاری)
         </label>
         <input
           id="meeting_link"
           name="meeting_link"
           type="url"
-          defaultValue={initialMeetingLink}
-          placeholder="این لینک بعد از رزرو به منتی نشون داده می‌شه"
+          value={meetingLink}
+          onChange={(e) => setMeetingLink(e.target.value)}
+          placeholder="https://meet.google.com/..."
           className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
         />
+        <p className="mt-1 text-xs text-muted">
+          می‌تونی الان خالی بذاری و بعداً پرش کنی. لینک ثابت Google Meet، Zoom یا
+          Microsoft Teams هر کدوم کار می‌کنه و بعد از رزرو به منتی نشون داده
+          می‌شه.
+        </p>
       </div>
 
       {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
-      {state?.success && (
-        <p className="text-sm text-brand">پروفایلت ذخیره شد.</p>
-      )}
+      {state?.success && <p className="text-sm text-brand">پروفایلت ذخیره شد.</p>}
 
       <button
         disabled={pending}
