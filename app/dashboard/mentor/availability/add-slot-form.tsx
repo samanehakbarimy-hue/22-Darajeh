@@ -244,11 +244,6 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
             })}
           </div>
 
-          <p className="mt-3 text-xs text-amber-400/70">
-            {useJalali
-              ? "پنجشنبه و جمعه تعطیل‌اند، ولی می‌تونی برایشان هم زمان بذاری."
-              : "Weekends are highlighted; you can still offer times."}
-          </p>
         </div>
 
         <div>
