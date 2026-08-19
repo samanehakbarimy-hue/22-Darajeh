@@ -9,7 +9,8 @@ export type AvailabilityState =
 
 const SESSION_MINUTES = 22;
 // "هر هفته" in the form means the next three months.
-const MAX_REPEAT_WEEKS = 12;
+// Six months of weekly repeats; the form asks for exactly this.
+const MAX_REPEAT_WEEKS = 26;
 
 /**
  * Adds every time picked for one day in a single go, optionally repeating the
