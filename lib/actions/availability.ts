@@ -8,7 +8,8 @@ export type AvailabilityState =
   | undefined;
 
 const SESSION_MINUTES = 22;
-const MAX_REPEAT_WEEKS = 8;
+// "هر هفته" in the form means the next three months.
+const MAX_REPEAT_WEEKS = 12;
 
 /**
  * Adds every time picked for one day in a single go, optionally repeating the

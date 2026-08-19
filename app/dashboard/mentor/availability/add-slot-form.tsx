@@ -20,11 +20,13 @@ const START_STEP = 30;
 const DAY_START = 8 * 60;
 const DAY_END = 21 * 60;
 
+// "هر هفته" books the next three months; slots have to end somewhere, and a
+// mentor can always extend later.
 const REPEAT_CHOICES = [
   { weeks: 1, label: "فقط همین روز" },
   { weeks: 2, label: "۲ هفته" },
   { weeks: 4, label: "۴ هفته" },
-  { weeks: 8, label: "۸ هفته" },
+  { weeks: 12, label: "هر هفته" },
 ];
 
 function hhmm(mins: number) {
@@ -48,16 +50,33 @@ function fa(n: number | string) {
   return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
 }
 
-/** Accepts Persian or Latin digits and returns a normalised "HH:MM", or null. */
+/**
+ * Reads a typed time as forgivingly as possible, so the mentor is not told off
+ * for a separator. "23:00", "23.00", "23 00", "2300" and "23" all work, in
+ * Persian or Latin digits. Returns "HH:MM", or null if it really can't be read.
+ */
 function normaliseTime(raw: string): string | null {
   const latin = raw
     .trim()
-    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
-    .replace(/[.،]/g, ":");
-  const match = latin.match(/^(\d{1,2}):(\d{2})$/);
-  if (!match) return null;
-  const h = Number(match[1]);
-  const m = Number(match[2]);
+    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
+
+  const parts = latin.split(/[^0-9]+/).filter(Boolean);
+  if (parts.length === 0) return null;
+
+  let h: number;
+  let m: number;
+
+  if (parts.length >= 2) {
+    // Separated, so "9:5" means five past nine rather than 95.
+    h = Number(parts[0]);
+    m = Number(parts[1]);
+  } else {
+    const digits = parts[0];
+    if (digits.length > 4) return null;
+    h = Number(digits.length <= 2 ? digits : digits.slice(0, digits.length - 2));
+    m = Number(digits.length <= 2 ? 0 : digits.slice(-2));
+  }
+
   if (h > 23 || m > 59) return null;
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
@@ -80,7 +99,7 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [times, setTimes] = useState<string[]>([]);
   const [customTime, setCustomTime] = useState("");
-  const [customError, setCustomError] = useState("");
+  const [customInvalid, setCustomInvalid] = useState(false);
   const [repeatWeeks, setRepeatWeeks] = useState(1);
 
   /** In Iran the weekend is Thursday and Friday; elsewhere Saturday/Sunday. */
@@ -150,10 +169,11 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
   function addCustomTime() {
     const normalised = normaliseTime(customTime);
     if (!normalised) {
-      setCustomError("ساعت را به شکل ۱۴:۱۵ بنویس.");
+      // The border turns red; no need to also lecture about the format.
+      setCustomInvalid(true);
       return;
     }
-    setCustomError("");
+    setCustomInvalid(false);
     setCustomTime("");
     if (!times.includes(normalised)) toggleTime(normalised);
   }
@@ -319,7 +339,10 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
                   <input
                     id="custom_time"
                     value={customTime}
-                    onChange={(e) => setCustomTime(e.target.value)}
+                    onChange={(e) => {
+                      setCustomTime(e.target.value);
+                      setCustomInvalid(false);
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -328,7 +351,9 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
                     }}
                     dir="ltr"
                     placeholder="14:15"
-                    className="w-28 rounded-lg border border-card-border bg-background px-3 py-2 text-center text-sm outline-none focus:border-brand"
+                    className={`w-28 rounded-lg border bg-background px-3 py-2 text-center text-sm outline-none focus:border-brand ${
+                      customInvalid ? "border-red-400" : "border-card-border"
+                    }`}
                   />
                   <button
                     type="button"
@@ -338,15 +363,9 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
                     افزودن
                   </button>
                 </div>
-                {customError && (
-                  <p className="mt-1 text-xs text-red-400">{customError}</p>
-                )}
               </div>
 
               <div className="mt-4">
-                <span className="mb-1.5 block text-xs text-muted">
-                  همین ساعت‌ها را هر هفته تکرار کن
-                </span>
                 <div className="flex flex-wrap gap-2">
                   {REPEAT_CHOICES.map(({ weeks, label: choiceLabel }) => (
                     <button
