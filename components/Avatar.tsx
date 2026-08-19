@@ -10,8 +10,10 @@ export default function Avatar({
   const dimension = { width: size, height: size, minWidth: size };
 
   if (photoUrl) {
-    // eslint-disable-next-line @next/next/no-img-element
     return (
+      // Avatars come from Supabase storage and LinkedIn at fixed small sizes,
+      // so next/image's optimiser would add a hop without saving anything.
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={photoUrl}
         alt={name}
