@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
+import { acceptBooking, declineBooking } from "@/lib/actions/booking-response";
 
 export default async function DashboardPage({
   searchParams,
@@ -43,6 +44,7 @@ export default async function DashboardPage({
   let mentorBookings: {
     id: string;
     message: string;
+    status: string;
     slot: { start_time: string } | null;
     seeker: { full_name: string } | null;
   }[] = [];
@@ -58,15 +60,16 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, message, availability_slots(start_time), profiles!bookings_seeker_id_fkey(full_name)",
+        "id, message, status, availability_slots(start_time), profiles!bookings_seeker_id_fkey(full_name)",
       )
       .eq("mentor_id", user.id)
-      .eq("status", "confirmed")
+      .in("status", ["pending", "confirmed"])
       .order("created_at", { ascending: false });
 
     mentorBookings = (data ?? []).map((b) => ({
       id: b.id,
       message: b.message,
+      status: b.status,
       slot: b.availability_slots as unknown as { start_time: string } | null,
       seeker: b.profiles as unknown as { full_name: string } | null,
     }));
@@ -76,6 +79,7 @@ export default async function DashboardPage({
     id: string;
     slot: { start_time: string } | null;
     mentor: { full_name: string } | null;
+    status: string;
     meetingLink: string | null;
   }[] = [];
 
@@ -83,10 +87,10 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, mentor_id, availability_slots(start_time), mentor_profiles(profiles(full_name))",
+        "id, mentor_id, status, availability_slots(start_time), mentor_profiles(profiles(full_name))",
       )
       .eq("seeker_id", user.id)
-      .eq("status", "confirmed")
+      .in("status", ["pending", "confirmed"])
       .order("created_at", { ascending: false });
 
     // The meeting link is the one contact detail a seeker gets — the mentor's
@@ -113,6 +117,7 @@ export default async function DashboardPage({
             profiles: { full_name: string } | null;
           } | null
         )?.profiles ?? null,
+      status: b.status,
       meetingLink: linkById.get(b.mentor_id) ?? null,
     }));
   }
@@ -130,7 +135,7 @@ export default async function DashboardPage({
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center px-6 py-16 text-center">
       {booked === "1" && (
         <div className="mb-6 w-full rounded-xl border border-brand bg-brand-light px-4 py-3 text-sm text-brand">
-          جلسه‌ات با موفقیت رزرو شد! 🎉
+          درخواستت فرستاده شد. منتظر تأیید متخصص باش.
         </div>
       )}
 
@@ -168,13 +173,43 @@ export default async function DashboardPage({
                     key={b.id}
                     className="rounded-xl border border-card-border bg-card p-4"
                   >
-                    <p className="font-bold">{b.seeker?.full_name}</p>
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="font-bold">{b.seeker?.full_name}</p>
+                      {b.status === "confirmed" && (
+                        <span className="shrink-0 text-xs text-brand">
+                          تأیید شده
+                        </span>
+                      )}
+                    </div>
                     {b.slot && (
                       <p className="mt-1 text-sm text-muted">
                         {timeFormatter.format(new Date(b.slot.start_time))}
                       </p>
                     )}
                     <p className="mt-2 text-sm text-muted">{b.message}</p>
+
+                    {b.status === "pending" && (
+                      <div className="mt-4 flex gap-3 border-t border-card-border pt-4">
+                        <form action={acceptBooking}>
+                          <input type="hidden" name="booking_id" value={b.id} />
+                          <button
+                            type="submit"
+                            className="rounded-full bg-brand px-5 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
+                          >
+                            قبول می‌کنم
+                          </button>
+                        </form>
+                        <form action={declineBooking}>
+                          <input type="hidden" name="booking_id" value={b.id} />
+                          <button
+                            type="submit"
+                            className="rounded-full border border-card-border px-5 py-2 text-sm text-muted hover:text-foreground"
+                          >
+                            رد می‌کنم
+                          </button>
+                        </form>
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -199,7 +234,12 @@ export default async function DashboardPage({
                   </p>
                 )}
 
-                {b.meetingLink ? (
+                {/* Nothing to join until the specialist has said yes. */}
+                {b.status === "pending" ? (
+                  <p className="mt-3 border-t border-card-border pt-3 text-sm text-amber-400/90">
+                    در انتظار تأیید متخصص. به‌محض جواب دادن، همین‌جا می‌بینی.
+                  </p>
+                ) : b.meetingLink ? (
                   <div className="mt-3 border-t border-card-border pt-3">
                     <a
                       href={b.meetingLink}
