@@ -75,6 +75,7 @@ export default function AddSlotForm({
   const [times, setTimes] = useState<string[]>([]);
   const [wheelHour, setWheelHour] = useState(9);
   const [wheelMinute, setWheelMinute] = useState(0);
+  const [wheelTouched, setWheelTouched] = useState(false);
 
 
   /** In Iran the weekend is Thursday and Friday; elsewhere Saturday/Sunday. */
@@ -148,12 +149,24 @@ export default function AddSlotForm({
   const [seenState, setSeenState] = useState(state);
   if (state !== seenState) {
     setSeenState(state);
-    if (state?.added && times.length > 0) setTimes([]);
+    if (state?.added && (times.length > 0 || wheelTouched)) {
+      setTimes([]);
+      setWheelTouched(false);
+    }
   }
 
-  function addWheelTime() {
-    const t = `${String(wheelHour).padStart(2, "0")}:${String(wheelMinute).padStart(2, "0")}`;
-    if (!times.includes(t)) toggleTime(t);
+  // Moving the wheel is the choice. Requiring a separate "add" press meant a
+  // mentor could set a time, see it on screen, and still find the submit
+  // button dead — two add buttons, and the wrong one looked like the action.
+  const wheelTime = `${String(wheelHour).padStart(2, "0")}:${String(wheelMinute).padStart(2, "0")}`;
+  const allTimes =
+    wheelTouched && !times.includes(wheelTime)
+      ? [...times, wheelTime].sort((a, b) => toMinutes(a) - toMinutes(b))
+      : times;
+
+  function removeTime(t: string) {
+    if (t === wheelTime && wheelTouched) setWheelTouched(false);
+    if (times.includes(t)) toggleTime(t);
   }
 
   const weekdays = useJalali ? JALALI_WEEKDAYS : GREGORIAN_WEEKDAYS;
@@ -168,12 +181,12 @@ export default function AddSlotForm({
   // Count what the mentor chose, not what it multiplies out to. Picking two
   // times is adding two times; that they recur weekly is a property of them,
   // not twenty-four separate decisions.
-  const chosenCount = times.length;
+  const chosenCount = allTimes.length;
 
   return (
     <form action={action} className="rounded-2xl border border-card-border bg-card p-6">
       <input type="hidden" name="date" value={selectedDate ? isoDate(selectedDate) : ""} />
-      <input type="hidden" name="times" value={times.join(",")} />
+      <input type="hidden" name="times" value={allTimes.join(",")} />
       <input type="hidden" name="repeat_weeks" value={REPEAT_WEEKS} />
 
       {/* Only split into two columns once there is something to put in the
@@ -269,9 +282,9 @@ export default function AddSlotForm({
                 <span className="font-bold">{selectedLabel}</span>
               </p>
 
-              {times.length > 0 && (
+              {allTimes.length > 0 && (
                 <div className="mb-3 flex flex-wrap gap-2">
-                  {times.map((t) => (
+                  {allTimes.map((t) => (
                     <span
                       key={t}
                       className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-xs text-brand"
@@ -283,7 +296,7 @@ export default function AddSlotForm({
                       </span>
                       <button
                         type="button"
-                        onClick={() => toggleTime(t)}
+                        onClick={() => removeTime(t)}
                         aria-label={`حذف ${t}`}
                         className="text-brand/60 transition hover:text-brand"
                       >
@@ -337,15 +350,9 @@ export default function AddSlotForm({
                     onChange={(h, m) => {
                       setWheelHour(h);
                       setWheelMinute(m);
+                      setWheelTouched(true);
                     }}
                   />
-                  <button
-                    type="button"
-                    onClick={addWheelTime}
-                    className="rounded-lg border border-card-border px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand"
-                  >
-                    افزودن
-                  </button>
                 </div>
               </div>
 
@@ -360,7 +367,7 @@ export default function AddSlotForm({
       )}
       {/* Drop the confirmation as soon as a new selection starts, so it never
           describes something other than what the button is about to do. */}
-      {state?.added && times.length === 0 ? (
+      {state?.added && allTimes.length === 0 ? (
         <p className="mt-4 rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm text-brand">
           زمان‌های آزادت اضافه شد.
         </p>
@@ -368,7 +375,7 @@ export default function AddSlotForm({
 
       <button
         type="submit"
-        disabled={pending || !selectedDate || times.length === 0}
+        disabled={pending || !selectedDate || allTimes.length === 0}
         className="mt-6 w-full rounded-full bg-brand px-6 py-3 font-semibold text-background transition hover:bg-brand-dark disabled:opacity-50"
       >
         {pending
