@@ -147,7 +147,10 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
       }).format(selectedDate)
     : null;
 
-  const totalSlots = times.length * REPEAT_WEEKS;
+  // Count what the mentor chose, not what it multiplies out to. Picking two
+  // times is adding two times; that they recur weekly is a property of them,
+  // not twenty-four separate decisions.
+  const chosenCount = times.length;
 
   return (
     <form action={action} className="rounded-2xl border border-card-border bg-card p-6">
@@ -330,8 +333,7 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
       )}
       {state?.added ? (
         <p className="mt-4 rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm text-brand">
-          {fa(state.added)} زمان اضافه شد.
-          {state.skipped ? ` (${fa(state.skipped)} زمان تکراری یا گذشته رد شد.)` : ""}
+          زمان‌های آزادت اضافه شد.
         </p>
       ) : null}
 
@@ -342,8 +344,8 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
       >
         {pending
           ? "در حال افزودن..."
-          : totalSlots > 0
-            ? `افزودن ${fa(totalSlots)} زمان`
+          : chosenCount > 0
+            ? `افزودن ${fa(chosenCount)} زمان`
             : "افزودن زمان"}
       </button>
     </form>
