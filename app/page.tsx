@@ -6,15 +6,15 @@ import SpecialistCard from "@/components/SpecialistCard";
 const STEPS = [
   {
     title: "متخصص رو انتخاب کن",
-    body: "بین متخصص‌های تأییدشده بگرد و کسی رو پیدا کن که همین مسیر رو رفته.",
+    body: "بین متخصص‌های تأییدشده بگرد و کسی رو پیدا کن که توی حوزه سؤال تو کار می‌کنه.",
   },
   {
-    title: "زمان رو رزرو کن",
-    body: "یکی از زمان‌های آزادش رو بردار و بنویس می‌خوای درباره چی حرف بزنی.",
+    title: "سؤالت رو بنویس و زمان بگیر",
+    body: "یکی از زمان‌های آزادش رو بردار و بنویس دنبال چه جوابی هستی، تا آماده بیاد.",
   },
   {
-    title: "۲۲ دقیقه حرف بزن",
-    body: "یک تماس تصویری کوتاه و رایگان. اگر خواستی ادامه بدی، خودتون تصمیم می‌گیرید.",
+    title: "۲۲ دقیقه راهنمایی بگیر",
+    body: "یک تماس تصویری کوتاه و رایگان. اگر خواستید ادامه بدید، خودتون با هم تصمیم می‌گیرید.",
   },
 ];
 
@@ -62,15 +62,15 @@ export default async function Home({
         )}
 
         <span className="mb-5 rounded-full bg-brand-light px-4 py-1 text-sm font-medium text-brand">
-          کاملاً رایگان برای شروع
+          ۲۲ دقیقه گفتگو، رایگان
         </span>
         <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
-          یک تماس رایگان ۲۲ دقیقه‌ای با متخصصی که تجربه‌اش را داره.
+          سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه.
         </h1>
-        <p className="mt-6 max-w-xl text-lg text-muted">
-          هر متخصص در ۲۲ درجه یک گفتگوی رایگان ۲۲ دقیقه‌ای ارائه می‌ده. موضوع را
-          انتخاب کن، زمان را انتخاب کن، و از کسی که قبلاً این مسیر را رفته
-          راهنمایی بگیر.
+        <p className="mt-6 max-w-xl text-lg leading-8 text-muted">
+          می‌خوای وارد یک حوزه بشی، مسیرت را عوض کنی، برای مهاجرت کاری آماده
+          بشی یا بدونی یک شغل واقعاً چه شکلیه؟ ۲۲ دقیقه با متخصصی حرف بزن که
+          همین حالا سرِ همان کاره.
         </p>
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <Link
@@ -161,10 +161,12 @@ export default async function Home({
         </section>
 
         <section className="mt-24 w-full max-w-3xl rounded-2xl border border-card-border bg-card px-6 py-12">
-          <h2 className="text-xl font-bold">تجربه‌ات را با بقیه قسمت کن</h2>
-          <p className="mx-auto mt-3 max-w-lg text-muted">
-            ۲۲ دقیقه از وقتت می‌تونه مسیر یک نفر را عوض کنه. پروفایلت را بساز و
-            زمان‌های آزادت را مشخص کن.
+          <h2 className="text-xl font-bold">تو هم می‌تونی متخصص باشی</h2>
+          <p className="mx-auto mt-3 max-w-lg leading-8 text-muted">
+            اگر توی کارت تجربه داری، ۲۲ دقیقه از وقتت می‌تونه مسیر یک نفر را
+            عوض کنه. زمان‌هایی که خودت انتخاب می‌کنی، به همان اندازه که دوست
+            داری — و اگر بعدش خواستید همکاری‌تان را ادامه بدید، خودتان تصمیم
+            می‌گیرید.
           </p>
           <Link
             href="/signup/mentor"
