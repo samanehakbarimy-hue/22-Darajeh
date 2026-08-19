@@ -12,6 +12,10 @@ const MONTHS = [
   "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
 ];
 
+// Must match the limits enforced in createBooking.
+const MIN_WORDS = 10;
+const MAX_WORDS = 120;
+
 function fa(n: number | string) {
   return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
 }
@@ -46,6 +50,11 @@ export default function BookingForm({
     slots.length > 0 ? isoDate(new Date(slots[0].startTime)) : null,
   );
   const [slotId, setSlotId] = useState<string>("");
+  const [message, setMessage] = useState("");
+
+  const wordCount = message.trim().split(/\s+/).filter(Boolean).length;
+  const tooShort = wordCount < MIN_WORDS;
+  const tooLong = wordCount > MAX_WORDS;
 
   const { label, days, leadingBlanks } = useMemo(() => {
     const { jy, jm } = toJalaali(cursor);
@@ -90,17 +99,34 @@ export default function BookingForm({
 
       <div>
         <label htmlFor="message" className="mb-2 block text-sm font-medium">
-          خودت رو معرفی کن و بگو چرا می‌خوای این تماس رو داشته باشی (حدود ۱۰۰
-          کلمه)
+          خودت رو معرفی کن و بگو چرا می‌خوای این تماس رو داشته باشی
         </label>
+        {/* Controlled, so a rejected submission doesn't erase what was
+            written — React resets uncontrolled fields after a form action. */}
         <textarea
           id="message"
           name="message"
           rows={6}
           required
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="سلام! من ... هستم و در حال حاضر روی ... کار می‌کنم. دوست دارم درباره ... باهات صحبت کنم چون ..."
           className="w-full rounded-lg border border-card-border bg-background px-4 py-3 outline-none focus:border-brand"
         />
+        {/* The word limits were only discoverable by failing, so show them. */}
+        <p
+          className={`mt-1.5 text-xs ${
+            tooLong || (wordCount > 0 && tooShort) ? "text-amber-400" : "text-muted"
+          }`}
+        >
+          {wordCount === 0
+            ? `حداقل ${fa(MIN_WORDS)} کلمه بنویس`
+            : tooShort
+              ? `${fa(wordCount)} کلمه — حداقل ${fa(MIN_WORDS)} کلمه لازمه`
+              : tooLong
+                ? `${fa(wordCount)} کلمه — حداکثر ${fa(MAX_WORDS)} کلمه`
+                : `${fa(wordCount)} کلمه`}
+        </p>
       </div>
 
       <div>
@@ -211,7 +237,7 @@ export default function BookingForm({
       )}
 
       <button
-        disabled={pending || !slotId}
+        disabled={pending || !slotId || tooShort || tooLong}
         type="submit"
         className="rounded-full bg-brand px-6 py-3 font-semibold text-background transition hover:bg-brand-dark disabled:opacity-50"
       >
