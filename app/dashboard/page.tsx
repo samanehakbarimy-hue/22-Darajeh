@@ -90,7 +90,9 @@ export default async function DashboardPage({
     meetingLink: string | null;
   }[] = [];
 
-  if (profile?.role === "seeker") {
+  // Not gated on role: a mentor or an admin can book a specialist too, and
+  // hiding their own requests from them is how they get lost.
+  {
     const { data } = await supabase
       .from("bookings")
       .select(
@@ -286,7 +288,8 @@ export default async function DashboardPage({
         </>
       )}
 
-      {profile?.role === "seeker" && (
+      {/* Shown whenever there is something to show, whatever the role. */}
+      {(profile?.role === "seeker" || seekerBookings.length > 0) && (
         <section className="mt-8">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-lg font-bold">درخواست‌های من</h2>
