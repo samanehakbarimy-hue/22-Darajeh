@@ -18,17 +18,14 @@ const JALALI_MONTHS = [
 // 22 minutes are measured from there, so 09:00 becomes 09:00–09:22.
 const SESSION_MINUTES = 22;
 const START_STEP = 30;
-const DAY_START = 8 * 60;
+// Nobody wants career advice at eight in the morning; evenings, once work is
+// over, are when these calls actually happen.
+const DAY_START = 9 * 60;
 const DAY_END = 21 * 60;
 
-// "هر هفته" books the next three months; slots have to end somewhere, and a
-// mentor can always extend later.
-const REPEAT_CHOICES = [
-  { weeks: 1, label: "فقط همین روز" },
-  { weeks: 2, label: "۲ هفته" },
-  { weeks: 4, label: "۴ هفته" },
-  { weeks: 12, label: "هر هفته" },
-];
+// Times repeat weekly by default, for the next three months. Slots have to
+// end somewhere, and a mentor can extend whenever they like.
+const REPEAT_WEEKS = 12;
 
 function hhmm(mins: number) {
   return `${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`;
@@ -70,7 +67,7 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
   const [times, setTimes] = useState<string[]>([]);
   const [wheelHour, setWheelHour] = useState(9);
   const [wheelMinute, setWheelMinute] = useState(0);
-  const [repeatWeeks, setRepeatWeeks] = useState(1);
+
 
   /** In Iran the weekend is Thursday and Friday; elsewhere Saturday/Sunday. */
   function isWeekend(d: Date) {
@@ -150,13 +147,13 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
       }).format(selectedDate)
     : null;
 
-  const totalSlots = times.length * repeatWeeks;
+  const totalSlots = times.length * REPEAT_WEEKS;
 
   return (
     <form action={action} className="rounded-2xl border border-card-border bg-card p-6">
       <input type="hidden" name="date" value={selectedDate ? isoDate(selectedDate) : ""} />
       <input type="hidden" name="times" value={times.join(",")} />
-      <input type="hidden" name="repeat_weeks" value={repeatWeeks} />
+      <input type="hidden" name="repeat_weeks" value={REPEAT_WEEKS} />
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div>
@@ -296,7 +293,7 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
 
               <div className="mt-4">
                 <span className="mb-1.5 block text-xs text-muted">
-                  ساعت دلخواه، اگر بین گزینه‌های بالا نبود
+                  ساعت دلخواه
                 </span>
                 <div className="flex items-center gap-3">
                   <TimeWheel
@@ -318,24 +315,6 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
                 </div>
               </div>
 
-              <div className="mt-4">
-                <div className="flex flex-wrap gap-2">
-                  {REPEAT_CHOICES.map(({ weeks, label: choiceLabel }) => (
-                    <button
-                      key={weeks}
-                      type="button"
-                      onClick={() => setRepeatWeeks(weeks)}
-                      className={`rounded-full border px-3 py-1.5 text-xs transition ${
-                        repeatWeeks === weeks
-                          ? "border-brand bg-brand-light text-brand"
-                          : "border-card-border text-muted hover:border-brand hover:text-brand"
-                      }`}
-                    >
-                      {choiceLabel}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </>
           )}
         </div>

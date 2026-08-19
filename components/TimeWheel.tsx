@@ -93,8 +93,10 @@ function Column({
             role="option"
             aria-selected={selected}
             onClick={() => selectAt(v)}
-            className={`flex w-full snap-center items-center justify-center text-lg tabular-nums transition ${
-              selected ? "font-bold text-brand" : "text-muted/60"
+            className={`flex w-full snap-center items-center justify-center tabular-nums transition ${
+              selected
+                ? "text-lg font-bold text-brand"
+                : "text-xs text-muted/40"
             }`}
             style={{ height: ITEM_HEIGHT }}
             dir="ltr"
@@ -126,8 +128,11 @@ export default function TimeWheel({
   const minutes = Array.from({ length: 60 / minuteStep }, (_, i) => i * minuteStep);
 
   return (
+    // Forced left-to-right so the hour sits on the left and the minutes on the
+    // right, the way a clock reads — an RTL page would otherwise flip them.
     <div
-      className="relative w-40 rounded-xl border border-card-border bg-background"
+      dir="ltr"
+      className="relative w-32 rounded-xl border border-card-border bg-background"
       style={{ height: WHEEL_HEIGHT }}
     >
       {/* The band marking which row counts as chosen. */}
