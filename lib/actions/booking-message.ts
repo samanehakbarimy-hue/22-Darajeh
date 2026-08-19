@@ -24,6 +24,18 @@ export async function editBookingMessage(
   }
 
   const supabase = await createClient();
+
+  // Saving without changing anything is not a failure, so don't report one.
+  const { data: current } = await supabase
+    .from("bookings")
+    .select("message")
+    .eq("id", bookingId)
+    .maybeSingle();
+
+  if (current?.message === message) {
+    return { saved: true };
+  }
+
   const { error } = await supabase.rpc("edit_booking_message", {
     booking_id: bookingId,
     new_message: message,
