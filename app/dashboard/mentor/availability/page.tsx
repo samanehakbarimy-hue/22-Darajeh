@@ -30,6 +30,18 @@ export default async function MentorAvailabilityPage() {
     .gte("start_time", new Date().toISOString())
     .order("start_time", { ascending: true });
 
+  // Show the Persian calendar to mentors in Iran, and to anyone who has not
+  // said where they live, since the site's audience is Persian-speaking.
+  const { data: mentorProfile } = await supabase
+    .from("mentor_profiles")
+    .select("country")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const country = (mentorProfile?.country ?? "").trim().toLowerCase();
+  const useJalali =
+    country === "" || country === "iran" || country === "ایران";
+
   const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
     weekday: "long",
     month: "long",
@@ -46,8 +58,8 @@ export default async function MentorAvailabilityPage() {
         برای تماس رایگان ۲۲ دقیقه‌ای نمایش داده می‌شه.
       </p>
 
-      <div className="mt-8 rounded-2xl border border-card-border bg-card p-5">
-        <AddSlotForm />
+      <div className="mt-8">
+        <AddSlotForm useJalali={useJalali} />
       </div>
 
       <ul className="mt-8 flex flex-col gap-3">
