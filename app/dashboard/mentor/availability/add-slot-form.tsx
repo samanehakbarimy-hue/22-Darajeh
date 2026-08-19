@@ -141,6 +141,16 @@ export default function AddSlotForm({
     );
   }
 
+  // Once the times are saved they are no longer a pending selection. Leaving
+  // them chosen left the button offering to add what had just been added, and
+  // pressing it did nothing because the server skips duplicates. Clear during
+  // render rather than in an effect, so the button never paints as enabled.
+  const [seenState, setSeenState] = useState(state);
+  if (state !== seenState) {
+    setSeenState(state);
+    if (state?.added && times.length > 0) setTimes([]);
+  }
+
   function addWheelTime() {
     const t = `${String(wheelHour).padStart(2, "0")}:${String(wheelMinute).padStart(2, "0")}`;
     if (!times.includes(t)) toggleTime(t);
@@ -348,7 +358,9 @@ export default function AddSlotForm({
           {state.error}
         </p>
       )}
-      {state?.added ? (
+      {/* Drop the confirmation as soon as a new selection starts, so it never
+          describes something other than what the button is about to do. */}
+      {state?.added && times.length === 0 ? (
         <p className="mt-4 rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm text-brand">
           زمان‌های آزادت اضافه شد.
         </p>
