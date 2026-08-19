@@ -75,8 +75,7 @@ export default async function MentorAvailabilityPage() {
     <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">زمان‌های آزاد من</h1>
       <p className="mt-2 text-muted">
-        زمان‌های آزادت برای مشاوره و کمک ۲۲ دقیقه‌ای به دیگران را اینجا اضافه
-        کن.
+        زمان‌های آزادت برای مشاوره و کمک به دیگران را اینجا اضافه کن.
       </p>
 
       <div className="mt-8">
