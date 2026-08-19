@@ -2,9 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
-import { acceptBooking, declineBooking } from "@/lib/actions/booking-response";
 import RequestMessage from "./request-message";
-import SubmitButton from "@/components/SubmitButton";
 
 export default async function DashboardPage({
   searchParams,
@@ -202,95 +200,40 @@ export default async function DashboardPage({
       </div>
 
       {profile?.role === "mentor" && (
-        <>
-          {/* Requests need an answer, so they come first and look like it. */}
-          <section className="mt-8">
-            <h2 className="text-lg font-bold">
-              درخواست‌های تازه
-              {pendingRequests.length > 0 && (
-                <span className="mr-2 rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs text-background">
-                  {pendingRequests.length.toLocaleString("fa-IR")}
-                </span>
-              )}
-            </h2>
+        <section className="mt-8">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="text-lg font-bold">جلسات من</h2>
+            <Link
+              href="/dashboard/sessions"
+              className="text-sm text-brand hover:underline"
+            >
+              دیدن همه
+            </Link>
+          </div>
 
-            {pendingRequests.length === 0 ? (
-              <p className="mt-3 text-sm text-muted">
-                درخواست تازه‌ای نداری.
-              </p>
-            ) : (
-              <ul className="mt-4 flex flex-col gap-4">
-                {pendingRequests.map((b) => (
-                  <li
-                    key={b.id}
-                    className="rounded-2xl border border-brand/40 bg-card p-6"
-                  >
-                    <p className="font-bold">{b.seeker?.full_name}</p>
-                    {b.slot && (
-                      <p className="mt-1 text-sm text-brand">
-                        {timeFormatter.format(new Date(b.slot.start_time))}
-                      </p>
-                    )}
-                    <p className="mt-4 whitespace-pre-line leading-7 text-muted">
-                      {b.message}
-                    </p>
-                    <div className="mt-5 flex gap-3 border-t border-card-border pt-5">
-                      <form action={acceptBooking}>
-                        <input type="hidden" name="booking_id" value={b.id} />
-                        <SubmitButton
-                          pendingLabel="در حال تأیید..."
-                          className="px-6 py-2.5 text-sm"
-                        >
-                          قبول می‌کنم
-                        </SubmitButton>
-                      </form>
-                      <form action={declineBooking}>
-                        <input type="hidden" name="booking_id" value={b.id} />
-                        <SubmitButton
-                          variant="outline"
-                          pendingLabel="در حال رد..."
-                          className="px-6 py-2.5 text-sm font-medium"
-                        >
-                          رد می‌کنم
-                        </SubmitButton>
-                      </form>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          {upcomingSessions.length > 0 && (
-            <section className="mt-10">
-              <h2 className="text-lg font-bold">جلسات پیش‌رو</h2>
-              <ul className="mt-4 flex flex-col gap-3">
-                {upcomingSessions.map((b) => (
-                  <li
-                    key={b.id}
-                    className="rounded-2xl border border-card-border bg-card p-5"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="font-bold">{b.seeker?.full_name}</p>
-                      <span className="shrink-0 text-xs text-brand">
-                        تأیید شده
-                      </span>
-                    </div>
-                    {b.slot && (
-                      <p className="mt-1 text-sm text-muted">
-                        {timeFormatter.format(new Date(b.slot.start_time))}
-                      </p>
-                    )}
-                    <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted">
-                      {b.message}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-        </>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <Link
+              href="/dashboard/sessions"
+              className="rounded-2xl border border-card-border bg-card px-5 py-4 transition hover:border-brand"
+            >
+              <div className="text-2xl font-bold">
+                {pendingRequests.length.toLocaleString("fa-IR")}
+              </div>
+              <div className="mt-0.5 text-xs text-muted">در انتظار جواب تو</div>
+            </Link>
+            <Link
+              href="/dashboard/sessions"
+              className="rounded-2xl border border-card-border bg-card px-5 py-4 transition hover:border-brand"
+            >
+              <div className="text-2xl font-bold">
+                {upcomingSessions.length.toLocaleString("fa-IR")}
+              </div>
+              <div className="mt-0.5 text-xs text-muted">جلسه قبول‌شده</div>
+            </Link>
+          </div>
+        </section>
       )}
+
 
       {/* Shown whenever there is something to show, whatever the role. */}
       {(profile?.role === "seeker" || seekerBookings.length > 0) && (

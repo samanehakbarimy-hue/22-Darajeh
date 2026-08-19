@@ -25,9 +25,12 @@ export default async function Navbar() {
 
   // A specialist has no use for "find a specialist" — they are the specialist.
   // Point each role at the thing they actually came to do.
-  const roleLinks =
+  // A specialist receives requests; a seeker sends them. Calling both
+  // "درخواست‌های من" made the specialist look like someone shopping for help.
+  const links =
     role === "mentor"
       ? [
+          { href: "/dashboard/sessions", label: "جلسات من" },
           { href: "/dashboard/mentor/availability", label: "زمان‌های آزاد" },
           { href: "/dashboard/mentor/profile", label: "پروفایل من" },
         ]
@@ -35,14 +38,14 @@ export default async function Navbar() {
         ? [
             { href: "/admin", label: "مدیریت" },
             { href: "/specialists", label: "متخصص‌ها" },
+            { href: "/dashboard/requests", label: "درخواست‌های من" },
           ]
-        : [{ href: "/specialists", label: "پیدا کردن متخصص" }];
-
-  // Anyone signed in can book a specialist — a mentor or an admin included —
-  // so everyone needs a way back to what they have asked for.
-  const links = user
-    ? [...roleLinks, { href: "/dashboard/requests", label: "درخواست‌های من" }]
-    : roleLinks;
+        : user
+          ? [
+              { href: "/specialists", label: "پیدا کردن متخصص" },
+              { href: "/dashboard/requests", label: "درخواست‌های من" },
+            ]
+          : [{ href: "/specialists", label: "پیدا کردن متخصص" }];
 
   return (
     <header className="flex items-center justify-between border-b border-card-border px-6 py-4 sm:px-12">
