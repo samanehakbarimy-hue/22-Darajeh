@@ -29,7 +29,7 @@ export default async function DashboardPage({
       ? "متخصص"
       : profile?.role === "admin"
         ? "ادمین"
-        : "منتی";
+        : "متقاضی";
 
   const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
     weekday: "long",
