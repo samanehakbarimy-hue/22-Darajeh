@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signUpSeeker } from "@/lib/actions/auth";
 import PasswordInput from "@/components/PasswordInput";
 import LinkedInButton from "@/components/LinkedInButton";
+import Spinner from "@/components/Spinner";
 
 export default function SeekerSignupPage() {
   const [state, action, pending] = useActionState(signUpSeeker, undefined);
@@ -68,9 +69,10 @@ export default function SeekerSignupPage() {
         <button
           disabled={pending}
           type="submit"
-          className="mt-2 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-dark disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 mt-2 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-dark disabled:opacity-60"
         >
-          {pending ? "در حال ثبت‌نام..." : "ثبت‌نام"}
+          {pending && <Spinner />}
+        {pending ? "در حال ثبت‌نام..." : "ثبت‌نام"}
         </button>
       </form>
 

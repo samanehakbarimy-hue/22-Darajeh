@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import { acceptBooking, declineBooking } from "@/lib/actions/booking-response";
 import RequestMessage from "./request-message";
+import SubmitButton from "@/components/SubmitButton";
 
 export default async function DashboardPage({
   searchParams,
@@ -234,21 +235,22 @@ export default async function DashboardPage({
                     <div className="mt-5 flex gap-3 border-t border-card-border pt-5">
                       <form action={acceptBooking}>
                         <input type="hidden" name="booking_id" value={b.id} />
-                        <button
-                          type="submit"
-                          className="rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-dark"
+                        <SubmitButton
+                          pendingLabel="در حال تأیید..."
+                          className="px-6 py-2.5 text-sm"
                         >
                           قبول می‌کنم
-                        </button>
+                        </SubmitButton>
                       </form>
                       <form action={declineBooking}>
                         <input type="hidden" name="booking_id" value={b.id} />
-                        <button
-                          type="submit"
-                          className="rounded-full border border-card-border px-6 py-2.5 text-sm text-muted transition hover:text-foreground"
+                        <SubmitButton
+                          variant="outline"
+                          pendingLabel="در حال رد..."
+                          className="px-6 py-2.5 text-sm font-medium"
                         >
                           رد می‌کنم
-                        </button>
+                        </SubmitButton>
                       </form>
                     </div>
                   </li>
