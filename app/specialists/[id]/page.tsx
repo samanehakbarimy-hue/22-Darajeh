@@ -112,7 +112,7 @@ export default async function SpecialistPage({
           <div className="rounded-xl border border-card-border p-4">
             <h3 className="font-bold">تماس راهنمایی</h3>
             <p className="mt-1 text-sm text-muted">
-              گفتگوی کوتاه برای بررسی سؤال و مسیر شغلی شما
+              گفتگویی برای بررسی سؤال و مسیر شغلی شما
             </p>
             <div className="mt-3 flex items-center justify-between text-sm">
               <span className="text-muted">۲۲ دقیقه</span>

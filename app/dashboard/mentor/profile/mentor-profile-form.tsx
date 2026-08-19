@@ -365,7 +365,7 @@ export default function MentorProfileForm({
             htmlFor="meeting_link"
             className="mb-1.5 block text-sm font-medium"
           >
-            لینک تماس تصویری
+            لینک جلسه آنلاین
             <span className="mr-1 text-xs font-normal text-muted">(خصوصی)</span>
           </label>
           <input
