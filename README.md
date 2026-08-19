@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ۲۲ درجه (22 Darajeh)
 
-## Getting Started
+Book a free 22-minute video call with a specialist who has already walked the
+path you're on. Seekers browse approved specialists, pick one of their open
+slots, and say what they want to talk about. No cost, no commitment.
 
-First, run the development server:
+The interface is Persian and right-to-left throughout.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+- [Next.js](https://nextjs.org) (App Router) with React and TypeScript
+- [Supabase](https://supabase.com) for auth, database, and avatar storage
+- [Tailwind CSS](https://tailwindcss.com) for styling
+- Deployed on [Vercel](https://vercel.com)
+
+## Getting started
+
+Install dependencies and create `.env.local` with your Supabase project's
+credentials:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Both values come from your Supabase project's API settings. Env files are
+gitignored — never commit them.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Then run the development server:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-To learn more about Next.js, take a look at the following resources:
+Other scripts: `npm run build`, `npm run start`, `npm run lint`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Database
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Schema lives in [`supabase/migrations`](supabase/migrations) as ordered SQL
+files, applied with the Supabase CLI. Add a new numbered file rather than
+editing one that has already been applied.
 
-## Deploy on Vercel
+## Roles
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Seeker (منتی)** — browses specialists and books a call.
+- **Specialist (متخصص)** — fills in a profile, publishes available slots, and
+  receives bookings. New specialists start as pending and need admin approval
+  before they appear in the directory.
+- **Admin (ادمین)** — reviews and approves or rejects specialist applications.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Layout
+
+- `app/` — routes: the landing page, auth (`login`, `signup`), the specialist
+  directory and booking flow (`specialists`), the signed-in area (`dashboard`),
+  and `admin`.
+- `components/` — shared UI.
+- `lib/actions/` — server actions for auth, bookings, availability, profiles,
+  and admin review.
+- `lib/supabase/` — Supabase clients for browser and server contexts.
+- `supabase/migrations/` — database schema.
