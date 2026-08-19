@@ -40,8 +40,8 @@ export default async function SpecialistsPage({
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">پیدا کردن متخصص</h1>
       <p className="mt-2 text-muted">
-        یکی از متخصص‌های ۲۲ درجه رو انتخاب کن و یک تماس رایگان ۲۲ دقیقه‌ای رزرو
-        کن.
+        حوزه‌ای که سؤالت درباره‌شه رو انتخاب کن و ۲۲ دقیقه رایگان با کسی حرف بزن
+        که همین حالا توی همان حوزه کار می‌کنه.
       </p>
 
       {availableTags.length > 0 && (
