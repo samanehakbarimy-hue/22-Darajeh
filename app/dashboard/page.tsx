@@ -76,7 +76,7 @@ export default async function DashboardPage({
     id: string;
     slot: { start_time: string } | null;
     mentor: { full_name: string } | null;
-    contact: { phone: string | null; meeting_link: string | null } | null;
+    meetingLink: string | null;
   }[] = [];
 
   if (profile?.role === "seeker") {
@@ -89,18 +89,19 @@ export default async function DashboardPage({
       .eq("status", "confirmed")
       .order("created_at", { ascending: false });
 
-    // Booking someone is pointless without a way to reach them. RLS only
-    // returns these rows for mentors this person has actually booked.
+    // The meeting link is the one contact detail a seeker gets — the mentor's
+    // phone number stays private to them and the admin. RLS returns these rows
+    // only for mentors this person has actually booked.
     const mentorIds = (data ?? []).map((b) => b.mentor_id);
-    const { data: contacts } = mentorIds.length
+    const { data: links } = mentorIds.length
       ? await supabase
-          .from("mentor_contacts")
-          .select("id, phone, meeting_link")
+          .from("mentor_meeting_links")
+          .select("id, meeting_link")
           .in("id", mentorIds)
       : { data: [] };
 
-    const contactById = new Map(
-      (contacts ?? []).map((c) => [c.id, c] as const),
+    const linkById = new Map(
+      (links ?? []).map((l) => [l.id, l.meeting_link] as const),
     );
 
     seekerBookings = (data ?? []).map((b) => ({
@@ -112,7 +113,7 @@ export default async function DashboardPage({
             profiles: { full_name: string } | null;
           } | null
         )?.profiles ?? null,
-      contact: contactById.get(b.mentor_id) ?? null,
+      meetingLink: linkById.get(b.mentor_id) ?? null,
     }));
   }
 
@@ -198,32 +199,20 @@ export default async function DashboardPage({
                   </p>
                 )}
 
-                {(b.contact?.meeting_link || b.contact?.phone) && (
-                  <div className="mt-3 border-t border-card-border pt-3 text-sm">
-                    {b.contact.meeting_link && (
-                      <a
-                        href={b.contact.meeting_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block rounded-full bg-brand px-4 py-2 font-semibold text-background hover:bg-brand-dark"
-                      >
-                        ورود به جلسه
-                      </a>
-                    )}
-                    {b.contact.phone && (
-                      <p className="mt-2 text-muted">
-                        شماره تماس:{" "}
-                        <a href={`tel:${b.contact.phone}`} dir="ltr" className="text-brand">
-                          {b.contact.phone}
-                        </a>
-                      </p>
-                    )}
+                {b.meetingLink ? (
+                  <div className="mt-3 border-t border-card-border pt-3">
+                    <a
+                      href={b.meetingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
+                    >
+                      ورود به جلسه
+                    </a>
                   </div>
-                )}
-
-                {!b.contact?.meeting_link && !b.contact?.phone && (
+                ) : (
                   <p className="mt-3 border-t border-card-border pt-3 text-sm text-muted">
-                    این متخصص هنوز راه ارتباطی ثبت نکرده. به‌زودی اینجا نمایش
+                    این متخصص هنوز لینک جلسه ثبت نکرده. به‌زودی اینجا نمایش
                     داده می‌شه.
                   </p>
                 )}
