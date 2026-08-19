@@ -17,10 +17,11 @@ const JALALI_MONTHS = [
   "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
 ];
 
-// The session itself is 22 minutes, so the starts step by 22 too: back-to-back
-// slots with no dead gap between them, from 08:00 up to the last one ending
-// by 21:00.
+// Mentors pick a round start time — nobody offers a call at 09:06 — and the
+// 22 minutes are measured from there, so 09:00 becomes 09:00–09:22. Starts sit
+// on the half hour, which also leaves a few minutes between consecutive calls.
 const SESSION_MINUTES = 22;
+const START_STEP = 30;
 const DAY_START = 8 * 60;
 const DAY_END = 21 * 60;
 
@@ -28,11 +29,7 @@ const TIME_OPTIONS = (() => {
   const out: { start: string; end: string }[] = [];
   const hhmm = (mins: number) =>
     `${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`;
-  for (
-    let m = DAY_START;
-    m + SESSION_MINUTES <= DAY_END;
-    m += SESSION_MINUTES
-  ) {
+  for (let m = DAY_START; m + SESSION_MINUTES <= DAY_END; m += START_STEP) {
     out.push({ start: hhmm(m), end: hhmm(m + SESSION_MINUTES) });
   }
   return out;
@@ -220,10 +217,10 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
                 <span className="font-bold">{selectedLabel}</span>
               </p>
               <p className="mb-3 text-xs text-muted">
-                هر بازه دقیقاً ۲۲ دقیقه است. می‌تونی چند بازه را با هم انتخاب
-                کنی.
+                ساعت شروع را انتخاب کن؛ جلسه ۲۲ دقیقه بعد تمام می‌شه. می‌تونی
+                چند ساعت را با هم انتخاب کنی.
               </p>
-              <div className="grid max-h-64 grid-cols-2 gap-2 overflow-y-auto pl-1 sm:grid-cols-3">
+              <div className="grid max-h-64 grid-cols-3 gap-2 overflow-y-auto pl-1 sm:grid-cols-4">
                 {TIME_OPTIONS.map(({ start, end }) => {
                   const on = times.includes(start);
                   return (
@@ -231,14 +228,18 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
                       key={start}
                       type="button"
                       onClick={() => toggleTime(start)}
-                      className={`rounded-lg border px-2 py-2 text-xs transition ${
+                      className={`rounded-lg border px-2 py-2 transition ${
                         on
-                          ? "border-brand bg-brand-light font-bold text-brand"
+                          ? "border-brand bg-brand-light text-brand"
                           : "border-card-border text-muted hover:border-brand hover:text-brand"
                       }`}
-                      dir="ltr"
                     >
-                      {useJalali ? `${fa(start)}–${fa(end)}` : `${start}–${end}`}
+                      <span className="block text-sm font-bold" dir="ltr">
+                        {useJalali ? fa(start) : start}
+                      </span>
+                      <span className="block text-[10px] opacity-70" dir="ltr">
+                        {useJalali ? `تا ${fa(end)}` : `to ${end}`}
+                      </span>
                     </button>
                   );
                 })}
