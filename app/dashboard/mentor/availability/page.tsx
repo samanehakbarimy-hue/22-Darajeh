@@ -71,6 +71,18 @@ export default async function MentorAvailabilityPage() {
       new Date(a[0].start_time).getTime() - new Date(b[0].start_time).getTime(),
   );
 
+  // Every day that already has a slot, so the calendar can mark them — a
+  // weekly series runs months ahead, and a mentor should see that without
+  // reading the list underneath.
+  const takenDates = [
+    ...new Set(
+      (slots ?? []).map((slot) => {
+        const d = new Date(slot.start_time);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      }),
+    ),
+  ];
+
   return (
     <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">زمان‌های آزاد من</h1>
@@ -79,7 +91,7 @@ export default async function MentorAvailabilityPage() {
       </p>
 
       <div className="mt-8">
-        <AddSlotForm useJalali={useJalali} />
+        <AddSlotForm useJalali={useJalali} takenDates={takenDates} />
       </div>
 
       <ul className="mt-8 flex flex-col gap-3">
@@ -123,14 +135,6 @@ export default async function MentorAvailabilityPage() {
                   <span className="shrink-0 text-sm text-brand">رزرو شده</span>
                 )}
               </div>
-
-              {group.length > 1 && (
-                <p className="mt-1 text-xs text-muted">
-                  {`${group.length.toLocaleString("fa-IR")} هفته، تا ${timeFormatter.format(
-                    new Date(group[group.length - 1].start_time),
-                  )}`}
-                </p>
-              )}
 
               {booked.length > 0 && (
                 <p className="mt-1 text-xs text-brand">

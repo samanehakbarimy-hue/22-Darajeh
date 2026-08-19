@@ -58,7 +58,15 @@ function startOfToday() {
   return d;
 }
 
-export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
+export default function AddSlotForm({
+  useJalali,
+  takenDates = [],
+}: {
+  useJalali: boolean;
+  takenDates?: string[];
+}) {
+  const taken = useMemo(() => new Set(takenDates), [takenDates]);
+
   const [state, action, pending] = useActionState(addAvailabilitySlots, undefined);
 
   const today = useMemo(() => startOfToday(), []);
@@ -200,28 +208,37 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
               <span key={`blank-${i}`} />
             ))}
             {days.map((day) => {
+              const iso = isoDate(day);
               const past = day < today;
-              const selected = selectedDate && isoDate(selectedDate) === isoDate(day);
+              const selected = selectedDate && isoDate(selectedDate) === iso;
               const weekend = isWeekend(day);
+              const hasSlots = taken.has(iso);
               const dayNumber = useJalali ? fa(toJalaali(day).jd) : day.getDate();
               return (
                 <button
-                  key={isoDate(day)}
+                  key={iso}
                   type="button"
                   disabled={past}
                   onClick={() => setSelectedDate(day)}
                   title={weekend ? "تعطیل" : undefined}
-                  className={`aspect-square rounded-lg text-sm transition ${
+                  className={`relative aspect-square rounded-lg text-sm transition ${
                     selected
                       ? "bg-brand font-bold text-background"
                       : past
                         ? "cursor-not-allowed text-muted/30"
-                        : weekend
-                          ? "text-amber-400/80 hover:bg-brand-light hover:text-brand"
-                          : "text-foreground hover:bg-brand-light hover:text-brand"
+                        : hasSlots
+                          ? "bg-brand-light font-bold text-brand"
+                          : weekend
+                            ? "text-amber-400/80 hover:bg-brand-light hover:text-brand"
+                            : "text-foreground hover:bg-brand-light hover:text-brand"
                   }`}
                 >
                   {dayNumber}
+                  {/* A day already carrying slots keeps its dot in every month
+                      the mentor browses to, not just the one on screen. */}
+                  {hasSlots && !selected && (
+                    <span className="absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand" />
+                  )}
                 </button>
               );
             })}
