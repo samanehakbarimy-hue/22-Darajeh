@@ -11,15 +11,32 @@ export default async function Navbar() {
 
   let fullName: string | null = null;
   let photoUrl: string | null = null;
+  let role: string | null = null;
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, photo_url")
+      .select("full_name, photo_url, role")
       .eq("id", user.id)
       .maybeSingle();
     fullName = profile?.full_name ?? null;
     photoUrl = profile?.photo_url ?? null;
+    role = profile?.role ?? null;
   }
+
+  // A specialist has no use for "find a specialist" — they are the specialist.
+  // Point each role at the thing they actually came to do.
+  const links =
+    role === "mentor"
+      ? [
+          { href: "/dashboard/mentor/availability", label: "زمان‌های آزاد" },
+          { href: "/dashboard/mentor/profile", label: "پروفایل من" },
+        ]
+      : role === "admin"
+        ? [
+            { href: "/admin", label: "مدیریت" },
+            { href: "/specialists", label: "متخصص‌ها" },
+          ]
+        : [{ href: "/specialists", label: "پیدا کردن متخصص" }];
 
   return (
     <header className="flex items-center justify-between border-b border-card-border px-6 py-4 sm:px-12">
@@ -27,9 +44,15 @@ export default async function Navbar() {
         ۲۲ درجه
       </Link>
       <nav className="flex items-center gap-4 text-sm font-medium">
-        <Link href="/specialists" className="text-muted hover:text-foreground">
-          پیدا کردن متخصص
-        </Link>
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="text-muted hover:text-foreground"
+          >
+            {link.label}
+          </Link>
+        ))}
 
         {user ? (
           <>
