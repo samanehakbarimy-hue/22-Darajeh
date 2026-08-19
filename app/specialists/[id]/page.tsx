@@ -33,7 +33,9 @@ export default async function SpecialistPage({
     .eq("is_booked", false)
     .gte("start_time", now)
     .order("start_time", { ascending: true })
-    .limit(6);
+    .limit(1);
+
+  const nextSlot = slots?.[0]?.start_time ?? null;
 
   // Sessions this specialist has actually held. Slots for approved mentors are
   // publicly readable, so this is real rather than a number we invented.
@@ -175,47 +177,41 @@ export default async function SpecialistPage({
 
         <aside className="h-fit lg:sticky lg:top-6">
           <div className="rounded-2xl border border-card-border bg-card p-5">
-            <div className="rounded-xl border border-card-border p-4">
-              <h3 className="font-bold">تماس راهنمایی</h3>
-              <p className="mt-1 text-sm text-muted">
-                گفتگویی برای بررسی سؤال و مسیر شغلی شما
-              </p>
-              <div className="mt-3 flex items-center justify-between text-sm">
-                <span className="text-muted">۲۲ دقیقه</span>
-                <span className="font-bold text-brand">رایگان</span>
+            <h3 className="font-bold">جلسات موجود</h3>
+            <p className="mt-1 text-sm text-muted">
+              جلسه را رزرو کن و زمانش را انتخاب کن.
+            </p>
+
+            {/* The session on offer, not a list of times — choosing a time is
+                the booking page's job, and a wall of dates here buried it. */}
+            <div className="mt-4 rounded-xl border border-card-border p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="font-bold">تماس راهنمایی</div>
+                  <div className="mt-0.5 text-sm text-muted">۲۲ دقیقه</div>
+                  <div className="mt-2 font-bold text-brand">رایگان</div>
+                </div>
+
+                {slots && slots.length > 0 ? (
+                  <Link
+                    href={`/specialists/${specialist.id}/book`}
+                    className="shrink-0 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-dark"
+                  >
+                    رزرو
+                  </Link>
+                ) : (
+                  <span className="shrink-0 rounded-full border border-card-border px-4 py-2.5 text-xs text-muted">
+                    زمان آزاد نیست
+                  </span>
+                )}
               </div>
+
+              {nextSlot && (
+                <p className="mt-3 border-t border-card-border pt-3 text-xs text-muted">
+                  نزدیک‌ترین زمان: {timeFormatter.format(new Date(nextSlot))}
+                </p>
+              )}
             </div>
-
-            {/* Only promise a booking when there is actually a slot to take;
-                otherwise the main call to action leads to a dead end. */}
-            {slots && slots.length > 0 ? (
-              <Link
-                href={`/specialists/${specialist.id}/book`}
-                className="mt-4 block rounded-full bg-brand px-4 py-3 text-center font-semibold text-background transition hover:bg-brand-dark"
-              >
-                رزرو جلسه رایگان
-              </Link>
-            ) : (
-              <div className="mt-4 rounded-full border border-card-border px-4 py-3 text-center text-sm text-muted">
-                فعلاً زمان آزادی ثبت نشده
-              </div>
-            )}
-
-            {slots && slots.length > 0 && (
-              <div className="mt-5 border-t border-card-border pt-4">
-                <h4 className="text-sm font-bold">نزدیک‌ترین زمان‌ها</h4>
-                <ul className="mt-3 flex flex-col gap-2">
-                  {slots.map((slot) => (
-                    <li
-                      key={slot.id}
-                      className="rounded-lg border border-card-border px-3 py-2 text-sm text-muted"
-                    >
-                      {timeFormatter.format(new Date(slot.start_time))}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         </aside>
       </div>
