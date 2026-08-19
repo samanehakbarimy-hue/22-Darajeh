@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import { acceptBooking, declineBooking } from "@/lib/actions/booking-response";
+import RequestMessage from "./request-message";
 
 export default async function DashboardPage({
   searchParams,
@@ -57,6 +58,10 @@ export default async function DashboardPage({
       .maybeSingle();
     mentorStatus = mentorProfile?.status ?? null;
 
+    // Opening the dashboard is reading the requests, so the people who sent
+    // them can see they landed — and can no longer quietly reword them.
+    await supabase.rpc("mark_bookings_seen");
+
     const { data } = await supabase
       .from("bookings")
       .select(
@@ -80,6 +85,8 @@ export default async function DashboardPage({
     slot: { start_time: string } | null;
     mentor: { full_name: string } | null;
     status: string;
+    message: string;
+    seenAt: string | null;
     meetingLink: string | null;
   }[] = [];
 
@@ -87,7 +94,7 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, mentor_id, status, availability_slots(start_time), mentor_profiles(profiles(full_name))",
+        "id, mentor_id, status, message, seen_at, availability_slots(start_time), mentor_profiles(profiles(full_name))",
       )
       .eq("seeker_id", user.id)
       .in("status", ["pending", "confirmed"])
@@ -118,6 +125,8 @@ export default async function DashboardPage({
           } | null
         )?.profiles ?? null,
       status: b.status,
+      message: b.message,
+      seenAt: b.seen_at,
       meetingLink: linkById.get(b.mentor_id) ?? null,
     }));
   }
@@ -234,10 +243,20 @@ export default async function DashboardPage({
                   </p>
                 )}
 
+                {/* The request as sent, so it is never lost — and rewordable
+                    until the specialist opens it. */}
+                <RequestMessage
+                  bookingId={b.id}
+                  message={b.message}
+                  editable={b.status === "pending" && !b.seenAt}
+                />
+
                 {/* Nothing to join until the specialist has said yes. */}
                 {b.status === "pending" ? (
                   <p className="mt-3 border-t border-card-border pt-3 text-sm text-amber-400/90">
-                    در انتظار تأیید متخصص. به‌محض جواب دادن، همین‌جا می‌بینی.
+                    {b.seenAt
+                      ? "متخصص درخواستت رو دیده. منتظر جوابش باش."
+                      : "درخواستت فرستاده شد. هنوز دیده نشده."}
                   </p>
                 ) : b.meetingLink ? (
                   <div className="mt-3 border-t border-card-border pt-3">
