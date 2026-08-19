@@ -266,7 +266,10 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
               <p className="mb-2 text-xs text-muted">
                 ساعت شروع را انتخاب کن؛ جلسه ۲۲ دقیقه بعد تمام می‌شه.
               </p>
-              <div className="grid max-h-48 grid-cols-3 gap-2 overflow-y-auto pl-1 sm:grid-cols-4">
+              <div
+                dir="ltr"
+                className="grid max-h-48 grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4"
+              >
                 {TIME_OPTIONS.map(({ start, end }) => {
                   const on = times.includes(start);
                   return (
