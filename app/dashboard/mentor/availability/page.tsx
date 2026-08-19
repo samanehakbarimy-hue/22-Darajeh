@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { deleteAvailabilitySlot } from "@/lib/actions/availability";
+import { deleteAvailabilitySlots } from "@/lib/actions/availability";
 import AddSlotForm from "./add-slot-form";
 
 export default async function MentorAvailabilityPage() {
@@ -49,6 +49,27 @@ export default async function MentorAvailabilityPage() {
     hour: "2-digit",
     minute: "2-digit",
   });
+  const weekdayFormatter = new Intl.DateTimeFormat("fa-IR", { weekday: "long" });
+  const clockFormatter = new Intl.DateTimeFormat("fa-IR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  // One weekly choice creates a slot per week, which listed individually
+  // buries the page in near-identical rows. Group them back into the series
+  // the mentor actually chose, and only spell out the dates when a series
+  // has been partly booked or trimmed.
+  type Slot = { id: string; start_time: string; is_booked: boolean };
+  const series = new Map<string, Slot[]>();
+  for (const slot of (slots ?? []) as Slot[]) {
+    const d = new Date(slot.start_time);
+    const key = `${d.getDay()}-${d.getHours()}-${d.getMinutes()}`;
+    series.set(key, [...(series.get(key) ?? []), slot]);
+  }
+  const groups = [...series.values()].sort(
+    (a, b) =>
+      new Date(a[0].start_time).getTime() - new Date(b[0].start_time).getTime(),
+  );
 
   return (
     <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
@@ -66,27 +87,60 @@ export default async function MentorAvailabilityPage() {
         {(!slots || slots.length === 0) && (
           <p className="text-muted">هنوز زمانی اضافه نکردی.</p>
         )}
-        {slots?.map((slot) => (
-          <li
-            key={slot.id}
-            className="flex items-center justify-between rounded-xl border border-card-border bg-card px-4 py-3"
-          >
-            <span>{timeFormatter.format(new Date(slot.start_time))}</span>
-            {slot.is_booked ? (
-              <span className="text-sm text-brand">رزرو شده</span>
-            ) : (
-              <form action={deleteAvailabilitySlot}>
-                <input type="hidden" name="slot_id" value={slot.id} />
-                <button
-                  type="submit"
-                  className="text-sm text-red-400 hover:text-red-300"
-                >
-                  حذف
-                </button>
-              </form>
-            )}
-          </li>
-        ))}
+        {groups.map((group) => {
+          const first = new Date(group[0].start_time);
+          const booked = group.filter((s) => s.is_booked);
+          const free = group.filter((s) => !s.is_booked);
+
+          // A single occurrence is just a date; a series is a standing weekly
+          // commitment and reads better as one.
+          const heading =
+            group.length === 1
+              ? timeFormatter.format(first)
+              : `${weekdayFormatter.format(first)}‌ها ساعت ${clockFormatter.format(first)}`;
+
+          return (
+            <li
+              key={group[0].id}
+              className="rounded-xl border border-card-border bg-card px-4 py-3"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span>{heading}</span>
+                {free.length > 0 ? (
+                  <form action={deleteAvailabilitySlots}>
+                    <input
+                      type="hidden"
+                      name="slot_ids"
+                      value={free.map((s) => s.id).join(",")}
+                    />
+                    <button
+                      type="submit"
+                      className="shrink-0 text-sm text-red-400 hover:text-red-300"
+                    >
+                      حذف
+                    </button>
+                  </form>
+                ) : (
+                  <span className="shrink-0 text-sm text-brand">رزرو شده</span>
+                )}
+              </div>
+
+              {group.length > 1 && (
+                <p className="mt-1 text-xs text-muted">
+                  {`${group.length.toLocaleString("fa-IR")} هفته، تا ${timeFormatter.format(
+                    new Date(group[group.length - 1].start_time),
+                  )}`}
+                </p>
+              )}
+
+              {booked.length > 0 && (
+                <p className="mt-1 text-xs text-brand">
+                  {`${booked.length.toLocaleString("fa-IR")} جلسه رزرو شده`}
+                </p>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

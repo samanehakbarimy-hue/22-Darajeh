@@ -104,6 +104,28 @@ export async function addAvailabilitySlots(
   return { added: fresh.length, skipped: skipped || undefined };
 }
 
+/**
+ * Removes a whole weekly series at once. A mentor who offered Wednesdays at
+ * nine and changed their mind means all of them, not twelve separate deletions.
+ * Booked slots are never included, so cancelling is always deliberate.
+ */
+export async function deleteAvailabilitySlots(formData: FormData) {
+  const ids = String(formData.get("slot_ids") ?? "")
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  if (ids.length === 0) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("availability_slots")
+    .delete()
+    .in("id", ids)
+    .eq("is_booked", false);
+
+  revalidatePath("/dashboard/mentor/availability");
+}
+
 export async function deleteAvailabilitySlot(formData: FormData) {
   const slotId = String(formData.get("slot_id") ?? "");
   if (!slotId) return;
