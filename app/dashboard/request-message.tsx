@@ -23,6 +23,14 @@ export default function RequestMessage({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(message);
 
+  // A save that leaves the form open and says nothing reads as a save that
+  // did not happen. Close the editor and confirm it.
+  const [seenState, setSeenState] = useState(state);
+  if (state !== seenState) {
+    setSeenState(state);
+    if (state?.saved && editing) setEditing(false);
+  }
+
   if (!editing) {
     return (
       <div className="mt-3 border-t border-card-border pt-3">
@@ -32,6 +40,25 @@ export default function RequestMessage({
             <span className="mr-2 text-xs text-muted/70">(ویرایش شده)</span>
           )}
         </p>
+
+        {state?.saved && (
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-brand">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-3.5 w-3.5"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            پیامت ذخیره شد.
+          </p>
+        )}
+
         {editable && (
           <button
             type="button"
