@@ -140,168 +140,243 @@ export default async function DashboardPage({
           ? "در انتظار تأیید ادمین"
           : "هنوز پروفایل متخصص‌ت رو تکمیل نکردی";
 
+  const pendingRequests = mentorBookings.filter((b) => b.status === "pending");
+  const upcomingSessions = mentorBookings.filter((b) => b.status === "confirmed");
+
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center px-6 py-16 text-center">
+    <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
       {booked === "1" && (
-        <div className="mb-6 w-full rounded-xl border border-brand bg-brand-light px-4 py-3 text-sm text-brand">
+        <div className="mb-6 rounded-xl border border-brand bg-brand-light px-4 py-3 text-sm text-brand">
           درخواستت فرستاده شد. منتظر تأیید متخصص باش.
         </div>
       )}
 
-      <h1 className="text-2xl font-bold">
-        خوش اومدی{profile?.full_name ? `، ${profile.full_name}` : ""}!
-      </h1>
-      <p className="mt-2 text-muted">
-        حساب تو به‌عنوان «{roleLabel}» ثبت شده.
-      </p>
+      {/* A returning user is not arriving for the first time, so this names
+          the page rather than greeting them. */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-card-border pb-6">
+        <div>
+          <h1 className="text-2xl font-bold">{profile?.full_name}</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+            <span className="rounded-full bg-brand-light px-3 py-1 text-brand">
+              {roleLabel}
+            </span>
+            {profile?.role === "mentor" && (
+              <span className="rounded-full border border-card-border px-3 py-1 text-muted">
+                {statusLabel}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {profile?.role === "mentor" && (
+            <>
+              <Link
+                href="/dashboard/mentor/profile"
+                className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand"
+              >
+                {mentorStatus ? "پروفایل من" : "تکمیل پروفایل"}
+              </Link>
+              <Link
+                href="/dashboard/mentor/availability"
+                className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand"
+              >
+                زمان‌های آزاد
+              </Link>
+            </>
+          )}
+          {profile?.role === "admin" && (
+            <Link
+              href="/admin"
+              className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
+            >
+              پنل مدیریت
+            </Link>
+          )}
+        </div>
+      </div>
 
       {profile?.role === "mentor" && (
-        <div className="mt-6 flex w-full flex-col items-center gap-3">
-          <p className="text-sm text-muted">{statusLabel}</p>
-          <div className="flex gap-3">
-            <Link
-              href="/dashboard/mentor/profile"
-              className="rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-dark"
-            >
-              {mentorStatus ? "ویرایش پروفایل" : "تکمیل پروفایل متخصص"}
-            </Link>
-            <Link
-              href="/dashboard/mentor/availability"
-              className="rounded-full border border-card-border px-6 py-3 font-medium hover:bg-card"
-            >
-              زمان‌های آزاد
-            </Link>
-          </div>
+        <>
+          {/* Requests need an answer, so they come first and look like it. */}
+          <section className="mt-8">
+            <h2 className="text-lg font-bold">
+              درخواست‌های تازه
+              {pendingRequests.length > 0 && (
+                <span className="mr-2 rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs text-background">
+                  {pendingRequests.length.toLocaleString("fa-IR")}
+                </span>
+              )}
+            </h2>
 
-          {mentorBookings.length > 0 && (
-            <div className="mt-8 w-full text-right">
-              <h2 className="text-lg font-bold">جلسات رزرو شده</h2>
-              <ul className="mt-4 flex flex-col gap-3">
-                {mentorBookings.map((b) => (
+            {pendingRequests.length === 0 ? (
+              <p className="mt-3 text-sm text-muted">
+                درخواست تازه‌ای نداری.
+              </p>
+            ) : (
+              <ul className="mt-4 flex flex-col gap-4">
+                {pendingRequests.map((b) => (
                   <li
                     key={b.id}
-                    className="rounded-xl border border-card-border bg-card p-4"
+                    className="rounded-2xl border border-brand/40 bg-card p-6"
+                  >
+                    <p className="font-bold">{b.seeker?.full_name}</p>
+                    {b.slot && (
+                      <p className="mt-1 text-sm text-brand">
+                        {timeFormatter.format(new Date(b.slot.start_time))}
+                      </p>
+                    )}
+                    <p className="mt-4 whitespace-pre-line leading-7 text-muted">
+                      {b.message}
+                    </p>
+                    <div className="mt-5 flex gap-3 border-t border-card-border pt-5">
+                      <form action={acceptBooking}>
+                        <input type="hidden" name="booking_id" value={b.id} />
+                        <button
+                          type="submit"
+                          className="rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-dark"
+                        >
+                          قبول می‌کنم
+                        </button>
+                      </form>
+                      <form action={declineBooking}>
+                        <input type="hidden" name="booking_id" value={b.id} />
+                        <button
+                          type="submit"
+                          className="rounded-full border border-card-border px-6 py-2.5 text-sm text-muted transition hover:text-foreground"
+                        >
+                          رد می‌کنم
+                        </button>
+                      </form>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {upcomingSessions.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-lg font-bold">جلسات پیش‌رو</h2>
+              <ul className="mt-4 flex flex-col gap-3">
+                {upcomingSessions.map((b) => (
+                  <li
+                    key={b.id}
+                    className="rounded-2xl border border-card-border bg-card p-5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <p className="font-bold">{b.seeker?.full_name}</p>
-                      {b.status === "confirmed" && (
-                        <span className="shrink-0 text-xs text-brand">
-                          تأیید شده
-                        </span>
-                      )}
+                      <span className="shrink-0 text-xs text-brand">
+                        تأیید شده
+                      </span>
                     </div>
                     {b.slot && (
                       <p className="mt-1 text-sm text-muted">
                         {timeFormatter.format(new Date(b.slot.start_time))}
                       </p>
                     )}
-                    <p className="mt-2 text-sm text-muted">{b.message}</p>
-
-                    {b.status === "pending" && (
-                      <div className="mt-4 flex gap-3 border-t border-card-border pt-4">
-                        <form action={acceptBooking}>
-                          <input type="hidden" name="booking_id" value={b.id} />
-                          <button
-                            type="submit"
-                            className="rounded-full bg-brand px-5 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
-                          >
-                            قبول می‌کنم
-                          </button>
-                        </form>
-                        <form action={declineBooking}>
-                          <input type="hidden" name="booking_id" value={b.id} />
-                          <button
-                            type="submit"
-                            className="rounded-full border border-card-border px-5 py-2 text-sm text-muted hover:text-foreground"
-                          >
-                            رد می‌کنم
-                          </button>
-                        </form>
-                      </div>
-                    )}
+                    <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted">
+                      {b.message}
+                    </p>
                   </li>
                 ))}
               </ul>
-            </div>
+            </section>
           )}
-        </div>
+        </>
       )}
 
-      {profile?.role === "seeker" && seekerBookings.length > 0 && (
-        <div className="mt-8 w-full text-right">
-          <h2 className="text-lg font-bold">جلسات رزرو شده من</h2>
-          <ul className="mt-4 flex flex-col gap-3">
-            {seekerBookings.map((b) => (
-              <li
-                key={b.id}
-                className="rounded-xl border border-card-border bg-card p-4"
+      {profile?.role === "seeker" && (
+        <section className="mt-8">
+          <h2 className="text-lg font-bold">درخواست‌های من</h2>
+
+          {seekerBookings.length === 0 ? (
+            <div className="mt-4 rounded-2xl border border-card-border bg-card p-8 text-center">
+              <p className="text-muted">هنوز جلسه‌ای رزرو نکردی.</p>
+              <Link
+                href="/specialists"
+                className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-dark"
               >
-                <p className="font-bold">{b.mentor?.full_name}</p>
-                {b.slot && (
-                  <p className="mt-1 text-sm text-muted">
-                    {timeFormatter.format(new Date(b.slot.start_time))}
-                  </p>
-                )}
-
-                {/* The request as sent, so it is never lost — and rewordable
-                    until the specialist opens it. */}
-                <RequestMessage
-                  bookingId={b.id}
-                  message={b.message}
-                  editable={b.status === "pending" && !b.seenAt}
-                />
-
-                {/* Nothing to join until the specialist has said yes. */}
-                {b.status === "pending" ? (
-                  <p className="mt-3 border-t border-card-border pt-3 text-sm text-amber-400/90">
-                    {b.seenAt
-                      ? "متخصص درخواستت رو دیده. منتظر جوابش باش."
-                      : "درخواستت فرستاده شد. هنوز دیده نشده."}
-                  </p>
-                ) : b.meetingLink ? (
-                  <div className="mt-3 border-t border-card-border pt-3">
-                    <a
-                      href={b.meetingLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
+                پیدا کردن متخصص
+              </Link>
+            </div>
+          ) : (
+            <ul className="mt-4 flex flex-col gap-4">
+              {seekerBookings.map((b) => (
+                <li
+                  key={b.id}
+                  className="rounded-2xl border border-card-border bg-card p-6"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-bold">{b.mentor?.full_name}</p>
+                      {b.slot && (
+                        <p className="mt-1 text-sm text-brand">
+                          {timeFormatter.format(new Date(b.slot.start_time))}
+                        </p>
+                      )}
+                    </div>
+                    <span
+                      className={`shrink-0 rounded-full px-3 py-1 text-xs ${
+                        b.status === "confirmed"
+                          ? "bg-brand-light text-brand"
+                          : "border border-card-border text-muted"
+                      }`}
                     >
-                      ورود به جلسه
-                    </a>
+                      {b.status === "confirmed"
+                        ? "تأیید شده"
+                        : b.seenAt
+                          ? "دیده شده"
+                          : "فرستاده شد"}
+                    </span>
                   </div>
-                ) : (
-                  <p className="mt-3 border-t border-card-border pt-3 text-sm text-muted">
-                    این متخصص هنوز لینک جلسه ثبت نکرده. به‌زودی اینجا نمایش
-                    داده می‌شه.
-                  </p>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+
+                  {/* The request as sent, so it is never lost — and rewordable
+                      until the specialist opens it. */}
+                  <RequestMessage
+                    bookingId={b.id}
+                    message={b.message}
+                    editable={b.status === "pending" && !b.seenAt}
+                  />
+
+                  {/* Nothing to join until the specialist has said yes. */}
+                  {b.status === "pending" ? (
+                    <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
+                      {b.seenAt
+                        ? "متخصص درخواستت رو دیده. منتظر جوابش باش."
+                        : "هنوز دیده نشده. تا وقتی باز نشده می‌تونی پیامت رو عوض کنی."}
+                    </p>
+                  ) : b.meetingLink ? (
+                    <div className="mt-4 border-t border-card-border pt-4">
+                      <a
+                        href={b.meetingLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-dark"
+                      >
+                        ورود به جلسه
+                      </a>
+                    </div>
+                  ) : (
+                    <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
+                      این متخصص هنوز لینک جلسه ثبت نکرده. به‌زودی اینجا نمایش
+                      داده می‌شه.
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       )}
 
-      {profile?.role === "admin" && (
-        <Link
-          href="/admin"
-          className="mt-6 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-dark"
-        >
-          پنل ادمین
-        </Link>
-      )}
-
-      <div className="mt-8 flex items-center gap-3">
-        <Link
-          href="/dashboard/account"
-          className="rounded-full border border-card-border px-6 py-3 font-medium hover:bg-card"
-        >
+      {/* Account actions are housekeeping, so they sit quietly at the end. */}
+      <div className="mt-12 flex items-center gap-4 border-t border-card-border pt-6 text-sm">
+        <Link href="/dashboard/account" className="text-muted hover:text-foreground">
           تنظیمات حساب
         </Link>
         <form action={logout}>
-          <button
-            type="submit"
-            className="rounded-full border border-card-border px-6 py-3 font-medium hover:bg-card"
-          >
+          <button type="submit" className="text-muted hover:text-foreground">
             خروج از حساب
           </button>
         </form>
