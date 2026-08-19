@@ -81,12 +81,6 @@ export default function BookingForm({
     hour: "2-digit",
     minute: "2-digit",
   });
-  const dayFormatter = new Intl.DateTimeFormat("fa-IR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-
   const daySlots = selectedDay ? (byDay.get(selectedDay) ?? []) : [];
 
   return (
@@ -181,35 +175,29 @@ export default function BookingForm({
 
             <div>
               {selectedDay && (
-                <>
-                  <p className="mb-3 text-sm">
-                    <span className="text-muted">روز انتخاب‌شده: </span>
-                    <span className="font-bold">
-                      {dayFormatter.format(new Date(selectedDay))}
-                    </span>
-                  </p>
-                  {/* One session per booking, so these are single-choice. */}
-                  <div className="grid grid-cols-2 gap-2">
-                    {daySlots.map((slot) => {
-                      const on = slotId === slot.id;
-                      return (
-                        <button
-                          key={slot.id}
-                          type="button"
-                          onClick={() => setSlotId(slot.id)}
-                          className={`rounded-lg border px-3 py-2.5 text-sm transition ${
-                            on
-                              ? "border-brand bg-brand-light font-bold text-brand"
-                              : "border-card-border text-muted hover:border-brand hover:text-brand"
-                          }`}
-                          dir="ltr"
-                        >
-                          {fa(timeFormatter.format(new Date(slot.startTime)))}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
+                /* One session per booking, so these are single-choice — and
+                   pressing the chosen one again lets it go. */
+                <div className="flex flex-col gap-2">
+                  {daySlots.map((slot) => {
+                    const on = slotId === slot.id;
+                    return (
+                      <button
+                        key={slot.id}
+                        type="button"
+                        onClick={() => setSlotId(on ? "" : slot.id)}
+                        aria-pressed={on}
+                        className={`rounded-lg border px-3 py-2.5 text-sm transition ${
+                          on
+                            ? "border-brand bg-brand-light font-bold text-brand"
+                            : "border-card-border text-muted hover:border-brand hover:text-brand"
+                        }`}
+                        dir="ltr"
+                      >
+                        {fa(timeFormatter.format(new Date(slot.startTime)))}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>
