@@ -36,7 +36,12 @@ export default async function Navbar() {
             { href: "/admin", label: "مدیریت" },
             { href: "/specialists", label: "متخصص‌ها" },
           ]
-        : [{ href: "/specialists", label: "پیدا کردن متخصص" }];
+        : role === "seeker"
+          ? [
+              { href: "/specialists", label: "پیدا کردن متخصص" },
+              { href: "/dashboard/requests", label: "درخواست‌های من" },
+            ]
+          : [{ href: "/specialists", label: "پیدا کردن متخصص" }];
 
   return (
     <header className="flex items-center justify-between border-b border-card-border px-6 py-4 sm:px-12">

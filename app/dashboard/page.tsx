@@ -288,7 +288,17 @@ export default async function DashboardPage({
 
       {profile?.role === "seeker" && (
         <section className="mt-8">
-          <h2 className="text-lg font-bold">درخواست‌های من</h2>
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="text-lg font-bold">درخواست‌های من</h2>
+            {seekerBookings.length > 0 && (
+              <Link
+                href="/dashboard/requests"
+                className="text-sm text-brand hover:underline"
+              >
+                دیدن همه
+              </Link>
+            )}
+          </div>
 
           {seekerBookings.length === 0 ? (
             <div className="mt-4 rounded-2xl border border-card-border bg-card p-8 text-center">
