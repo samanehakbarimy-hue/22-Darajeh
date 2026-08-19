@@ -23,9 +23,9 @@ const START_STEP = 30;
 const DAY_START = 9 * 60;
 const DAY_END = 21 * 60;
 
-// Times repeat weekly by default, for the next three months. Slots have to
-// end somewhere, and a mentor can extend whenever they like.
-const REPEAT_WEEKS = 12;
+// Times repeat weekly by default, for the next six months. Slots have to end
+// somewhere, and a mentor can extend whenever they like.
+const REPEAT_WEEKS = 26;
 
 function hhmm(mins: number) {
   return `${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`;
@@ -257,10 +257,6 @@ export default function AddSlotForm({
         </div>
 
         <div>
-          {!selectedDate && (
-            <p className="text-sm text-muted">اول یک روز از تقویم انتخاب کن.</p>
-          )}
-
           {selectedDate && (
             <>
               <p className="mb-3 text-sm">
