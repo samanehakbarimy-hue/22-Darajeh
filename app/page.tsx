@@ -176,23 +176,6 @@ export default async function Home({
           </Link>
         </section>
       </main>
-
-      <footer className="border-t border-card-border px-6 py-8">
-        <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-4 text-sm text-muted sm:flex-row">
-          <span>۲۲ درجه</span>
-          <div className="flex gap-6">
-            <Link href="/specialists" className="hover:text-foreground">
-              پیدا کردن متخصص
-            </Link>
-            <Link href="/signup/mentor" className="hover:text-foreground">
-              متخصص شدن
-            </Link>
-            <Link href="/login" className="hover:text-foreground">
-              ورود
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
