@@ -16,7 +16,7 @@ type Member = {
 
 const ROLE_LABEL: Record<Member["role"], string> = {
   mentor: "متخصص",
-  seeker: "منتی",
+  seeker: "متقاضی",
   admin: "ادمین",
 };
 

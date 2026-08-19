@@ -252,7 +252,7 @@ export default function MentorProfileForm({
 
       <Section
         title="حوزه‌های تخصص"
-        description="منتی‌ها با همین حوزه‌ها تو رو پیدا می‌کنن."
+        description="متقاضی‌ها با همین حوزه‌ها تو رو پیدا می‌کنن."
       >
         <div>
           {tags.length > 0 && (
@@ -316,7 +316,7 @@ export default function MentorProfileForm({
 
       <Section
         title="راه‌های ارتباطی"
-        description="شماره تماس و لینک جلسه فقط بعد از رزرو، به همون منتی نشون داده می‌شه."
+        description="شماره تماس و لینک جلسه فقط بعد از رزرو، به همون متقاضی نشون داده می‌شه."
       >
         <div>
           <label

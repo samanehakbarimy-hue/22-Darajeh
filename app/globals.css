@@ -39,6 +39,15 @@ h2 {
   letter-spacing: -0.01em;
 }
 
+/* The time wheel scrolls, but a visible scrollbar would break the illusion. */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

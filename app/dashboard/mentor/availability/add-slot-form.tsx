@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import { toJalaali, toGregorian, jalaaliMonthLength } from "jalaali-js";
 import { addAvailabilitySlots } from "@/lib/actions/availability";
+import TimeWheel from "@/components/TimeWheel";
 
 // Saturday-first, matching how a Persian week is read.
 const JALALI_WEEKDAYS = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
@@ -50,37 +51,6 @@ function fa(n: number | string) {
   return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
 }
 
-/**
- * Reads a typed time as forgivingly as possible, so the mentor is not told off
- * for a separator. "23:00", "23.00", "23 00", "2300" and "23" all work, in
- * Persian or Latin digits. Returns "HH:MM", or null if it really can't be read.
- */
-function normaliseTime(raw: string): string | null {
-  const latin = raw
-    .trim()
-    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
-
-  const parts = latin.split(/[^0-9]+/).filter(Boolean);
-  if (parts.length === 0) return null;
-
-  let h: number;
-  let m: number;
-
-  if (parts.length >= 2) {
-    // Separated, so "9:5" means five past nine rather than 95.
-    h = Number(parts[0]);
-    m = Number(parts[1]);
-  } else {
-    const digits = parts[0];
-    if (digits.length > 4) return null;
-    h = Number(digits.length <= 2 ? digits : digits.slice(0, digits.length - 2));
-    m = Number(digits.length <= 2 ? 0 : digits.slice(-2));
-  }
-
-  if (h > 23 || m > 59) return null;
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-}
-
 function isoDate(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
@@ -98,8 +68,8 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
   const [cursor, setCursor] = useState(() => new Date(today));
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [times, setTimes] = useState<string[]>([]);
-  const [customTime, setCustomTime] = useState("");
-  const [customInvalid, setCustomInvalid] = useState(false);
+  const [wheelHour, setWheelHour] = useState(9);
+  const [wheelMinute, setWheelMinute] = useState(0);
   const [repeatWeeks, setRepeatWeeks] = useState(1);
 
   /** In Iran the weekend is Thursday and Friday; elsewhere Saturday/Sunday. */
@@ -166,16 +136,9 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
     );
   }
 
-  function addCustomTime() {
-    const normalised = normaliseTime(customTime);
-    if (!normalised) {
-      // The border turns red; no need to also lecture about the format.
-      setCustomInvalid(true);
-      return;
-    }
-    setCustomInvalid(false);
-    setCustomTime("");
-    if (!times.includes(normalised)) toggleTime(normalised);
+  function addWheelTime() {
+    const t = `${String(wheelHour).padStart(2, "0")}:${String(wheelMinute).padStart(2, "0")}`;
+    if (!times.includes(t)) toggleTime(t);
   }
 
   const weekdays = useJalali ? JALALI_WEEKDAYS : GREGORIAN_WEEKDAYS;
@@ -332,32 +295,22 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
               </div>
 
               <div className="mt-4">
-                <label htmlFor="custom_time" className="mb-1.5 block text-xs text-muted">
+                <span className="mb-1.5 block text-xs text-muted">
                   ساعت دلخواه، اگر بین گزینه‌های بالا نبود
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    id="custom_time"
-                    value={customTime}
-                    onChange={(e) => {
-                      setCustomTime(e.target.value);
-                      setCustomInvalid(false);
+                </span>
+                <div className="flex items-center gap-3">
+                  <TimeWheel
+                    hour={wheelHour}
+                    minute={wheelMinute}
+                    usePersianDigits={useJalali}
+                    onChange={(h, m) => {
+                      setWheelHour(h);
+                      setWheelMinute(m);
                     }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addCustomTime();
-                      }
-                    }}
-                    dir="ltr"
-                    placeholder="14:15"
-                    className={`w-28 rounded-lg border bg-background px-3 py-2 text-center text-sm outline-none focus:border-brand ${
-                      customInvalid ? "border-red-400" : "border-card-border"
-                    }`}
                   />
                   <button
                     type="button"
-                    onClick={addCustomTime}
+                    onClick={addWheelTime}
                     className="rounded-lg border border-card-border px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand"
                   >
                     افزودن
