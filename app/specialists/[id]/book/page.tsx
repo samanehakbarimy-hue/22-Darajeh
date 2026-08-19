@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import Avatar from "@/components/Avatar";
 import BookingForm from "./booking-form";
 
 export default async function BookSpecialistPage({
@@ -21,7 +22,7 @@ export default async function BookSpecialistPage({
 
   const { data: specialist } = await supabase
     .from("mentor_profiles")
-    .select("id, status, profiles(full_name)")
+    .select("id, status, headline, country, profiles(full_name, photo_url)")
     .eq("id", id)
     .eq("status", "approved")
     .maybeSingle();
@@ -36,22 +37,16 @@ export default async function BookSpecialistPage({
     .eq("mentor_id", id)
     .eq("is_booked", false)
     .gte("start_time", new Date().toISOString())
-    .order("start_time", { ascending: true })
-    .limit(10);
+    .order("start_time", { ascending: true });
 
-  const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  const name =
-    (specialist.profiles as unknown as { full_name: string } | null)?.full_name ?? "";
+  const profile = specialist.profiles as unknown as {
+    full_name: string;
+    photo_url: string | null;
+  } | null;
+  const name = profile?.full_name ?? "";
 
   return (
-    <div className="mx-auto w-full max-w-xl flex-1 px-6 py-16">
+    <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
       <Link
         href={`/specialists/${id}`}
         className="text-sm text-muted hover:text-foreground"
@@ -59,12 +54,26 @@ export default async function BookSpecialistPage({
         ← بازگشت به پروفایل {name}
       </Link>
 
-      <h1 className="mt-4 text-2xl font-bold">
-        رزرو تماس راهنمایی رایگان با {name}
-      </h1>
-      <p className="mt-2 text-muted">
-        این یک تماس رایگان ۲۲ دقیقه‌ای است. قبل از رزرو، یک معرفی کوتاه بنویس
-        تا {name} بدونه چطور می‌تونه کمکت کنه.
+      {/* Who you are booking, so the page is about a person rather than a form. */}
+      <div className="mt-4 flex items-center gap-4 rounded-2xl border border-card-border bg-card p-5">
+        <Avatar photoUrl={profile?.photo_url} name={name} size={64} />
+        <div className="min-w-0">
+          <h1 className="text-lg font-bold">{name}</h1>
+          {specialist.headline && (
+            <p className="mt-0.5 truncate text-sm text-muted">
+              {specialist.headline}
+            </p>
+          )}
+          <p className="mt-1 text-xs text-brand">
+            تماس راهنمایی ۲۲ دقیقه‌ای — رایگان
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-6 text-sm leading-7 text-muted">
+        یک معرفی کوتاه بنویس تا {name} بدونه چطور می‌تونه کمکت کنه، بعد زمانی که
+        برات مناسبه رو انتخاب کن. درخواستت براش فرستاده می‌شه و بعد از تأییدش،
+        جلسه قطعی می‌شه.
       </p>
 
       <div className="mt-8">
@@ -73,7 +82,7 @@ export default async function BookSpecialistPage({
           slots={
             slots?.map((slot) => ({
               id: slot.id,
-              label: timeFormatter.format(new Date(slot.start_time)),
+              startTime: slot.start_time,
             })) ?? []
           }
         />
