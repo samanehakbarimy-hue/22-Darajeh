@@ -60,7 +60,7 @@ export default async function BookSpecialistPage({
       </Link>
 
       <h1 className="mt-4 text-2xl font-bold">
-        رزرو تماس آشنایی رایگان با {name}
+        رزرو تماس راهنمایی رایگان با {name}
       </h1>
       <p className="mt-2 text-muted">
         این یک تماس رایگان ۲۲ دقیقه‌ای است. قبل از رزرو، یک معرفی کوتاه بنویس

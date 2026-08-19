@@ -17,13 +17,26 @@ const JALALI_MONTHS = [
   "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
 ];
 
-// 08:00 → 21:30, the hours someone realistically offers a call.
-const TIME_OPTIONS = Array.from({ length: 28 }, (_, i) => {
-  const minutes = 8 * 60 + i * 30;
-  const h = String(Math.floor(minutes / 60)).padStart(2, "0");
-  const m = String(minutes % 60).padStart(2, "0");
-  return `${h}:${m}`;
-});
+// The session itself is 22 minutes, so the starts step by 22 too: back-to-back
+// slots with no dead gap between them, from 08:00 up to the last one ending
+// by 21:00.
+const SESSION_MINUTES = 22;
+const DAY_START = 8 * 60;
+const DAY_END = 21 * 60;
+
+const TIME_OPTIONS = (() => {
+  const out: { start: string; end: string }[] = [];
+  const hhmm = (mins: number) =>
+    `${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`;
+  for (
+    let m = DAY_START;
+    m + SESSION_MINUTES <= DAY_END;
+    m += SESSION_MINUTES
+  ) {
+    out.push({ start: hhmm(m), end: hhmm(m + SESSION_MINUTES) });
+  }
+  return out;
+})();
 
 function fa(n: number | string) {
   return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
@@ -207,25 +220,25 @@ export default function AddSlotForm({ useJalali }: { useJalali: boolean }) {
                 <span className="font-bold">{selectedLabel}</span>
               </p>
               <p className="mb-3 text-xs text-muted">
-                هر ساعتی که انتخاب کنی یک جلسه ۲۲ دقیقه‌ای می‌شه. می‌تونی چند
-                ساعت را با هم انتخاب کنی.
+                هر بازه دقیقاً ۲۲ دقیقه است. می‌تونی چند بازه را با هم انتخاب
+                کنی.
               </p>
-              <div className="grid max-h-64 grid-cols-3 gap-2 overflow-y-auto pl-1 sm:grid-cols-4">
-                {TIME_OPTIONS.map((t) => {
-                  const on = times.includes(t);
+              <div className="grid max-h-64 grid-cols-2 gap-2 overflow-y-auto pl-1 sm:grid-cols-3">
+                {TIME_OPTIONS.map(({ start, end }) => {
+                  const on = times.includes(start);
                   return (
                     <button
-                      key={t}
+                      key={start}
                       type="button"
-                      onClick={() => toggleTime(t)}
-                      className={`rounded-lg border px-2 py-2 text-sm transition ${
+                      onClick={() => toggleTime(start)}
+                      className={`rounded-lg border px-2 py-2 text-xs transition ${
                         on
                           ? "border-brand bg-brand-light font-bold text-brand"
                           : "border-card-border text-muted hover:border-brand hover:text-brand"
                       }`}
                       dir="ltr"
                     >
-                      {useJalali ? fa(t) : t}
+                      {useJalali ? `${fa(start)}–${fa(end)}` : `${start}–${end}`}
                     </button>
                   );
                 })}
