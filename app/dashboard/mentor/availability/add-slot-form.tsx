@@ -176,8 +176,14 @@ export default function AddSlotForm({
       <input type="hidden" name="times" value={times.join(",")} />
       <input type="hidden" name="repeat_weeks" value={REPEAT_WEEKS} />
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div>
+      {/* Only split into two columns once there is something to put in the
+          second one; an empty half beside the calendar looks unfinished. */}
+      <div
+        className={`grid gap-8 ${
+          selectedDate ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
+        }`}
+      >
+        <div className={selectedDate ? "" : "mx-auto w-full max-w-xs"}>
           <div className="mb-4 flex items-center justify-between">
             <button
               type="button"
@@ -256,9 +262,8 @@ export default function AddSlotForm({
 
         </div>
 
-        <div>
-          {selectedDate && (
-            <>
+        {selectedDate && (
+          <div>
               <p className="mb-3 text-sm">
                 <span className="text-muted">روز انتخاب‌شده: </span>
                 <span className="font-bold">{selectedLabel}</span>
@@ -344,9 +349,8 @@ export default function AddSlotForm({
                 </div>
               </div>
 
-            </>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {state?.error && (
