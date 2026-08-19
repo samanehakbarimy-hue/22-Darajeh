@@ -66,7 +66,7 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, message, status, availability_slots(start_time), profiles!bookings_seeker_id_fkey(full_name)",
+        "id, message, status, edited_at, availability_slots(start_time), profiles!bookings_seeker_id_fkey(full_name)",
       )
       .eq("mentor_id", user.id)
       .in("status", ["pending", "confirmed"])
@@ -88,6 +88,7 @@ export default async function DashboardPage({
     status: string;
     message: string;
     seenAt: string | null;
+    editedAt: string | null;
     meetingLink: string | null;
   }[] = [];
 
@@ -97,7 +98,7 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, mentor_id, status, message, seen_at, availability_slots(start_time), mentor_profiles(profiles(full_name))",
+        "id, mentor_id, status, message, seen_at, edited_at, availability_slots(start_time), mentor_profiles(profiles(full_name))",
       )
       .eq("seeker_id", user.id)
       .in("status", ["pending", "confirmed"])
@@ -130,6 +131,7 @@ export default async function DashboardPage({
       status: b.status,
       message: b.message,
       seenAt: b.seen_at,
+      editedAt: b.edited_at,
       meetingLink: linkById.get(b.mentor_id) ?? null,
     }));
   }
@@ -351,7 +353,8 @@ export default async function DashboardPage({
                   <RequestMessage
                     bookingId={b.id}
                     message={b.message}
-                    editable={b.status === "pending" && !b.seenAt}
+                    editable={b.status === "pending"}
+                    edited={!!b.editedAt}
                   />
 
                   {/* Nothing to join until the specialist has said yes. */}
