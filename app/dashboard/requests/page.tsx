@@ -26,7 +26,7 @@ export default async function MyRequestsPage() {
   const { data: bookings } = await supabase
     .from("bookings")
     .select(
-      "id, mentor_id, status, message, seen_at, created_at, availability_slots(start_time), mentor_profiles(headline, profiles(full_name, photo_url))",
+      "id, mentor_id, status, message, seen_at, edited_at, created_at, availability_slots(start_time), mentor_profiles(headline, profiles(full_name, photo_url))",
     )
     .eq("seeker_id", user.id)
     .order("created_at", { ascending: false });
@@ -138,7 +138,8 @@ export default async function MyRequestsPage() {
                 <RequestMessage
                   bookingId={b.id}
                   message={b.message}
-                  editable={b.status === "pending" && !b.seen_at}
+                  editable={b.status === "pending"}
+                  edited={!!b.edited_at}
                 />
 
                 {b.status === "confirmed" && meetingLink && (

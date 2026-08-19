@@ -12,10 +12,12 @@ export default function RequestMessage({
   bookingId,
   message,
   editable,
+  edited = false,
 }: {
   bookingId: string;
   message: string;
   editable: boolean;
+  edited?: boolean;
 }) {
   const [state, action, pending] = useActionState(editBookingMessage, undefined);
   const [editing, setEditing] = useState(false);
@@ -24,7 +26,12 @@ export default function RequestMessage({
   if (!editing) {
     return (
       <div className="mt-3 border-t border-card-border pt-3">
-        <p className="whitespace-pre-line text-sm text-muted">{message}</p>
+        <p className="whitespace-pre-line text-sm text-muted">
+          {message}
+          {edited && (
+            <span className="mr-2 text-xs text-muted/70">(ویرایش شده)</span>
+          )}
+        </p>
         {editable && (
           <button
             type="button"
