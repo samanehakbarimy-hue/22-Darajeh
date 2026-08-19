@@ -120,12 +120,20 @@ export default async function SpecialistPage({
             </div>
           </div>
 
-          <Link
-            href={`/specialists/${specialist.id}/book`}
-            className="mt-4 block rounded-full bg-brand px-4 py-3 text-center font-semibold text-background hover:bg-brand-dark"
-          >
-            رزرو جلسه رایگان
-          </Link>
+          {/* Only promise a booking when there is actually a slot to take;
+              otherwise the main call to action leads to a dead end. */}
+          {slots && slots.length > 0 ? (
+            <Link
+              href={`/specialists/${specialist.id}/book`}
+              className="mt-4 block rounded-full bg-brand px-4 py-3 text-center font-semibold text-background hover:bg-brand-dark"
+            >
+              رزرو جلسه رایگان
+            </Link>
+          ) : (
+            <div className="mt-4 rounded-full border border-card-border px-4 py-3 text-center text-sm text-muted">
+              فعلاً زمان آزادی ثبت نشده
+            </div>
+          )}
 
           <div className="mt-5 border-t border-card-border pt-4">
             <h4 className="text-sm font-bold text-muted">زمان‌های موجود</h4>
