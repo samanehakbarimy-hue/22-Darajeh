@@ -26,12 +26,14 @@ export async function createBooking(
     return { error: "یک زمان رو انتخاب کن." };
   }
 
+  // Say the actual limit. "چند جمله" left people guessing why they were
+  // rejected, and the form shows the same numbers as they type.
   const wordCount = message.split(/\s+/).filter(Boolean).length;
   if (wordCount < 10) {
-    return { error: "لطفاً یک معرفی کوتاه (حداقل چند جمله) بنویس." };
+    return { error: "معرفی‌ات باید حداقل ۱۰ کلمه باشه." };
   }
   if (wordCount > 120) {
-    return { error: "معرفی رو کمی کوتاه‌تر کن (حداکثر حدود ۱۰۰ کلمه)." };
+    return { error: "معرفی‌ات باید حداکثر ۱۲۰ کلمه باشه." };
   }
 
   const { error } = await supabase.from("bookings").insert({
