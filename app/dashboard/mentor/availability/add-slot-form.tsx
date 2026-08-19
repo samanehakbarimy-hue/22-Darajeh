@@ -1,18 +1,10 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import { toJalaali, toGregorian, jalaaliMonthLength } from "jalaali-js";
 import { addAvailabilitySlots } from "@/lib/actions/availability";
+import MonthCalendar from "@/components/MonthCalendar";
 import TimeWheel from "@/components/TimeWheel";
-
-// Saturday-first, matching how a Persian week is read.
-const JALALI_WEEKDAYS = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
-const GREGORIAN_WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-
-const JALALI_MONTHS = [
-  "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
-  "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
-];
+import { fa, hhmm, isoDate, startOfToday, toMinutes } from "@/lib/persian";
 
 // Mentors pick a round start time — nobody offers a call at 09:06 — and the
 // 22 minutes are measured from there, so 09:00 becomes 09:00–09:22.
@@ -27,15 +19,6 @@ const DAY_END = 21 * 60;
 // somewhere, and a mentor can extend whenever they like.
 const REPEAT_WEEKS = 26;
 
-function hhmm(mins: number) {
-  return `${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`;
-}
-
-function toMinutes(t: string) {
-  const [h, m] = t.split(":").map(Number);
-  return h * 60 + m;
-}
-
 const TIME_OPTIONS = (() => {
   const out: { start: string; end: string }[] = [];
   for (let m = DAY_START; m + SESSION_MINUTES <= DAY_END; m += START_STEP) {
@@ -43,20 +26,6 @@ const TIME_OPTIONS = (() => {
   }
   return out;
 })();
-
-function fa(n: number | string) {
-  return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
-}
-
-function isoDate(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function startOfToday() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
 
 export default function AddSlotForm({
   useJalali,
@@ -70,69 +39,11 @@ export default function AddSlotForm({
   const [state, action, pending] = useActionState(addAvailabilitySlots, undefined);
 
   const today = useMemo(() => startOfToday(), []);
-  const [cursor, setCursor] = useState(() => new Date(today));
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [times, setTimes] = useState<string[]>([]);
   const [wheelHour, setWheelHour] = useState(9);
   const [wheelMinute, setWheelMinute] = useState(0);
   const [wheelTouched, setWheelTouched] = useState(false);
-
-
-  /** In Iran the weekend is Thursday and Friday; elsewhere Saturday/Sunday. */
-  function isWeekend(d: Date) {
-    const day = d.getDay(); // 0 = Sunday
-    return useJalali ? day === 4 || day === 5 : day === 6 || day === 0;
-  }
-
-  const { label, days, leadingBlanks } = useMemo(() => {
-    if (useJalali) {
-      const { jy, jm } = toJalaali(cursor);
-      const length = jalaaliMonthLength(jy, jm);
-      const first = toGregorian(jy, jm, 1);
-      const firstDate = new Date(first.gy, first.gm - 1, first.gd);
-      const blanks = (firstDate.getDay() + 1) % 7; // Saturday-first
-      return {
-        label: `${JALALI_MONTHS[jm - 1]} ${fa(jy)}`,
-        days: Array.from({ length }, (_, i) => {
-          const g = toGregorian(jy, jm, i + 1);
-          return new Date(g.gy, g.gm - 1, g.gd);
-        }),
-        leadingBlanks: blanks,
-      };
-    }
-
-    const y = cursor.getFullYear();
-    const m = cursor.getMonth();
-    const length = new Date(y, m + 1, 0).getDate();
-    const firstDate = new Date(y, m, 1);
-    return {
-      label: new Intl.DateTimeFormat("en-GB", {
-        month: "long",
-        year: "numeric",
-      }).format(firstDate),
-      days: Array.from({ length }, (_, i) => new Date(y, m, i + 1)),
-      leadingBlanks: (firstDate.getDay() + 6) % 7, // Monday-first
-    };
-  }, [cursor, useJalali]);
-
-  function shiftMonth(delta: number) {
-    if (useJalali) {
-      const { jy, jm } = toJalaali(cursor);
-      let ny = jy;
-      let nm = jm + delta;
-      if (nm < 1) {
-        nm = 12;
-        ny -= 1;
-      } else if (nm > 12) {
-        nm = 1;
-        ny += 1;
-      }
-      const g = toGregorian(ny, nm, 1);
-      setCursor(new Date(g.gy, g.gm - 1, g.gd));
-    } else {
-      setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + delta, 1));
-    }
-  }
 
   function toggleTime(t: string) {
     setTimes((prev) =>
@@ -169,7 +80,6 @@ export default function AddSlotForm({
     if (times.includes(t)) toggleTime(t);
   }
 
-  const weekdays = useJalali ? JALALI_WEEKDAYS : GREGORIAN_WEEKDAYS;
   const selectedLabel = selectedDate
     ? new Intl.DateTimeFormat(useJalali ? "fa-IR" : "en-GB", {
         weekday: "long",
@@ -197,81 +107,13 @@ export default function AddSlotForm({
         }`}
       >
         <div className={selectedDate ? "" : "mx-auto w-full max-w-xs"}>
-          <div className="mb-4 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => shiftMonth(-1)}
-              className="rounded-full border border-card-border px-3 py-1 text-sm text-muted transition hover:border-brand hover:text-brand"
-              aria-label="ماه قبل"
-            >
-              ‹
-            </button>
-            <span className="text-sm font-bold">{label}</span>
-            <button
-              type="button"
-              onClick={() => shiftMonth(1)}
-              className="rounded-full border border-card-border px-3 py-1 text-sm text-muted transition hover:border-brand hover:text-brand"
-              aria-label="ماه بعد"
-            >
-              ›
-            </button>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1 text-center text-xs">
-            {weekdays.map((w, i) => {
-              // Column index of the weekend, in each calendar's own ordering.
-              const weekendColumn = useJalali ? i >= 5 : i >= 5;
-              return (
-                <span
-                  key={w}
-                  className={`py-1 ${weekendColumn ? "text-amber-400/70" : "text-muted"}`}
-                >
-                  {w}
-                </span>
-              );
-            })}
-          </div>
-
-          <div className="mt-1 grid grid-cols-7 gap-1">
-            {Array.from({ length: leadingBlanks }, (_, i) => (
-              <span key={`blank-${i}`} />
-            ))}
-            {days.map((day) => {
-              const iso = isoDate(day);
-              const past = day < today;
-              const selected = selectedDate && isoDate(selectedDate) === iso;
-              const weekend = isWeekend(day);
-              const hasSlots = taken.has(iso);
-              const dayNumber = useJalali ? fa(toJalaali(day).jd) : day.getDate();
-              return (
-                <button
-                  key={iso}
-                  type="button"
-                  disabled={past}
-                  onClick={() => setSelectedDate(day)}
-                  title={weekend ? "تعطیل" : undefined}
-                  className={`relative aspect-square rounded-lg text-sm transition ${
-                    selected
-                      ? "bg-brand font-bold text-background"
-                      : past
-                        ? "cursor-not-allowed text-muted/30"
-                        : hasSlots
-                          ? "bg-brand-light font-bold text-brand"
-                          : weekend
-                            ? "text-amber-400/80 hover:bg-brand-light hover:text-brand"
-                            : "text-foreground hover:bg-brand-light hover:text-brand"
-                  }`}
-                >
-                  {dayNumber}
-                  {/* A day already carrying slots keeps its dot in every month
-                      the mentor browses to, not just the one on screen. */}
-                  {hasSlots && !selected && (
-                    <span className="absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+          <MonthCalendar
+            useJalali={useJalali}
+            value={selectedDate}
+            onChange={setSelectedDate}
+            isDisabled={(day) => day < today}
+            isMarked={(day) => taken.has(isoDate(day))}
+          />
 
         </div>
 

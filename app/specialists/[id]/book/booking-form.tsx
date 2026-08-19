@@ -1,28 +1,15 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import { toJalaali, toGregorian, jalaaliMonthLength } from "jalaali-js";
 import { createBooking } from "@/lib/actions/booking";
+import MonthCalendar from "@/components/MonthCalendar";
 import Spinner from "@/components/Spinner";
+import { dateFormats, fa, isoDate } from "@/lib/persian";
 
 type Slot = { id: string; startTime: string };
 
-const WEEKDAYS = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
-const MONTHS = [
-  "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
-  "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
-];
-
 // Must match the limit enforced in createBooking.
 const MAX_WORDS = 120;
-
-function fa(n: number | string) {
-  return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
-}
-
-function isoDate(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
 
 export default function BookingForm({
   mentorId,
@@ -44,52 +31,15 @@ export default function BookingForm({
     return map;
   }, [slots]);
 
-  const firstDay = slots.length > 0 ? new Date(slots[0].startTime) : new Date();
-  const [cursor, setCursor] = useState(firstDay);
-  const [selectedDay, setSelectedDay] = useState<string | null>(
-    slots.length > 0 ? isoDate(new Date(slots[0].startTime)) : null,
-  );
-  const [slotId, setSlotId] = useState<string>("");
+  const firstFreeDay = slots.length > 0 ? new Date(slots[0].startTime) : null;
+  const [selectedDay, setSelectedDay] = useState<Date | null>(firstFreeDay);
+  const [slotId, setSlotId] = useState("");
   const [message, setMessage] = useState("");
 
   const wordCount = message.trim().split(/\s+/).filter(Boolean).length;
   const tooLong = wordCount > MAX_WORDS;
 
-  const { label, days, leadingBlanks } = useMemo(() => {
-    const { jy, jm } = toJalaali(cursor);
-    const length = jalaaliMonthLength(jy, jm);
-    const first = toGregorian(jy, jm, 1);
-    const firstDate = new Date(first.gy, first.gm - 1, first.gd);
-    return {
-      label: `${MONTHS[jm - 1]} ${fa(jy)}`,
-      days: Array.from({ length }, (_, i) => {
-        const g = toGregorian(jy, jm, i + 1);
-        return new Date(g.gy, g.gm - 1, g.gd);
-      }),
-      leadingBlanks: (firstDate.getDay() + 1) % 7, // Saturday-first
-    };
-  }, [cursor]);
-
-  function shiftMonth(delta: number) {
-    const { jy, jm } = toJalaali(cursor);
-    let ny = jy;
-    let nm = jm + delta;
-    if (nm < 1) {
-      nm = 12;
-      ny -= 1;
-    } else if (nm > 12) {
-      nm = 1;
-      ny += 1;
-    }
-    const g = toGregorian(ny, nm, 1);
-    setCursor(new Date(g.gy, g.gm - 1, g.gd));
-  }
-
-  const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  const daySlots = selectedDay ? (byDay.get(selectedDay) ?? []) : [];
+  const daySlots = selectedDay ? (byDay.get(isoDate(selectedDay)) ?? []) : [];
 
   return (
     <form action={action} className="flex flex-col gap-8">
@@ -131,66 +81,17 @@ export default function BookingForm({
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-6 rounded-2xl border border-card-border bg-card p-5 md:grid-cols-2">
-            <div>
-              <div className="mb-4 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => shiftMonth(-1)}
-                  aria-label="ماه قبل"
-                  className="rounded-full border border-card-border px-3 py-1 text-sm text-muted transition hover:border-brand hover:text-brand"
-                >
-                  ‹
-                </button>
-                <span className="text-sm font-bold">{label}</span>
-                <button
-                  type="button"
-                  onClick={() => shiftMonth(1)}
-                  aria-label="ماه بعد"
-                  className="rounded-full border border-card-border px-3 py-1 text-sm text-muted transition hover:border-brand hover:text-brand"
-                >
-                  ›
-                </button>
-              </div>
-
-              <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted">
-                {WEEKDAYS.map((w) => (
-                  <span key={w} className="py-1">
-                    {w}
-                  </span>
-                ))}
-              </div>
-
-              <div className="mt-1 grid grid-cols-7 gap-1">
-                {Array.from({ length: leadingBlanks }, (_, i) => (
-                  <span key={`blank-${i}`} />
-                ))}
-                {days.map((day) => {
-                  const iso = isoDate(day);
-                  const free = byDay.has(iso);
-                  const selected = selectedDay === iso;
-                  return (
-                    <button
-                      key={iso}
-                      type="button"
-                      disabled={!free}
-                      onClick={() => {
-                        setSelectedDay(iso);
-                        setSlotId("");
-                      }}
-                      className={`aspect-square rounded-lg text-sm transition ${
-                        selected
-                          ? "bg-brand font-bold text-background"
-                          : free
-                            ? "bg-brand-light font-bold text-brand hover:bg-brand hover:text-background"
-                            : "cursor-not-allowed text-muted/30"
-                      }`}
-                    >
-                      {fa(toJalaali(day).jd)}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            <MonthCalendar
+              useJalali
+              value={selectedDay}
+              startFrom={firstFreeDay ?? undefined}
+              onChange={(day) => {
+                setSelectedDay(day);
+                setSlotId("");
+              }}
+              isDisabled={(day) => !byDay.has(isoDate(day))}
+              isMarked={(day) => byDay.has(isoDate(day))}
+            />
 
             <div>
               {selectedDay && (
@@ -212,7 +113,7 @@ export default function BookingForm({
                         }`}
                         dir="ltr"
                       >
-                        {fa(timeFormatter.format(new Date(slot.startTime)))}
+                        {fa(dateFormats.clock.format(new Date(slot.startTime)))}
                       </button>
                     );
                   })}

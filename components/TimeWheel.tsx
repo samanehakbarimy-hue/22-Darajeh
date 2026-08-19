@@ -1,14 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { fa } from "@/lib/persian";
 
 const ITEM_HEIGHT = 40;
 const VISIBLE_ITEMS = 3;
 const WHEEL_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS;
-
-function fa(n: number | string) {
-  return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
-}
 
 /**
  * One scrollable column, snapping to whichever value sits in the middle —
