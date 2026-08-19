@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Vazirmatn } from "next/font/google";
 import Navbar from "@/components/Navbar";
+import SiteFooter from "@/components/SiteFooter";
 import "./globals.css";
 
 const vazirmatn = Vazirmatn({
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <Navbar />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );
