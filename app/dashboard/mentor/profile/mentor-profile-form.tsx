@@ -56,11 +56,32 @@ const SUGGESTED_TAGS = [
 
 const MAX_PHOTO_MB = 3;
 
+const FIELD_CLASS =
+  "w-full rounded-lg border border-card-border bg-background px-4 py-2.5 outline-none transition focus:border-brand";
+
 function parseTags(raw: string): string[] {
   return raw
     .split(/[,،]/)
     .map((tag) => tag.trim())
     .filter(Boolean);
+}
+
+function Section({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border border-card-border bg-card p-6">
+      <h2 className="font-bold">{title}</h2>
+      {description && <p className="mt-1 text-sm text-muted">{description}</p>}
+      <div className="mt-5 flex flex-col gap-5">{children}</div>
+    </section>
+  );
 }
 
 export default function MentorProfileForm({
@@ -85,6 +106,7 @@ export default function MentorProfileForm({
   const [state, action, pending] = useActionState(saveMentorProfile, undefined);
   const [preview, setPreview] = useState(initialPhotoUrl);
   const [photoError, setPhotoError] = useState("");
+  const [photoName, setPhotoName] = useState("");
 
   // Controlled so nothing typed is lost when the form re-renders after saving.
   const [headline, setHeadline] = useState(initialHeadline);
@@ -133,209 +155,253 @@ export default function MentorProfileForm({
     }
 
     setPhotoError("");
+    setPhotoName(file.name);
     setPreview(URL.createObjectURL(file));
   }
 
   return (
-    <form action={action} className="mt-8 flex flex-col gap-4">
-      <div>
-        <label htmlFor="photo" className="mb-1 block text-sm font-medium">
-          عکس پروفایل
-        </label>
-        <div className="flex items-center gap-4">
+    <form action={action} className="mt-8 flex flex-col gap-5">
+      <Section
+        title="معرفی"
+        description="این بخش روی پروفایل عمومی تو نمایش داده می‌شه."
+      >
+        <div className="flex items-center gap-5">
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={preview}
               alt=""
-              className="h-16 w-16 rounded-full object-cover"
+              className="h-24 w-24 shrink-0 rounded-full border border-card-border object-cover"
             />
           ) : (
-            <div className="h-16 w-16 rounded-full bg-brand-light" />
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border border-dashed border-card-border text-3xl text-muted">
+              ؟
+            </div>
           )}
+
+          <div className="min-w-0">
+            {/* The native file input shows English browser text ("No file
+                chosen"), so it is hidden and driven by this label instead. */}
+            <input
+              id="photo"
+              name="photo"
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="sr-only"
+            />
+            <label
+              htmlFor="photo"
+              className="inline-block cursor-pointer rounded-full bg-brand-light px-5 py-2 text-sm font-medium text-brand transition hover:bg-brand hover:text-background"
+            >
+              {preview ? "تغییر عکس" : "انتخاب عکس"}
+            </label>
+            <p className="mt-2 truncate text-xs text-muted">
+              {photoName
+                ? photoName
+                : `عکس واضح از صورت، کمتر از ${MAX_PHOTO_MB} مگابایت`}
+            </p>
+          </div>
+        </div>
+        {photoError && <p className="text-sm text-red-400">{photoError}</p>}
+
+        <div>
+          <label htmlFor="headline" className="mb-1.5 block text-sm font-medium">
+            سمت فعلی
+          </label>
           <input
-            id="photo"
-            name="photo"
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoChange}
-            className="text-sm text-muted file:mr-3 file:rounded-full file:border-0 file:bg-brand-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand"
+            id="headline"
+            name="headline"
+            value={headline}
+            onChange={(e) => setHeadline(e.target.value)}
+            placeholder="مثلاً «مدیر ارشد پروژه در شرکت پتروپارس»"
+            className={FIELD_CLASS}
           />
         </div>
-        {photoError && <p className="mt-1 text-sm text-red-400">{photoError}</p>}
-      </div>
 
-      <div>
-        <label htmlFor="headline" className="mb-1 block text-sm font-medium">
-          سمت فعلی
-        </label>
-        <input
-          id="headline"
-          name="headline"
-          value={headline}
-          onChange={(e) => setHeadline(e.target.value)}
-          placeholder="مثلاً «مدیر محصول ارشد در اسنپ»"
-          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
-        />
-      </div>
+        <div>
+          <label htmlFor="country" className="mb-1.5 block text-sm font-medium">
+            کشور محل زندگی
+          </label>
+          <input
+            id="country"
+            name="country"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            placeholder="مثلاً «ایران» یا «آلمان»"
+            className={FIELD_CLASS}
+          />
+        </div>
 
-      <div>
-        <label htmlFor="country" className="mb-1 block text-sm font-medium">
-          کشور محل زندگی
-        </label>
-        <input
-          id="country"
-          name="country"
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          placeholder="مثلاً «ایران» یا «آلمان»"
-          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
-        />
-      </div>
+        <div>
+          <label htmlFor="bio" className="mb-1.5 block text-sm font-medium">
+            معرفی کوتاه
+          </label>
+          <textarea
+            id="bio"
+            name="bio"
+            rows={5}
+            required
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="در چند خط بنویس چه تجربه‌ای داری و توی این ۲۲ دقیقه می‌تونی به چه کسی کمک کنی."
+            className={FIELD_CLASS}
+          />
+        </div>
+      </Section>
 
-      <div>
-        <label htmlFor="bio" className="mb-1 block text-sm font-medium">
-          معرفی کوتاه
-        </label>
-        <textarea
-          id="bio"
-          name="bio"
-          rows={4}
-          required
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="tag_draft" className="mb-1 block text-sm font-medium">
-          حوزه‌های تخصص
-        </label>
-
-        {tags.length > 0 && (
-          <div className="mb-2 flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="flex items-center gap-1 rounded-full bg-brand-light px-3 py-1 text-sm text-brand"
-              >
-                {tag}
-                <button
-                  type="button"
-                  onClick={() => removeTag(tag)}
-                  aria-label={`حذف ${tag}`}
-                  className="text-brand/70 hover:text-brand"
+      <Section
+        title="حوزه‌های تخصص"
+        description="منتی‌ها با همین حوزه‌ها تو رو پیدا می‌کنن."
+      >
+        <div>
+          {tags.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-sm text-brand"
                 >
-                  ×
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => removeTag(tag)}
+                    aria-label={`حذف ${tag}`}
+                    className="text-brand/60 transition hover:text-brand"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <input
+            id="tag_draft"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={handleTagKeyDown}
+            placeholder="مثلاً «نفت و گاز»"
+            className={FIELD_CLASS}
+          />
+          {/* The real value the server reads. */}
+          <input type="hidden" name="expertise_tags" value={tags.join("، ")} />
+
+          {matches.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {matches.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => addTag(tag)}
+                  className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand"
+                >
+                  + {tag}
                 </button>
-              </span>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
 
-        <input
-          id="tag_draft"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={handleTagKeyDown}
-          placeholder="مثلاً «نفت و گاز»"
-          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
-        />
-        {/* The real value the server reads. */}
-        <input type="hidden" name="expertise_tags" value={tags.join("، ")} />
+          {draft.trim() && !SUGGESTED_TAGS.includes(draft.trim()) && (
+            <button
+              type="button"
+              onClick={() => addTag(draft)}
+              className="mt-3 text-xs text-brand hover:underline"
+            >
+              افزودن «{draft.trim()}» به‌عنوان تخصص جدید
+            </button>
+          )}
+        </div>
+      </Section>
 
-        {matches.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {matches.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => addTag(tag)}
-                className="rounded-full border border-card-border px-3 py-1 text-xs text-muted hover:border-brand hover:text-brand"
-              >
-                + {tag}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {draft.trim() && !SUGGESTED_TAGS.includes(draft.trim()) && (
-          <button
-            type="button"
-            onClick={() => addTag(draft)}
-            className="mt-2 text-xs text-brand hover:underline"
+      <Section
+        title="راه‌های ارتباطی"
+        description="شماره تماس و لینک جلسه فقط بعد از رزرو، به همون منتی نشون داده می‌شه."
+      >
+        <div>
+          <label
+            htmlFor="linkedin_url"
+            className="mb-1.5 block text-sm font-medium"
           >
-            افزودن «{draft.trim()}» به‌عنوان تخصص جدید
-          </button>
-        )}
-      </div>
+            لینک لینکدین
+            <span className="mr-1 text-xs font-normal text-muted">
+              (روی پروفایل عمومی دیده می‌شه)
+            </span>
+          </label>
+          <input
+            id="linkedin_url"
+            name="linkedin_url"
+            type="url"
+            dir="ltr"
+            value={linkedin}
+            onChange={(e) => setLinkedin(e.target.value)}
+            placeholder="https://linkedin.com/in/..."
+            className={`${FIELD_CLASS} text-left`}
+          />
+        </div>
 
-      <div>
-        <label htmlFor="linkedin_url" className="mb-1 block text-sm font-medium">
-          لینک لینکدین (اختیاری)
-        </label>
-        <input
-          id="linkedin_url"
-          name="linkedin_url"
-          type="url"
-          value={linkedin}
-          onChange={(e) => setLinkedin(e.target.value)}
-          placeholder="https://linkedin.com/in/..."
-          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
-        />
-      </div>
+        <div>
+          <label htmlFor="phone" className="mb-1.5 block text-sm font-medium">
+            شماره تماس
+            <span className="mr-1 text-xs font-normal text-muted">
+              (خصوصی)
+            </span>
+          </label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            dir="ltr"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="09123456789"
+            className={`${FIELD_CLASS} text-left`}
+          />
+        </div>
 
-      <div>
-        <label htmlFor="phone" className="mb-1 block text-sm font-medium">
-          شماره تماس (اختیاری)
-        </label>
-        <input
-          id="phone"
-          name="phone"
-          type="tel"
-          inputMode="tel"
-          dir="ltr"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="۰۹۱۲۳۴۵۶۷۸۹"
-          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 text-right outline-none focus:border-brand"
-        />
-        <p className="mt-1 text-xs text-muted">
-          روی پروفایل عمومی نشون داده نمی‌شه. فقط ادمین و کسی که جلسه‌ای با تو
-          رزرو کرده می‌تونه ببینه.
+        <div>
+          <label
+            htmlFor="meeting_link"
+            className="mb-1.5 block text-sm font-medium"
+          >
+            لینک تماس تصویری
+            <span className="mr-1 text-xs font-normal text-muted">(خصوصی)</span>
+          </label>
+          <input
+            id="meeting_link"
+            name="meeting_link"
+            type="url"
+            dir="ltr"
+            value={meetingLink}
+            onChange={(e) => setMeetingLink(e.target.value)}
+            placeholder="https://meet.google.com/..."
+            className={`${FIELD_CLASS} text-left`}
+          />
+          <p className="mt-1.5 text-xs text-muted">
+            لینک ثابت Google Meet، Zoom یا Microsoft Teams. می‌تونی بعداً پرش
+            کنی.
+          </p>
+        </div>
+      </Section>
+
+      {state?.error && (
+        <p className="rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400">
+          {state.error}
         </p>
-      </div>
-
-      <div>
-        <label htmlFor="meeting_link" className="mb-1 block text-sm font-medium">
-          لینک تماس تصویری (اختیاری)
-        </label>
-        <input
-          id="meeting_link"
-          name="meeting_link"
-          type="url"
-          value={meetingLink}
-          onChange={(e) => setMeetingLink(e.target.value)}
-          placeholder="https://meet.google.com/..."
-          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
-        />
-        <p className="mt-1 text-xs text-muted">
-          می‌تونی الان خالی بذاری و بعداً پرش کنی. لینک ثابت Google Meet، Zoom یا
-          Microsoft Teams هر کدوم کار می‌کنه و بعد از رزرو به منتی نشون داده
-          می‌شه.
+      )}
+      {state?.success && (
+        <p className="rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm text-brand">
+          پروفایلت ذخیره شد.
         </p>
-      </div>
-
-      {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
-      {state?.success && <p className="text-sm text-brand">پروفایلت ذخیره شد.</p>}
+      )}
 
       <button
         disabled={pending}
         type="submit"
-        className="mt-2 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-dark disabled:opacity-60"
+        className="rounded-full bg-brand px-6 py-3.5 font-semibold text-background transition hover:bg-brand-dark disabled:opacity-60"
       >
-        {pending ? "در حال ذخیره..." : "ذخیره"}
+        {pending ? "در حال ذخیره..." : "ذخیره پروفایل"}
       </button>
     </form>
   );
