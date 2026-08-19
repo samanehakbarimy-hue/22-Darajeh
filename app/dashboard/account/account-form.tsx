@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { updateAccount, deleteAccount } from "@/lib/actions/account";
+import Spinner from "@/components/Spinner";
 
 export default function AccountForm({
   email,
@@ -84,9 +85,10 @@ export default function AccountForm({
         <button
           disabled={pending}
           type="submit"
-          className="mt-2 self-start rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-dark disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 mt-2 self-start rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-dark disabled:opacity-60"
         >
-          {pending ? "در حال ذخیره..." : "ذخیره تغییرات"}
+          {pending && <Spinner />}
+        {pending ? "در حال ذخیره..." : "ذخیره تغییرات"}
         </button>
       </form>
 

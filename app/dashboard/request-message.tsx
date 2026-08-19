@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { editBookingMessage } from "@/lib/actions/booking-message";
+import Spinner from "@/components/Spinner";
 
 /**
  * The request as sent, with the option to reword it while the specialist has
@@ -57,9 +58,10 @@ export default function RequestMessage({
         <button
           type="submit"
           disabled={pending || draft.trim().length === 0}
-          className="rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-background disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-background disabled:opacity-50"
         >
-          {pending ? "در حال ذخیره..." : "ذخیره"}
+          {pending && <Spinner />}
+        {pending ? "در حال ذخیره..." : "ذخیره"}
         </button>
         <button
           type="button"
