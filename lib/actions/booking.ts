@@ -26,13 +26,11 @@ export async function createBooking(
     return { error: "یک زمان رو انتخاب کن." };
   }
 
-  // Say the actual limit. "چند جمله" left people guessing why they were
-  // rejected, and the form shows the same numbers as they type.
-  const wordCount = message.split(/\s+/).filter(Boolean).length;
-  if (wordCount < 10) {
-    return { error: "معرفی‌ات باید حداقل ۱۰ کلمه باشه." };
+  // No minimum: how much someone writes to introduce themselves is their call.
+  if (!message) {
+    return { error: "لطفاً یک معرفی بنویس." };
   }
-  if (wordCount > 120) {
+  if (message.split(/\s+/).filter(Boolean).length > 120) {
     return { error: "معرفی‌ات باید حداکثر ۱۲۰ کلمه باشه." };
   }
 

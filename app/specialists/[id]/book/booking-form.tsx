@@ -12,8 +12,7 @@ const MONTHS = [
   "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
 ];
 
-// Must match the limits enforced in createBooking.
-const MIN_WORDS = 10;
+// Must match the limit enforced in createBooking.
 const MAX_WORDS = 120;
 
 function fa(n: number | string) {
@@ -53,7 +52,6 @@ export default function BookingForm({
   const [message, setMessage] = useState("");
 
   const wordCount = message.trim().split(/\s+/).filter(Boolean).length;
-  const tooShort = wordCount < MIN_WORDS;
   const tooLong = wordCount > MAX_WORDS;
 
   const { label, days, leadingBlanks } = useMemo(() => {
@@ -113,20 +111,14 @@ export default function BookingForm({
           placeholder="سلام! من ... هستم و در حال حاضر روی ... کار می‌کنم. دوست دارم درباره ... باهات صحبت کنم چون ..."
           className="w-full rounded-lg border border-card-border bg-background px-4 py-3 outline-none focus:border-brand"
         />
-        {/* The word limits were only discoverable by failing, so show them. */}
-        <p
-          className={`mt-1.5 text-xs ${
-            tooLong || (wordCount > 0 && tooShort) ? "text-amber-400" : "text-muted"
-          }`}
-        >
-          {wordCount === 0
-            ? `حداقل ${fa(MIN_WORDS)} کلمه بنویس`
-            : tooShort
-              ? `${fa(wordCount)} کلمه — حداقل ${fa(MIN_WORDS)} کلمه لازمه`
-              : tooLong
-                ? `${fa(wordCount)} کلمه — حداکثر ${fa(MAX_WORDS)} کلمه`
-                : `${fa(wordCount)} کلمه`}
-        </p>
+        {/* Only the ceiling is a rule, so only mention it when it is close. */}
+        {wordCount > MAX_WORDS - 20 && (
+          <p
+            className={`mt-1.5 text-xs ${tooLong ? "text-amber-400" : "text-muted"}`}
+          >
+            {fa(wordCount)} کلمه از {fa(MAX_WORDS)}
+          </p>
+        )}
       </div>
 
       <div>
@@ -237,7 +229,7 @@ export default function BookingForm({
       )}
 
       <button
-        disabled={pending || !slotId || tooShort || tooLong}
+        disabled={pending || !slotId || wordCount === 0 || tooLong}
         type="submit"
         className="rounded-full bg-brand px-6 py-3 font-semibold text-background transition hover:bg-brand-dark disabled:opacity-50"
       >
