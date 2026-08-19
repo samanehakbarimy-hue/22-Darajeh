@@ -316,7 +316,7 @@ export default function MentorProfileForm({
 
       <Section
         title="راه‌های ارتباطی"
-        description="شماره تماس و لینک جلسه فقط بعد از رزرو، به همون متقاضی نشون داده می‌شه."
+        description="شماره تماست پیش ما می‌مونه و به کسی نشون داده نمی‌شه. لینک جلسه فقط بعد از رزرو، به همون متقاضی نشون داده می‌شه."
       >
         <div>
           <label
@@ -366,7 +366,9 @@ export default function MentorProfileForm({
             className="mb-1.5 block text-sm font-medium"
           >
             لینک جلسه آنلاین
-            <span className="mr-1 text-xs font-normal text-muted">(خصوصی)</span>
+            <span className="mr-1 text-xs font-normal text-muted">
+              (فقط برای کسی که رزرو کرده)
+            </span>
           </label>
           <input
             id="meeting_link"

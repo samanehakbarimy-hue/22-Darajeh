@@ -72,17 +72,29 @@ export async function saveMentorProfile(
     return { error: error.message };
   }
 
-  // Phone and meeting link live apart from the public profile so they reach
-  // only the mentor, an admin, or a seeker who has booked them.
+  // The phone is for our records only — mentor and admin. The meeting link
+  // has to reach whoever books, so it lives in its own table with its own
+  // audience.
   const { error: contactError } = await supabase.from("mentor_contacts").upsert({
     id: user.id,
     phone,
-    meeting_link: meetingLink || null,
     updated_at: new Date().toISOString(),
   });
 
   if (contactError) {
     return { error: contactError.message };
+  }
+
+  const { error: linkError } = await supabase
+    .from("mentor_meeting_links")
+    .upsert({
+      id: user.id,
+      meeting_link: meetingLink || null,
+      updated_at: new Date().toISOString(),
+    });
+
+  if (linkError) {
+    return { error: linkError.message };
   }
 
   return { success: true };
