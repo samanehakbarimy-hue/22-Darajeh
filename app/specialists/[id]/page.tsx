@@ -195,7 +195,7 @@ export default async function SpecialistPage({
                 {slots && slots.length > 0 ? (
                   <Link
                     href={`/specialists/${specialist.id}/book`}
-                    className="shrink-0 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-dark"
+                    className="shrink-0 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-hover"
                   >
                     رزرو
                   </Link>

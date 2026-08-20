@@ -79,7 +79,7 @@ export default async function Home({
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <Link
             href="/specialists"
-            className="rounded-full bg-brand px-8 py-3 font-semibold text-background hover:bg-brand-dark"
+            className="rounded-full bg-brand px-8 py-3 font-semibold text-background hover:bg-brand-hover"
           >
             پیدا کردن متخصص
           </Link>
@@ -177,7 +177,7 @@ export default async function Home({
           </p>
           <Link
             href="/signup/mentor"
-            className="mt-8 inline-block rounded-full bg-brand px-8 py-3 font-semibold text-background hover:bg-brand-dark"
+            className="mt-8 inline-block rounded-full bg-brand px-8 py-3 font-semibold text-background hover:bg-brand-hover"
           >
             به متخصص‌ها بپیوند
           </Link>

@@ -73,7 +73,7 @@ export default async function MySessionsPage() {
           <p className="text-muted">هنوز کسی ازت درخواست جلسه نکرده.</p>
           <Link
             href="/dashboard/mentor/availability"
-            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-dark"
+            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
           >
             زمان‌های آزادت را بیشتر کن
           </Link>

@@ -9,12 +9,20 @@
   --foreground: #f5f0ee;
   --muted: #a89f9c;
 
-  /* The logo's exact red reads at only 3.85:1 on this background — fine as a
-     solid fill behind white, too weak as text. Text uses a lifted red that
-     clears AA at 4.86:1; the mark itself keeps the true colour. */
+  /* The logo's exact red reads at only 3.85:1 on the page background — fine
+     as a solid fill behind a dark label, too weak as text. Text uses a
+     lifted red; the mark itself keeps the true colour.
+
+     The lift is tuned against --card, not --background: cards are the
+     lighter surface and so the harder test, and nearly every text-brand in
+     the app sits on one. Only the red channel moves, so the hue is the
+     logo's. 4.64:1 on card, 5.05:1 on the page. */
   --color-logo-red: #e30613;
-  --color-brand: #ef3d47;
-  --color-brand-dark: #d0242e;
+  --color-brand: #f53d47;
+  /* Hover BRIGHTENS. Primary buttons carry a near-black label, so darkening
+     the fill on hover cut it to 3.56:1 — the button passed at rest and
+     failed under the cursor. Lighter takes it to 6.16:1. */
+  --color-brand-hover: #ff5a5f;
   --color-brand-light: #2b1417;
 
   /* From the logo's tagline. Used sparingly, so red stays the brand. */
@@ -35,7 +43,7 @@
   --color-muted: var(--muted);
   --color-brand: var(--color-brand);
   --color-brand-light: var(--color-brand-light);
-  --color-brand-dark: var(--color-brand-dark);
+  --color-brand-hover: var(--color-brand-hover);
   --color-logo-red: var(--color-logo-red);
   --color-accent: var(--color-accent);
   --color-success: var(--color-success);

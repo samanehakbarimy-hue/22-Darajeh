@@ -20,7 +20,7 @@ export default function Error({
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <button
           onClick={reset}
-          className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-background hover:bg-brand-dark"
+          className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-background hover:bg-brand-hover"
         >
           دوباره امتحان کن
         </button>

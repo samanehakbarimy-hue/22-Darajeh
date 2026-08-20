@@ -85,7 +85,7 @@ export default function AccountForm({
         <button
           disabled={pending}
           type="submit"
-          className="inline-flex items-center justify-center gap-2 mt-2 self-start rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-dark disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 mt-2 self-start rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover disabled:opacity-60"
         >
           {pending && <Spinner />}
         {pending ? "در حال ذخیره..." : "ذخیره تغییرات"}
