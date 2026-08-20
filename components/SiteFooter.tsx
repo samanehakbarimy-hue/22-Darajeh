@@ -56,7 +56,7 @@ export default function SiteFooter() {
             </span>
           </div>
           <p className="text-xs text-muted">
-            ۲۲ درجه — یک تماس ۲۲ دقیقه‌ای با کسی که همان کار را می‌کند.
+            ۲۲ درجه — با کسی حرف بزن که همان کار را می‌کند.
           </p>
         </div>
       </div>

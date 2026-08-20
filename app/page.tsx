@@ -14,7 +14,7 @@ const STEPS = [
     body: "یکی از زمان‌های آزادش رو بردار و بنویس دنبال چه جوابی هستی، تا آماده بیاد.",
   },
   {
-    title: "۲۲ دقیقه راهنمایی بگیر",
+    title: "راهنمایی بگیر",
     body: "یک تماس رایگان. اگر خواستید ادامه بدید، خودتون با هم تصمیم می‌گیرید.",
   },
 ];
@@ -90,9 +90,6 @@ export default async function Home({
             به متخصص‌ها بپیوند
           </Link>
         </div>
-        <p className="mt-4 text-sm text-muted">
-          ۲۲ دقیقه گفتگوی رایگان — این وقت را متخصص‌ها خودشان می‌گذارند.
-        </p>
 
         {/* Fields double as the entry point to a filtered list, so they carry
             real information rather than decorating the page. */}
