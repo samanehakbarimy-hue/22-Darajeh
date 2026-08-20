@@ -83,7 +83,7 @@ export default async function Home({
             href="/signup/mentor"
             className="rounded-full border border-card-border px-8 py-3 font-medium hover:bg-card"
           >
-            متخصص شدن
+            به متخصص‌ها بپیوند
           </Link>
         </div>
 
@@ -161,7 +161,7 @@ export default async function Home({
         </section>
 
         <section className="mt-24 w-full max-w-3xl rounded-2xl border border-card-border bg-card px-6 py-12">
-          <h2 className="text-xl font-bold">تو هم می‌تونی متخصص باشی</h2>
+          <h2 className="text-xl font-bold">تجربه‌ات را با بقیه قسمت کن</h2>
           <p className="mx-auto mt-3 max-w-lg leading-8 text-muted">
             اگر توی کارت تجربه داری، ۲۲ دقیقه از وقتت می‌تونه مسیر یک نفر را
             عوض کنه. زمان‌هایی که خودت انتخاب می‌کنی، به همان اندازه که دوست
@@ -172,7 +172,7 @@ export default async function Home({
             href="/signup/mentor"
             className="mt-8 inline-block rounded-full bg-brand px-8 py-3 font-semibold text-background hover:bg-brand-dark"
           >
-            متخصص شدن
+            به متخصص‌ها بپیوند
           </Link>
         </section>
       </main>
