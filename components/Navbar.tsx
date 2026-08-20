@@ -87,7 +87,7 @@ export default async function Navbar() {
               href="/signup/mentor"
               className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
             >
-              متخصص شوید
+              به متخصص‌ها بپیوند
             </Link>
           </>
         )}

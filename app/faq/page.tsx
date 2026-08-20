@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "سؤال‌های پرتکرار — ۲۲ درجه",
   description:
-    "تماس ۲۲ دقیقه‌ای چطور کار می‌کنه، چرا رایگانه، و متخصص شدن چه شکلیه.",
+    "تماس ۲۲ دقیقه‌ای چطور کار می‌کنه، چرا رایگانه، و پیوستن به متخصص‌ها چه شکلیه.",
 };
 
 const FAQS: { q: string; a: React.ReactNode }[] = [

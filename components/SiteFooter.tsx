@@ -5,7 +5,7 @@ const GROUPS = [
     title: "۲۲ درجه",
     links: [
       { href: "/specialists", label: "پیدا کردن متخصص" },
-      { href: "/signup/mentor", label: "متخصص شدن" },
+      { href: "/signup/mentor", label: "به متخصص‌ها بپیوند" },
       { href: "/login", label: "ورود" },
     ],
   },
