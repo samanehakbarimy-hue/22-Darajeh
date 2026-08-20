@@ -1,39 +1,31 @@
+import Image from "next/image";
 import Link from "next/link";
+import mark from "@/public/logo-mark.png";
+
+// The artwork's tile is 830x796 — very close to square, but not square. Held
+// here so callers pass one number and still get the true proportions.
+const ASPECT = 830 / 796;
 
 /**
- * The mark: white "22°" on the brand red square.
+ * The mark, from the logo artwork itself.
  *
- * Drawn rather than loaded so it stays sharp at every size and costs no
- * request. The degree is a bordered circle, not the "°" character, which
- * different fonts place at wildly different heights and sizes — at navbar
- * scale the glyph collapsed into a smudge.
- *
- * The numerals use the page font, close to but not identical to the original
- * artwork; swapping in a real file later means replacing this body only.
+ * An earlier version drew this in CSS — a rounded square with "22" set in the
+ * page font and a bordered circle for the degree. It was not the logo: the
+ * real tile has square corners, and its numerals are a custom geometric face,
+ * far heavier than any web font, sized to fill the tile edge to edge with the
+ * two digits interlocking. That is not reproducible in CSS, so use the file.
  */
 export function LogoMark({ size = 36 }: { size?: number }) {
-  const ring = size * 0.165;
-
   return (
-    <span
+    <Image
+      src={mark}
+      alt=""
       aria-hidden
-      dir="ltr"
-      className="inline-flex shrink-0 items-center justify-center rounded-[22%] bg-logo-red font-bold text-white"
-      style={{ width: size, height: size }}
-    >
-      <span style={{ fontSize: size * 0.46, lineHeight: 1 }}>22</span>
-      <span
-        className="rounded-full border-white"
-        style={{
-          width: ring,
-          height: ring,
-          borderWidth: Math.max(1.5, size * 0.055),
-          // Lifts the ring to sit against the cap height of the numerals.
-          marginTop: -(size * 0.2),
-          marginLeft: size * 0.035,
-        }}
-      />
-    </span>
+      width={Math.round(size * ASPECT)}
+      height={size}
+      priority
+      className="shrink-0"
+    />
   );
 }
 

@@ -9,28 +9,25 @@
   --foreground: #f5f0ee;
   --muted: #a89f9c;
 
-  /* The logo's exact red reads at only 3.85:1 on the page background — fine
-     as a solid fill behind a dark label, too weak as text. Text uses a
-     lifted red; the mark itself keeps the true colour.
+  /* Sampled from the logo artwork, not guessed: the tile is #da0101 and the
+     tagline #01478a. Both were drawn for a white page and are too dark to
+     use as text here — #da0101 manages 3.28:1 on a card, #01478a only 1.86.
 
-     The lift is tuned against --card, not --background: cards are the
-     lighter surface and so the harder test, and nearly every text-brand in
-     the app sits on one. Only the red channel moves, so the hue is the
-     logo's. 4.64:1 on card, 5.05:1 on the page. */
-  --color-logo-red: #e30613;
-  --color-brand: #f53d47;
+     So each UI colour keeps its source hue and saturation and lifts only
+     lightness until it clears AA on --card, the lighter of the two surfaces
+     and the one most brand text sits on. The mark itself is the untouched
+     artwork, where white on #da0101 already reads at 5.27:1. */
+  --color-logo-red: #da0101;
+  --color-brand: #fe3333;
+
   /* Hover BRIGHTENS. Primary buttons carry a near-black label, so darkening
-     the fill on hover cut it to 3.56:1 — the button passed at rest and
-     failed under the cursor. Lighter takes it to 6.16:1. */
-  --color-brand-hover: #ff5a5f;
-  --color-brand-light: #2b1417;
+     the fill cut it below AA — the button passed at rest and failed under
+     the cursor. Lighter takes it to 6.54:1. */
+  --color-brand-hover: #fe6666;
+  --color-brand-light: #330f0f;
 
-  /* From the logo's tagline. Used sparingly, so red stays the brand.
-     Tuned against --card like the brand red: the tagline sits on the page
-     today, where the original #4a7fd4 passed at 4.72 — but it dropped to
-     4.34 on a card, so moving it into one would have failed silently.
-     4.65 on card, 5.06 on the page. */
-  --color-accent: #4f85d6;
+  /* The tagline blue, lifted the same way: 4.71 on card, 5.12 on the page. */
+  --color-accent: #0684fd;
 
   /* Status colours are deliberately NOT the brand. When the brand was green,
      "approved" could borrow it; against a red brand the same chip reads as a
