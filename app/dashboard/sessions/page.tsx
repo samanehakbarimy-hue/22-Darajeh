@@ -146,7 +146,9 @@ export default async function MySessionsPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <p className="font-bold">{b.seeker?.full_name}</p>
-                  <span className="shrink-0 text-xs text-success">تأیید شده</span>
+                  <span className="shrink-0 text-xs text-success">
+                    <span aria-hidden>✓</span> تأیید شده
+                  </span>
                 </div>
                 {b.slot && (
                   <p className="mt-1 text-sm text-muted">
