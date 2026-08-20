@@ -91,7 +91,7 @@ export default async function Home({
           </Link>
         </div>
         <p className="mt-4 text-sm text-muted">
-          ۲۲ دقیقه گفتگو، رایگان — بدون هزینه و بدون تعهد.
+          ۲۲ دقیقه گفتگوی رایگان — این وقت را متخصص‌ها خودشان می‌گذارند.
         </p>
 
         {/* Fields double as the entry point to a filtered list, so they carry
