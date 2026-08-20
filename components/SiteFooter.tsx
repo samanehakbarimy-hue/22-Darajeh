@@ -51,7 +51,7 @@ export default function SiteFooter() {
         <div className="mt-10 flex flex-col gap-3 border-t border-card-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <LogoMark size={32} />
-            <span className="text-sm font-semibold text-accent">
+            <span className="text-sm font-semibold text-muted">
               فرصت‌ها از زاویه‌ای تازه
             </span>
           </div>
