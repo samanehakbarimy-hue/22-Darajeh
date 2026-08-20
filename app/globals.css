@@ -1,16 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  /* Deep pine green ground with cream text and a mint accent, so the page
-     reads as green rather than near-black. */
-  --background: #0c3327;
-  --card: #12402f;
-  --card-border: #1e5842;
-  --foreground: #f2ede1;
-  --muted: #9db9a9;
-  --color-brand: #35d99a;
-  --color-brand-light: #17452f;
-  --color-brand-dark: #23b981;
+  /* Built around the logo: its red on a near-black ground, warmed very
+     slightly so the red sits in the page rather than on top of it. */
+  --background: #141110;
+  --card: #1e1a19;
+  --card-border: #302928;
+  --foreground: #f5f0ee;
+  --muted: #a89f9c;
+
+  /* The logo's exact red reads at only 3.85:1 on this background — fine as a
+     solid fill behind white, too weak as text. Text uses a lifted red that
+     clears AA at 4.86:1; the mark itself keeps the true colour. */
+  --color-logo-red: #e30613;
+  --color-brand: #ef3d47;
+  --color-brand-dark: #d0242e;
+  --color-brand-light: #2b1417;
+
+  /* From the logo's tagline. Used sparingly, so red stays the brand. */
+  --color-accent: #4a7fd4;
+
+  /* Status colours are deliberately NOT the brand. When the brand was green,
+     "approved" could borrow it; against a red brand the same chip reads as a
+     rejection, and sits indistinguishable beside the real rejection. */
+  --color-success: #3fbf7f;
+  --color-success-light: #10251c;
 }
 
 @theme inline {
@@ -22,6 +36,10 @@
   --color-brand: var(--color-brand);
   --color-brand-light: var(--color-brand-light);
   --color-brand-dark: var(--color-brand-dark);
+  --color-logo-red: var(--color-logo-red);
+  --color-accent: var(--color-accent);
+  --color-success: var(--color-success);
+  --color-success-light: var(--color-success-light);
   --font-sans: var(--font-vazirmatn);
 }
 

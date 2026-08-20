@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Vazirmatn } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   title: "۲۲ درجه — سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه",
   description:
     "برای انتخاب مسیر شغلی، تغییر حوزه، مهاجرت کاری یا آمادگی مصاحبه، ۲۲ دقیقه رایگان با متخصصی حرف بزن که همین حالا سرِ همان کاره.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#141110",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

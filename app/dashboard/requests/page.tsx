@@ -6,7 +6,7 @@ import RequestMessage from "../request-message";
 
 const STATUS = {
   pending: { label: "در انتظار جواب", className: "border border-card-border text-muted" },
-  confirmed: { label: "تأیید شده", className: "bg-brand-light text-brand" },
+  confirmed: { label: "تأیید شده", className: "bg-success-light text-success" },
   declined: { label: "رد شده", className: "border border-red-400/40 text-red-400" },
   cancelled: { label: "لغو شده", className: "border border-card-border text-muted" },
 } as const;

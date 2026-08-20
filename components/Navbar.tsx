@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import Avatar from "@/components/Avatar";
+import Logo from "@/components/Logo";
 
 export default async function Navbar() {
   const supabase = await createClient();
@@ -49,9 +50,7 @@ export default async function Navbar() {
 
   return (
     <header className="flex items-center justify-between border-b border-card-border px-6 py-4 sm:px-12">
-      <Link href="/" className="text-xl font-bold text-brand">
-        ۲۲ درجه
-      </Link>
+      <Logo />
       <nav className="flex items-center gap-4 text-sm font-medium">
         {links.map((link) => (
           <Link

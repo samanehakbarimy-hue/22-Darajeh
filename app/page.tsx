@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SpecialistCard from "@/components/SpecialistCard";
+import { LogoMark } from "@/components/Logo";
 
 const STEPS = [
   {
@@ -61,9 +62,12 @@ export default async function Home({
           </div>
         )}
 
-        <span className="mb-5 rounded-full bg-brand-light px-4 py-1 text-sm font-medium text-brand">
-          ۲۲ دقیقه گفتگو، رایگان
-        </span>
+        {/* The logo lockup, at the size the mark was drawn for: the tagline
+            explains the name before the headline has to. */}
+        <LogoMark size={64} />
+        <p className="mb-8 mt-4 text-lg font-semibold text-accent">
+          فرصت‌ها از زاویه‌ای تازه
+        </p>
         <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
           سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه.
         </h1>
@@ -86,6 +90,9 @@ export default async function Home({
             به متخصص‌ها بپیوند
           </Link>
         </div>
+        <p className="mt-4 text-sm text-muted">
+          ۲۲ دقیقه گفتگو، رایگان — بدون هزینه و بدون تعهد.
+        </p>
 
         {/* Fields double as the entry point to a filtered list, so they carry
             real information rather than decorating the page. */}
