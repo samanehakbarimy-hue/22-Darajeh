@@ -35,6 +35,16 @@ export default async function MySessionsPage() {
     .eq("mentor_id", user.id)
     .order("created_at", { ascending: false });
 
+  // A confirmed session with no meeting link leaves the seeker with nowhere
+  // to go, and the specialist is the only person who can fix that — so this
+  // page, where they accept requests, is where it has to be said.
+  const { data: link } = await supabase
+    .from("mentor_meeting_links")
+    .select("meeting_link")
+    .eq("id", user.id)
+    .maybeSingle();
+  const hasMeetingLink = Boolean(link?.meeting_link);
+
   const rows = (data ?? []).map((b) => ({
     id: b.id,
     message: b.message,
@@ -67,6 +77,23 @@ export default async function MySessionsPage() {
       <p className="mt-2 text-muted">
         درخواست‌هایی که برات فرستاده شده و جلسه‌هایی که قبول کردی.
       </p>
+
+      {!hasMeetingLink && (
+        <div className="mt-6 rounded-2xl border border-brand/40 bg-brand-light p-5">
+          <p className="font-bold text-brand">لینک جلسه‌ات را اضافه کن</p>
+          <p className="mt-1.5 text-sm leading-7 text-muted">
+            {confirmed.length > 0
+              ? "یک درخواست را قبول کرده‌ای، ولی چون لینک جلسه نداری کسی نمی‌تواند به جلسه بیاید."
+              : "بدون لینک جلسه، بعد از قبول کردن یک درخواست کسی نمی‌تواند به جلسه بیاید."}
+          </p>
+          <Link
+            href="/dashboard/mentor/profile"
+            className="mt-4 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+          >
+            افزودن لینک جلسه
+          </Link>
+        </div>
+      )}
 
       {rows.length === 0 && (
         <div className="mt-8 rounded-2xl border border-card-border bg-card p-10 text-center">

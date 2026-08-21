@@ -10,10 +10,26 @@ import RequestMessage from "../request-message";
 // Whether a request was accepted or rejected is the thing people scan for,
 // so it cannot rest on hue alone.
 const STATUS = {
-  pending: { mark: "…", label: "در انتظار جواب", className: "border border-card-border text-muted" },
-  confirmed: { mark: "✓", label: "تأیید شده", className: "bg-success-light text-success" },
-  declined: { mark: "✕", label: "رد شده", className: "border border-red-400/40 text-red-400" },
-  cancelled: { mark: "✕", label: "لغو شده", className: "border border-card-border text-muted" },
+  pending: {
+    mark: "…",
+    label: "در انتظار جواب",
+    className: "border border-card-border text-muted",
+  },
+  confirmed: {
+    mark: "✓",
+    label: "تأیید شده",
+    className: "bg-success-light text-success",
+  },
+  declined: {
+    mark: "✕",
+    label: "رد شده",
+    className: "border border-red-400/40 text-red-400",
+  },
+  cancelled: {
+    mark: "✕",
+    label: "لغو شده",
+    className: "border border-card-border text-muted",
+  },
 } as const;
 
 export default async function MyRequestsPage() {
@@ -134,7 +150,8 @@ export default async function MyRequestsPage() {
                     </span>
                   )}
                   <span className="text-xs text-muted">
-                    فرستاده شده در {sentFormatter.format(new Date(b.created_at))}
+                    فرستاده شده در{" "}
+                    {sentFormatter.format(new Date(b.created_at))}
                     {b.status === "pending" &&
                       (b.seen_at ? " — دیده شده" : " — هنوز دیده نشده")}
                   </span>
@@ -147,16 +164,23 @@ export default async function MyRequestsPage() {
                   edited={!!b.edited_at}
                 />
 
-                {b.status === "confirmed" && meetingLink && (
+                {b.status === "confirmed" && (
                   <div className="mt-4 border-t border-card-border pt-4">
-                    <a
-                      href={meetingLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
-                    >
-                      ورود به جلسه
-                    </a>
+                    {meetingLink ? (
+                      <a
+                        href={meetingLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+                      >
+                        ورود به جلسه
+                      </a>
+                    ) : (
+                      <p className="text-sm leading-7 text-muted">
+                        متخصص درخواستت را قبول کرده، ولی هنوز لینک جلسه ثبت
+                        نکرده. به‌محض اینکه اضافه کند همین‌جا می‌بینی‌اش.
+                      </p>
+                    )}
                   </div>
                 )}
               </li>
