@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SpecialistCard from "@/components/SpecialistCard";
-import HeroVisual from "@/components/HeroVisual";
 
 // These match expertise tags specialists actually carry, so a chip leads to a
 // populated list rather than an empty one.
@@ -76,52 +75,59 @@ export default async function Home({
           </div>
         )}
 
-        {/* HERO. Text sits left of the visual, which runs against the reading
-            direction, so the columns are ordered explicitly at lg. A narrow
-            screen stacks them and keeps the heading first. */}
-        <section className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
-          <div className="lg:order-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-              فرصت‌ها از زاویه‌ای تازه
-            </span>
+        {/* HERO. Centred, with search as the primary action — the thing
+            someone actually came to do. An illustration sat here before and
+            was decoration standing in for function. */}
+        <section className="mx-auto max-w-3xl pt-8 text-center sm:pt-14">
+          <span className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted">
+            <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+            فرصت‌ها از زاویه‌ای تازه
+          </span>
 
-            <h1 className="mt-6 text-4xl font-bold leading-[1.25] tracking-tight sm:text-5xl">
-              سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه.
-            </h1>
+          <h1 className="mt-6 text-4xl font-bold leading-[1.25] tracking-tight sm:text-5xl">
+            سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه.
+          </h1>
 
-            <p className="mt-5 max-w-lg text-lg leading-8 text-muted">
-              می‌خوای وارد یک حوزه بشی، مسیرت را عوض کنی، برای مهاجرت کاری آماده
-              بشی یا بدونی یک شغل واقعاً چه شکلیه؟ با متخصصی حرف بزن که همین
-              حالا سرِ همان کاره.
-            </p>
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-muted">
+            می‌خوای وارد یک حوزه بشی، مسیرت را عوض کنی، برای مهاجرت کاری آماده
+            بشی یا بدونی یک شغل واقعاً چه شکلیه؟ با متخصصی حرف بزن که همین حالا
+            سرِ همان کاره.
+          </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/specialists"
-                className="rounded-full bg-brand px-7 py-3 text-center font-semibold text-background hover:bg-brand-hover"
-              >
-                پیدا کردن متخصص
-              </Link>
-              <Link
-                href="/signup/mentor"
-                className="rounded-full border border-card-border px-7 py-3 text-center font-medium hover:bg-card"
-              >
-                به متخصص‌ها بپیوند
-              </Link>
-            </div>
+          {/* A plain GET form, so search works without JavaScript. */}
+          <form
+            action="/specialists"
+            className="mx-auto mt-9 flex max-w-xl items-center gap-2 rounded-full border border-card-border bg-card p-2 focus-within:border-brand"
+          >
+            <label htmlFor="q" className="sr-only">
+              جستجوی متخصص
+            </label>
+            <input
+              id="q"
+              name="q"
+              type="search"
+              placeholder="اسم، شرکت، یا حوزه کاری"
+              className="min-w-0 flex-1 bg-transparent px-4 py-2 text-sm outline-none placeholder:text-muted"
+            />
+            <button
+              type="submit"
+              className="shrink-0 rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+            >
+              پیدا کردن
+            </button>
+          </form>
 
-            <p className="mt-5 text-sm text-muted">۲۲ دقیقه گفتگوی رایگان</p>
-          </div>
-
-          <div className="lg:order-1">
-            <HeroVisual />
-          </div>
+          <p className="mt-4 text-sm text-muted">
+            ۲۲ دقیقه گفتگوی رایگان —{" "}
+            <Link href="/specialists" className="text-brand hover:underline">
+              یا همه متخصص‌ها را ببین
+            </Link>
+          </p>
         </section>
 
         {/* CATEGORIES */}
-        <section className="mt-20">
-          <div className="flex flex-wrap gap-2.5">
+        <section className="mt-12">
+          <div className="flex flex-wrap justify-center gap-2.5">
             {FIELDS.map((field) => (
               <Link
                 key={field}
