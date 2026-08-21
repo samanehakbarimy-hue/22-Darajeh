@@ -5,7 +5,7 @@ import Spinner from "@/components/Spinner";
 
 const VARIANTS = {
   primary:
-    "bg-brand text-background hover:bg-brand-dark disabled:hover:bg-brand",
+    "bg-brand text-background hover:bg-brand-hover disabled:hover:bg-brand",
   outline:
     "border border-card-border text-muted hover:border-brand hover:text-brand disabled:hover:border-card-border disabled:hover:text-muted",
   danger:

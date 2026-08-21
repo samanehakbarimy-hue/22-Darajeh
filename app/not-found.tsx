@@ -11,7 +11,7 @@ export default function NotFound() {
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link
           href="/specialists"
-          className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-background hover:bg-brand-dark"
+          className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-background hover:bg-brand-hover"
         >
           پیدا کردن متخصص
         </Link>

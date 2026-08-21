@@ -128,7 +128,7 @@ export default async function AdminPage() {
                     <input type="hidden" name="mentor_id" value={mentor.id} />
                     <button
                       type="submit"
-                      className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
+                      className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-hover"
                     >
                       تأیید
                     </button>

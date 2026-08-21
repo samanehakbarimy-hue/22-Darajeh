@@ -4,11 +4,16 @@ import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
 import RequestMessage from "../request-message";
 
+// Each status carries a mark as well as a colour. Simulated against
+// deuteranopia the green and red chips land at a 1.10 luminance ratio — all
+// but identical — and the filled/outlined difference is no clearer at 1.07.
+// Whether a request was accepted or rejected is the thing people scan for,
+// so it cannot rest on hue alone.
 const STATUS = {
-  pending: { label: "در انتظار جواب", className: "border border-card-border text-muted" },
-  confirmed: { label: "تأیید شده", className: "bg-brand-light text-brand" },
-  declined: { label: "رد شده", className: "border border-red-400/40 text-red-400" },
-  cancelled: { label: "لغو شده", className: "border border-card-border text-muted" },
+  pending: { mark: "…", label: "در انتظار جواب", className: "border border-card-border text-muted" },
+  confirmed: { mark: "✓", label: "تأیید شده", className: "bg-success-light text-success" },
+  declined: { mark: "✕", label: "رد شده", className: "border border-red-400/40 text-red-400" },
+  cancelled: { mark: "✕", label: "لغو شده", className: "border border-card-border text-muted" },
 } as const;
 
 export default async function MyRequestsPage() {
@@ -70,7 +75,7 @@ export default async function MyRequestsPage() {
           <p className="text-muted">هنوز درخواستی نفرستادی.</p>
           <Link
             href="/specialists"
-            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-dark"
+            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
           >
             پیدا کردن متخصص
           </Link>
@@ -118,7 +123,7 @@ export default async function MyRequestsPage() {
                   <span
                     className={`shrink-0 rounded-full px-3 py-1 text-xs ${status.className}`}
                   >
-                    {status.label}
+                    <span aria-hidden>{status.mark}</span> {status.label}
                   </span>
                 </div>
 
@@ -148,7 +153,7 @@ export default async function MyRequestsPage() {
                       href={meetingLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-dark"
+                      className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
                     >
                       ورود به جلسه
                     </a>

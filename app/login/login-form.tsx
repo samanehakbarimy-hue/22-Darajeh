@@ -41,7 +41,7 @@ export default function LoginForm({
             <button
               disabled={resendPending}
               type="submit"
-              className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark disabled:opacity-60"
+              className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-hover disabled:opacity-60"
             >
               {resendPending ? "..." : "ارسال دوباره"}
             </button>
@@ -98,7 +98,7 @@ export default function LoginForm({
         <button
           disabled={pending}
           type="submit"
-          className="inline-flex items-center justify-center gap-2 mt-2 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-dark disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 mt-2 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover disabled:opacity-60"
         >
           {pending && <Spinner />}
         {pending ? "در حال ورود..." : "ورود"}

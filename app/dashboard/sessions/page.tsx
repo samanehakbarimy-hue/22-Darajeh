@@ -73,7 +73,7 @@ export default async function MySessionsPage() {
           <p className="text-muted">هنوز کسی ازت درخواست جلسه نکرده.</p>
           <Link
             href="/dashboard/mentor/availability"
-            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-dark"
+            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
           >
             زمان‌های آزادت را بیشتر کن
           </Link>
@@ -146,7 +146,9 @@ export default async function MySessionsPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <p className="font-bold">{b.seeker?.full_name}</p>
-                  <span className="shrink-0 text-xs text-brand">تأیید شده</span>
+                  <span className="shrink-0 text-xs text-success">
+                    <span aria-hidden>✓</span> تأیید شده
+                  </span>
                 </div>
                 {b.slot && (
                   <p className="mt-1 text-sm text-muted">

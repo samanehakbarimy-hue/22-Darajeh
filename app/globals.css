@@ -1,16 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  /* Deep pine green ground with cream text and a mint accent, so the page
-     reads as green rather than near-black. */
-  --background: #0c3327;
-  --card: #12402f;
-  --card-border: #1e5842;
-  --foreground: #f2ede1;
-  --muted: #9db9a9;
-  --color-brand: #35d99a;
-  --color-brand-light: #17452f;
-  --color-brand-dark: #23b981;
+  /* Ink Teal + Coral. The ground is a deep desaturated teal rather than a
+     neutral black, so the coral reads as warm against it. */
+  --background: #0f1818;
+  --card: #172322;
+  --card-border: #2c3a38;
+  --foreground: #f5f1ea;
+  --muted: #a8b3ae;
+
+  /* Coral is rationed: primary CTAs, the selected state, and accents that
+     genuinely need to pull the eye. Spreading it further would spend the
+     one colour that is meant to mean "act here".
+
+     Buttons carry a DARK label, not white — 6.26:1 against the coral, where
+     white manages only 2.55. */
+  --color-brand: #ff6657;
+
+  /* Hover brightens. With a dark label, darkening the fill would cut its
+     contrast; lighter takes it to 7.02:1. */
+  --color-brand-hover: #ff786b;
+
+  /* Coral mixed into the ground, for the selected chip: dark enough that
+     coral text still clears AA on it at 4.58:1. */
+  --color-brand-light: #442926;
+
+  /* Status colours stay off the brand. Coral IS a red, so an approved chip
+     borrowing it would read as an alert and sit indistinguishable next to
+     one. Green carries approval instead, at 6.90:1 on a card. */
+  --color-success: #3fbf7f;
+  --color-success-light: #12231d;
 }
 
 @theme inline {
@@ -21,7 +40,9 @@
   --color-muted: var(--muted);
   --color-brand: var(--color-brand);
   --color-brand-light: var(--color-brand-light);
-  --color-brand-dark: var(--color-brand-dark);
+  --color-brand-hover: var(--color-brand-hover);
+  --color-success: var(--color-success);
+  --color-success-light: var(--color-success-light);
   --font-sans: var(--font-vazirmatn);
 }
 

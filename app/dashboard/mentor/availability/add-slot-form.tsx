@@ -218,7 +218,7 @@ export default function AddSlotForm({
       <button
         type="submit"
         disabled={pending || !selectedDate || allTimes.length === 0}
-        className="mt-6 w-full rounded-full bg-brand px-6 py-3 font-semibold text-background transition hover:bg-brand-dark disabled:opacity-50"
+        className="mt-6 w-full rounded-full bg-brand px-6 py-3 font-semibold text-background transition hover:bg-brand-hover disabled:opacity-50"
       >
         {pending
           ? "در حال افزودن..."

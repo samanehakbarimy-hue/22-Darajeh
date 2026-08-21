@@ -191,7 +191,7 @@ export default async function DashboardPage({
           {profile?.role === "admin" && (
             <Link
               href="/admin"
-              className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-dark"
+              className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-hover"
             >
               پنل مدیریت
             </Link>
@@ -255,7 +255,7 @@ export default async function DashboardPage({
               <p className="text-muted">هنوز جلسه‌ای رزرو نکردی.</p>
               <Link
                 href="/specialists"
-                className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-dark"
+                className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
               >
                 پیدا کردن متخصص
               </Link>
@@ -313,7 +313,7 @@ export default async function DashboardPage({
                         href={b.meetingLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-dark"
+                        className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
                       >
                         ورود به جلسه
                       </a>

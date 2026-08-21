@@ -2,22 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SpecialistCard from "@/components/SpecialistCard";
+import HeroVisual from "@/components/HeroVisual";
 
-const STEPS = [
-  {
-    title: "متخصص رو انتخاب کن",
-    body: "بین متخصص‌های تأییدشده بگرد و کسی رو پیدا کن که توی حوزه سؤال تو کار می‌کنه.",
-  },
-  {
-    title: "سؤالت رو بنویس و زمان بگیر",
-    body: "یکی از زمان‌های آزادش رو بردار و بنویس دنبال چه جوابی هستی، تا آماده بیاد.",
-  },
-  {
-    title: "۲۲ دقیقه راهنمایی بگیر",
-    body: "یک تماس رایگان. اگر خواستید ادامه بدید، خودتون با هم تصمیم می‌گیرید.",
-  },
-];
-
+// These match expertise tags specialists actually carry, so a chip leads to a
+// populated list rather than an empty one.
 const FIELDS = [
   "نفت و گاز",
   "توسعه نرم‌افزار",
@@ -27,6 +15,33 @@ const FIELDS = [
   "رزومه و مصاحبه",
   "بازاریابی دیجیتال",
   "مدیریت پروژه",
+];
+
+const BENEFITS = [
+  {
+    title: "خصوصی و امن",
+    body: "شماره تماس و اطلاعاتت پیش خودمان می‌ماند و با کسی قسمت نمی‌شود.",
+    // Padlock.
+    icon: "M7 10V7a5 5 0 0 1 10 0v3M5 10h14v10H5z",
+  },
+  {
+    title: "۲۲ دقیقه رایگان",
+    body: "این وقت را متخصص‌ها خودشان می‌گذارند.",
+    // Clock.
+    icon: "M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z",
+  },
+  {
+    title: "متخصص‌های تأییدشده",
+    body: "هر پروفایل پیش از انتشار بررسی می‌شود.",
+    // Shield with a check.
+    icon: "M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6zM9 12l2 2 4-4",
+  },
+  {
+    title: "حرفه‌ای و واقعی",
+    body: "با کسی حرف می‌زنی که همین حالا سرِ همان کار است.",
+    // Two people.
+    icon: "M16 19v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6M21 19v-2a4 4 0 0 0-3-3.9",
+  },
 ];
 
 export default async function Home({
@@ -50,52 +65,68 @@ export default async function Home({
     )
     .eq("status", "approved")
     .order("created_at", { ascending: false })
-    .limit(8);
+    .limit(4);
 
   return (
-    <div className="flex flex-1 flex-col">
-      <main className="flex flex-1 flex-col items-center px-6 pb-24 pt-20 text-center">
+    <main className="flex flex-1 flex-col px-6 pb-24 pt-10 sm:px-10">
+      <div className="mx-auto w-full max-w-6xl">
         {deleted === "1" && (
-          <div className="mb-6 w-full max-w-md rounded-xl border border-card-border bg-card px-4 py-3 text-sm text-muted">
+          <div className="mb-8 rounded-xl border border-card-border bg-card px-4 py-3 text-sm text-muted">
             حسابت با موفقیت حذف شد.
           </div>
         )}
 
-        <span className="mb-5 rounded-full bg-brand-light px-4 py-1 text-sm font-medium text-brand">
-          ۲۲ دقیقه گفتگو، رایگان
-        </span>
-        <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
-          سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه.
-        </h1>
-        <p className="mt-6 max-w-xl text-lg leading-8 text-muted">
-          می‌خوای وارد یک حوزه بشی، مسیرت را عوض کنی، برای مهاجرت کاری آماده
-          بشی یا بدونی یک شغل واقعاً چه شکلیه؟ ۲۲ دقیقه با متخصصی حرف بزن که
-          همین حالا سرِ همان کاره.
-        </p>
-        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-          <Link
-            href="/specialists"
-            className="rounded-full bg-brand px-8 py-3 font-semibold text-background hover:bg-brand-dark"
-          >
-            پیدا کردن متخصص
-          </Link>
-          <Link
-            href="/signup/mentor"
-            className="rounded-full border border-card-border px-8 py-3 font-medium hover:bg-card"
-          >
-            به متخصص‌ها بپیوند
-          </Link>
-        </div>
+        {/* HERO. Text sits left of the visual, which runs against the reading
+            direction, so the columns are ordered explicitly at lg. A narrow
+            screen stacks them and keeps the heading first. */}
+        <section className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+          <div className="lg:order-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+              فرصت‌ها از زاویه‌ای تازه
+            </span>
 
-        {/* Fields double as the entry point to a filtered list, so they carry
-            real information rather than decorating the page. */}
-        <section className="mt-16 w-full max-w-3xl">
-          <div className="flex flex-wrap justify-center gap-2">
+            <h1 className="mt-6 text-4xl font-bold leading-[1.25] tracking-tight sm:text-5xl">
+              سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه.
+            </h1>
+
+            <p className="mt-5 max-w-lg text-lg leading-8 text-muted">
+              می‌خوای وارد یک حوزه بشی، مسیرت را عوض کنی، برای مهاجرت کاری آماده
+              بشی یا بدونی یک شغل واقعاً چه شکلیه؟ با متخصصی حرف بزن که همین
+              حالا سرِ همان کاره.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/specialists"
+                className="rounded-full bg-brand px-7 py-3 text-center font-semibold text-background hover:bg-brand-hover"
+              >
+                پیدا کردن متخصص
+              </Link>
+              <Link
+                href="/signup/mentor"
+                className="rounded-full border border-card-border px-7 py-3 text-center font-medium hover:bg-card"
+              >
+                به متخصص‌ها بپیوند
+              </Link>
+            </div>
+
+            <p className="mt-5 text-sm text-muted">۲۲ دقیقه گفتگوی رایگان</p>
+          </div>
+
+          <div className="lg:order-1">
+            <HeroVisual />
+          </div>
+        </section>
+
+        {/* CATEGORIES */}
+        <section className="mt-20">
+          <div className="flex flex-wrap gap-2.5">
             {FIELDS.map((field) => (
               <Link
                 key={field}
                 href={`/specialists?tag=${encodeURIComponent(field)}`}
-                className="rounded-full border border-card-border px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand"
+                className="rounded-full border border-card-border bg-card px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand"
               >
                 {field}
               </Link>
@@ -103,16 +134,27 @@ export default async function Home({
           </div>
         </section>
 
+        {/* SPECIALISTS */}
         {specialists && specialists.length > 0 && (
-          <section className="mt-24 w-full max-w-5xl">
-            <div className="mb-8 flex items-baseline justify-between">
-              <h2 className="text-xl font-bold">متخصص‌های ۲۲ درجه</h2>
-              <Link href="/specialists" className="text-sm text-brand hover:underline">
-                دیدن همه
+          <section className="mt-20">
+            <div className="mb-7 flex items-end justify-between gap-6">
+              <div>
+                <h2 className="text-2xl font-bold">متخصص‌های ۲۲ درجه</h2>
+                <p className="mt-2 text-sm text-muted">
+                  کسی را انتخاب کن که توی حوزه سؤال تو کار می‌کنه.
+                </p>
+              </div>
+              <Link
+                href="/specialists"
+                className="shrink-0 text-sm text-brand hover:underline"
+              >
+                دیدن همه ←
               </Link>
             </div>
-            {/* Wrap rather than grid, so a handful of specialists sit centred
-                instead of clinging to one edge of empty columns. */}
+
+            {/* Wrap rather than grid: with four specialists this fills the
+                row, and with one it centres instead of leaving three empty
+                columns beside it. */}
             <div className="flex flex-wrap justify-center gap-5">
               {specialists.map((specialist) => {
                 const profile = specialist.profiles as unknown as {
@@ -142,40 +184,34 @@ export default async function Home({
           </section>
         )}
 
-        <section className="mt-24 w-full max-w-5xl text-right">
-          <h2 className="mb-8 text-center text-xl font-bold">چطور کار می‌کنه؟</h2>
-          <ol className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-            {STEPS.map((step, index) => (
-              <li
-                key={step.title}
-                className="rounded-2xl border border-card-border bg-card p-6"
-              >
-                <span className="text-sm font-bold text-brand">
-                  {(index + 1).toLocaleString("fa-IR")}
-                </span>
-                <h3 className="mt-2 font-bold">{step.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-muted">{step.body}</p>
+        {/* TRUST STRIP */}
+        <section className="mt-20 rounded-3xl border border-card-border bg-card px-6 py-8 sm:px-10">
+          <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {BENEFITS.map((benefit) => (
+              <li key={benefit.title} className="flex items-start gap-3.5">
+                <svg
+                  aria-hidden
+                  viewBox="0 0 24 24"
+                  className="mt-0.5 h-6 w-6 shrink-0 text-brand"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d={benefit.icon} />
+                </svg>
+                <div>
+                  <h3 className="font-bold">{benefit.title}</h3>
+                  <p className="mt-1 text-sm leading-6 text-muted">
+                    {benefit.body}
+                  </p>
+                </div>
               </li>
             ))}
-          </ol>
+          </ul>
         </section>
-
-        <section className="mt-24 w-full max-w-3xl rounded-2xl border border-card-border bg-card px-6 py-12">
-          <h2 className="text-xl font-bold">تجربه‌ات را با بقیه قسمت کن</h2>
-          <p className="mx-auto mt-3 max-w-lg leading-8 text-muted">
-            اگر توی کارت تجربه داری، ۲۲ دقیقه از وقتت می‌تونه مسیر یک نفر را
-            عوض کنه. زمان‌هایی که خودت انتخاب می‌کنی، به همان اندازه که دوست
-            داری — و اگر بعدش خواستید همکاری‌تان را ادامه بدید، خودتان تصمیم
-            می‌گیرید.
-          </p>
-          <Link
-            href="/signup/mentor"
-            className="mt-8 inline-block rounded-full bg-brand px-8 py-3 font-semibold text-background hover:bg-brand-dark"
-          >
-            به متخصص‌ها بپیوند
-          </Link>
-        </section>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
