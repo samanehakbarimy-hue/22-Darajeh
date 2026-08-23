@@ -91,7 +91,7 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, mentor_id, status, message, seen_at, edited_at, availability_slots(start_time), mentor_profiles(profiles(full_name))",
+        "id, mentor_id, status, message, seen_at, edited_at, meeting_link, availability_slots(start_time), mentor_profiles(profiles(full_name))",
       )
       .eq("seeker_id", user.id)
       .in("status", ["pending", "confirmed"])
@@ -125,7 +125,9 @@ export default async function DashboardPage({
       message: b.message,
       seenAt: b.seen_at,
       editedAt: b.edited_at,
-      meetingLink: linkById.get(b.mentor_id) ?? null,
+      // A link made for this booking beats the profile-wide one.
+      meetingLink:
+        (b.meeting_link as string | null) ?? linkById.get(b.mentor_id) ?? null,
     }));
   }
 

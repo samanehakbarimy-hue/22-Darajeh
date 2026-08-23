@@ -48,7 +48,7 @@ export default async function MyRequestsPage() {
   const { data: bookings } = await supabase
     .from("bookings")
     .select(
-      "id, mentor_id, status, message, seen_at, edited_at, created_at, availability_slots(start_time), mentor_profiles(headline, profiles(full_name, photo_url))",
+      "id, mentor_id, status, message, seen_at, edited_at, created_at, meeting_link, availability_slots(start_time), mentor_profiles(headline, profiles(full_name, photo_url))",
     )
     .eq("seeker_id", user.id)
     .order("created_at", { ascending: false });
@@ -101,7 +101,12 @@ export default async function MyRequestsPage() {
             const name = mentor?.profiles?.full_name ?? "";
             const status =
               STATUS[b.status as keyof typeof STATUS] ?? STATUS.pending;
-            const meetingLink = linkById.get(b.mentor_id) ?? null;
+            // A link generated for this booking beats the specialist's
+            // permanent one: it is theirs alone, and nobody else is in it.
+            const meetingLink =
+              (b.meeting_link as string | null) ??
+              linkById.get(b.mentor_id) ??
+              null;
 
             return (
               <li

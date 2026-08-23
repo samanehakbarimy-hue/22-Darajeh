@@ -2,7 +2,18 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import MentorProfileForm from "./mentor-profile-form";
 
-export default async function MentorProfilePage() {
+const GOOGLE_MESSAGE: Record<string, string> = {
+  connected: "حساب گوگلت وصل شد. از این به بعد برای هر جلسه‌ای که قبول کنی لینک ساخته می‌شود.",
+  cancelled: "اتصال به گوگل انجام نشد. اشکالی ندارد — لینک ثابتت همچنان کار می‌کند.",
+  failed: "اتصال به گوگل ناموفق بود. یک بار دیگر امتحان کن.",
+};
+
+export default async function MentorProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ google?: string }>;
+}) {
+  const { google } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -42,6 +53,20 @@ export default async function MentorProfilePage() {
     .eq("id", user.id)
     .maybeSingle();
 
+  // Only the fact of a connection, never the token: this reads the view,
+  // which exposes the address and nothing beside it.
+  const { data: googleAccount } = await supabase
+    .from("mentor_google_connected")
+    .select("google_email")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const googleReady = Boolean(
+    process.env.GOOGLE_CLIENT_ID &&
+      process.env.GOOGLE_CLIENT_SECRET &&
+      process.env.NEXT_PUBLIC_SITE_URL,
+  );
+
   return (
     <div className="mx-auto w-full max-w-xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">پروفایل متخصص</h1>
@@ -65,6 +90,51 @@ export default async function MentorProfilePage() {
           </p>
         </div>
       )}
+      {google && GOOGLE_MESSAGE[google] && (
+        <p className="mt-6 rounded-2xl border border-card-border bg-card p-4 text-sm leading-7 text-muted">
+          {GOOGLE_MESSAGE[google]}
+        </p>
+      )}
+
+      {/* Hidden entirely until the Google credentials exist, so nobody is
+          offered a button that cannot work. */}
+      {googleReady && (
+        <div className="mt-6 rounded-2xl border border-card-border bg-card p-5">
+          <h2 className="font-bold">ساخت خودکار لینک جلسه</h2>
+          {googleAccount?.google_email ? (
+            <>
+              <p className="mt-2 text-sm leading-7 text-muted">
+                وصل است به{" "}
+                <span dir="ltr" className="text-foreground">
+                  {googleAccount.google_email}
+                </span>
+                . برای هر جلسه‌ای که قبول می‌کنی یک لینک تازه ساخته می‌شود و
+                توی تقویمت هم می‌آید.
+              </p>
+              <a
+                href="/api/google/connect"
+                className="mt-4 inline-block rounded-full border border-card-border px-5 py-2.5 text-sm hover:border-brand hover:text-brand"
+              >
+                وصل کردن حساب دیگر
+              </a>
+            </>
+          ) : (
+            <>
+              <p className="mt-2 text-sm leading-7 text-muted">
+                اگر حساب گوگلت را وصل کنی، دیگر لازم نیست لینک ثابت بگذاری —
+                برای هر جلسه یک لینک جدا ساخته می‌شود و در تقویمت ثبت می‌شود.
+              </p>
+              <a
+                href="/api/google/connect"
+                className="mt-4 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+              >
+                وصل کردن حساب گوگل
+              </a>
+            </>
+          )}
+        </div>
+      )}
+
       <MentorProfileForm
         initialPhotoUrl={profile?.photo_url ?? ""}
         initialHeadline={mentorProfile?.headline ?? ""}
