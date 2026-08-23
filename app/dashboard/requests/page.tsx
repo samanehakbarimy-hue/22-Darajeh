@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
 import RequestMessage from "../request-message";
+import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
 
 // Each status carries a mark as well as a colour. Simulated against
@@ -48,7 +49,7 @@ export default async function MyRequestsPage() {
   const { data: bookings } = await supabase
     .from("bookings")
     .select(
-      "id, mentor_id, status, message, seen_at, edited_at, created_at, meeting_link, availability_slots(start_time, end_time), mentor_profiles(headline, profiles(full_name, photo_url))",
+      "id, mentor_id, status, message, seen_at, edited_at, created_at, meeting_link, cancelled_by, cancel_reason, availability_slots(start_time, end_time), mentor_profiles(headline, profiles(full_name, photo_url))",
     )
     .eq("seeker_id", user.id)
     .order("created_at", { ascending: false });
@@ -161,6 +162,25 @@ export default async function MyRequestsPage() {
                   editable={b.status === "pending"}
                   edited={!!b.edited_at}
                 />
+
+                {b.status === "cancelled" && (
+                  <p className="mt-4 border-t border-card-border pt-4 text-sm leading-7 text-muted">
+                    {b.cancelled_by === user.id
+                      ? "خودت لغوش کردی."
+                      : "متخصص لغوش کرد."}
+                    {b.cancel_reason ? ` دلیل: ${b.cancel_reason}` : ""}
+                  </p>
+                )}
+
+                {b.status === "pending" && (
+                  <CancelBooking bookingId={b.id} kind="request" />
+                )}
+
+                {b.status === "confirmed" &&
+                  slot &&
+                  sessionTiming(slot.start_time, slot.end_time) !== "past" && (
+                    <CancelBooking bookingId={b.id} kind="session" />
+                  )}
 
                 {b.status === "confirmed" &&
                   slot &&

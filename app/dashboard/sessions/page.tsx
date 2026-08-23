@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { acceptBooking, declineBooking } from "@/lib/actions/booking-response";
 import SubmitButton from "@/components/SubmitButton";
 import ConfirmedSessionLink from "./confirmed-session-link";
+import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
 
 export default async function MySessionsPage() {
@@ -32,7 +33,7 @@ export default async function MySessionsPage() {
   const { data } = await supabase
     .from("bookings")
     .select(
-      "id, message, status, edited_at, meeting_link, availability_slots(start_time, end_time), profiles!bookings_seeker_id_fkey(full_name, photo_url)",
+      "id, message, status, edited_at, meeting_link, cancelled_by, cancel_reason, availability_slots(start_time, end_time), profiles!bookings_seeker_id_fkey(full_name, photo_url)",
     )
     .eq("mentor_id", user.id)
     .order("created_at", { ascending: false });
@@ -61,6 +62,8 @@ export default async function MySessionsPage() {
     status: b.status as string,
     editedAt: b.edited_at as string | null,
     meetingLink: (b.meeting_link as string | null) ?? null,
+    cancelledBy: (b.cancelled_by as string | null) ?? null,
+    cancelReason: (b.cancel_reason as string | null) ?? null,
     slot: b.availability_slots as unknown as {
       start_time: string;
       end_time: string | null;
@@ -247,6 +250,8 @@ export default async function MySessionsPage() {
                   fallbackLink={link?.meeting_link ?? null}
                   googleConnected={googleConnected}
                 />
+
+                <CancelBooking bookingId={b.id} kind="session" />
               </li>
             ))}
           </ul>
@@ -325,12 +330,23 @@ export default async function MySessionsPage() {
             {closed.map((b) => (
               <li
                 key={b.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-card-border px-4 py-3 text-sm"
+                className="rounded-xl border border-card-border px-4 py-3 text-sm"
               >
-                <span className="text-muted">{b.seeker?.full_name}</span>
-                <span className="text-xs text-muted/70">
-                  {b.status === "declined" ? "رد شده" : "لغو شده"}
-                </span>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-muted">{b.seeker?.full_name}</span>
+                  <span className="text-xs text-muted/70">
+                    {b.status === "declined"
+                      ? "رد شده"
+                      : b.cancelledBy === user.id
+                        ? "تو لغوش کردی"
+                        : "متقاضی لغو کرد"}
+                  </span>
+                </div>
+                {b.cancelReason && (
+                  <p className="mt-1.5 text-xs leading-6 text-muted/70">
+                    دلیل: {b.cancelReason}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

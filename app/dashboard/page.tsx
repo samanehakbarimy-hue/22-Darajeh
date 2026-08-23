@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import RequestMessage from "./request-message";
+import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
 
 export default async function DashboardPage({
@@ -109,6 +110,8 @@ export default async function DashboardPage({
     seenAt: string | null;
     editedAt: string | null;
     meetingLink: string | null;
+    cancelledByMe: boolean;
+    cancelReason: string | null;
   }[] = [];
 
   // Not gated on role: a mentor or an admin can book a specialist too, and
@@ -117,10 +120,10 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, mentor_id, status, message, seen_at, edited_at, meeting_link, availability_slots(start_time, end_time), mentor_profiles(profiles(full_name))",
+        "id, mentor_id, status, message, seen_at, edited_at, meeting_link, cancelled_by, cancel_reason, availability_slots(start_time, end_time), mentor_profiles(profiles(full_name))",
       )
       .eq("seeker_id", user.id)
-      .in("status", ["pending", "confirmed"])
+      .in("status", ["pending", "confirmed", "cancelled"])
       .order("created_at", { ascending: false });
 
     // The meeting link is the one contact detail a seeker gets — the mentor's
@@ -167,6 +170,8 @@ export default async function DashboardPage({
       // A link made for this booking beats the profile-wide one.
       meetingLink:
         (b.meeting_link as string | null) ?? linkById.get(b.mentor_id) ?? null,
+      cancelledByMe: b.cancelled_by === user.id,
+      cancelReason: (b.cancel_reason as string | null) ?? null,
       }));
   }
 
@@ -400,16 +405,20 @@ export default async function DashboardPage({
                     </div>
                     <span
                       className={`shrink-0 rounded-full px-3 py-1 text-xs ${
-                        b.status === "confirmed"
-                          ? "bg-brand-light text-brand"
-                          : "border border-card-border text-muted"
+                        b.status === "cancelled"
+                          ? "border border-red-400/40 text-red-400"
+                          : b.status === "confirmed"
+                            ? "bg-brand-light text-brand"
+                            : "border border-card-border text-muted"
                       }`}
                     >
-                      {b.status === "confirmed"
-                        ? "تأیید شده"
-                        : b.seenAt
-                          ? "دیده شده"
-                          : "فرستاده شد"}
+                      {b.status === "cancelled"
+                        ? "لغو شده"
+                        : b.status === "confirmed"
+                          ? "تأیید شده"
+                          : b.seenAt
+                            ? "دیده شده"
+                            : "فرستاده شد"}
                     </span>
                   </div>
 
@@ -423,12 +432,36 @@ export default async function DashboardPage({
                   />
 
                   {/* Nothing to join until the specialist has said yes. */}
-                  {b.status === "pending" ? (
-                    <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
-                      {b.seenAt
-                        ? "متخصص درخواستت رو دیده. منتظر جوابش باش."
-                        : "هنوز دیده نشده. تا وقتی باز نشده می‌تونی پیامت رو عوض کنی."}
-                    </p>
+                  {b.status === "cancelled" ? (
+                    <div className="mt-4 border-t border-card-border pt-4 text-sm leading-7 text-muted">
+                      <p>
+                        {b.cancelledByMe
+                          ? "این جلسه را خودت لغو کردی."
+                          : "متخصص این جلسه را لغو کرد."}
+                      </p>
+                      {b.cancelReason && (
+                        <p className="mt-1 text-muted/80">
+                          دلیل: {b.cancelReason}
+                        </p>
+                      )}
+                      {!b.cancelledByMe && (
+                        <Link
+                          href="/specialists"
+                          className="mt-3 inline-block rounded-full border border-card-border px-5 py-2 text-sm hover:border-brand hover:text-brand"
+                        >
+                          وقت دیگری پیدا کن
+                        </Link>
+                      )}
+                    </div>
+                  ) : b.status === "pending" ? (
+                    <>
+                      <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
+                        {b.seenAt
+                          ? "متخصص درخواستت رو دیده. منتظر جوابش باش."
+                          : "هنوز دیده نشده. تا وقتی باز نشده می‌تونی پیامت رو عوض کنی."}
+                      </p>
+                      <CancelBooking bookingId={b.id} kind="request" />
+                    </>
                   ) : b.meetingLink ? (
                     <div className="mt-4 border-t border-card-border pt-4">
                       <a
@@ -439,12 +472,16 @@ export default async function DashboardPage({
                       >
                         ورود به جلسه
                       </a>
+                      <CancelBooking bookingId={b.id} kind="session" />
                     </div>
                   ) : (
-                    <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
-                      این متخصص هنوز لینک جلسه ثبت نکرده. به‌زودی اینجا نمایش
-                      داده می‌شه.
-                    </p>
+                    <div className="mt-4 border-t border-card-border pt-4">
+                      <p className="text-sm text-muted">
+                        این متخصص هنوز لینک جلسه ثبت نکرده. به‌زودی اینجا نمایش
+                        داده می‌شه.
+                      </p>
+                      <CancelBooking bookingId={b.id} kind="session" />
+                    </div>
                   )}
                 </li>
               ))}
