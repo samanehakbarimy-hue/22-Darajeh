@@ -6,7 +6,11 @@
  * them — see that file when a number needs changing.
  */
 
-import { BASE_HOURLY_TOMAN, formatMoneyRange } from "@/lib/rates";
+import {
+  BASE_HOURLY_TOMAN,
+  formatMoneyRange,
+  roundToman,
+} from "@/lib/rates";
 
 export type Seniority = "mid" | "senior" | "principal";
 
@@ -37,13 +41,6 @@ export function seniorityBadge(value: string | null | undefined): string | null 
   return SENIORITY_LEVELS.find((l) => l.value === value)?.badge ?? null;
 }
 
-/** Rounded to something a person would actually type. */
-function tidy(amount: number): number {
-  if (amount >= 1_000_000) return Math.round(amount / 100_000) * 100_000;
-  if (amount >= 100_000) return Math.round(amount / 50_000) * 50_000;
-  return Math.round(amount / 10_000) * 10_000;
-}
-
 /**
  * A suggested range, not a rule. Returns null when there is no base rate or no
  * seniority to scale it by — a suggestion drawn from nothing is worse than
@@ -60,8 +57,12 @@ export function suggestedRange(
   if (!level || hours <= 0) return null;
 
   const centre = BASE_HOURLY_TOMAN * level.factor * hours;
-  // Wide enough to read as a range rather than a price in disguise.
-  return { low: tidy(centre * 0.75), high: tidy(centre * 1.35) };
+
+  // Deliberately wide, and wider downwards than up. Most people booking here
+  // are early in their careers and paying for themselves, so the floor has to
+  // be somewhere a specialist can comfortably sit without feeling they have
+  // undercut the platform. A narrow band reads as a price with extra steps.
+  return { low: roundToman(centre * 0.55), high: roundToman(centre * 1.5) };
 }
 
 /** Delegates, so currency and exchange rate stay in one file. */
