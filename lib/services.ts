@@ -1,3 +1,5 @@
+import { formatMoney } from "@/lib/rates";
+
 /**
  * What a specialist offers.
  *
@@ -96,10 +98,10 @@ export const TEMPLATES: {
   },
 ];
 
-/** "۸۰۰٬۰۰۰ تومان", or the honest placeholder while nothing is priced. */
+/** Currency display lives in lib/rates.ts, so amounts appear one way. */
 export function formatPrice(price: number | null): string {
   if (price === null) return "به‌زودی";
-  return `${price.toLocaleString("fa-IR")} تومان`;
+  return formatMoney(price);
 }
 
 /** "۴۵ دقیقه" for a session, "حداقل ۳ ساعت" for project work. */
