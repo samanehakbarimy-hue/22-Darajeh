@@ -73,7 +73,7 @@ export default function ServicesEditor({
       : draft.kind === "consultation"
         ? (Number(draft.minutes) || 0) / 60
         : Number(draft.minHours) || 0;
-  const suggestion = suggestedRange(seniority, hours);
+  const suggestion = suggestedRange(seniority, hours, usdRate);
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((current) => (current ? { ...current, [key]: value } : current));

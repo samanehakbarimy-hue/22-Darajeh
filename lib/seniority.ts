@@ -7,7 +7,7 @@
  */
 
 import {
-  BASE_HOURLY_TOMAN,
+  BASE_HOURLY_USD,
   formatMoneyRange,
   roundToman,
 } from "@/lib/rates";
@@ -51,12 +51,16 @@ export function seniorityBadge(value: string | null | undefined): string | null 
 export function suggestedRange(
   seniority: string | null | undefined,
   hours: number,
+  usdRate: number | null,
 ): { low: number; high: number } | null {
-  if (BASE_HOURLY_TOMAN === null) return null;
+  // The base is in dollars, so without a rate there is nothing to convert it
+  // into. No suggestion is the right answer — better than one in the wrong
+  // currency, or one built on a guessed rate.
+  if (BASE_HOURLY_USD === null || usdRate === null || usdRate <= 0) return null;
   const level = SENIORITY_LEVELS.find((l) => l.value === seniority);
   if (!level || hours <= 0) return null;
 
-  const centre = BASE_HOURLY_TOMAN * level.factor * hours;
+  const centre = BASE_HOURLY_USD * usdRate * level.factor * hours;
 
   // Deliberately wide, and wider downwards than up. Most people booking here
   // are early in their careers and paying for themselves, so the floor has to

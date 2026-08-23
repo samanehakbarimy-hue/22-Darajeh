@@ -13,15 +13,17 @@
  */
 
 /**
- * What one hour of a mid-level specialist's time is worth, in Toman.
+ * What one hour of a mid-level specialist's time is worth, in US dollars.
  *
- * Seniority and duration scale this — see lib/seniority.ts. Set by the
- * founder, who knows the market; it is not derived from anything.
+ * Anchored in dollars rather than Toman on purpose: a dollar figure keeps its
+ * meaning through a devaluation, so when the rial moves only the exchange rate
+ * needs updating and every suggestion follows automatically. A Toman anchor
+ * would have to be re-decided by hand every few months.
  *
- * Safe to hardcode because it is a judgement, not an observation: it changes
- * when the business decides it should, not when the market moves.
+ * Seniority and duration scale it — see lib/seniority.ts. Set by the founder,
+ * who knows what this market can pay; it is not derived from anything.
  */
-export const BASE_HOURLY_TOMAN: number | null = 1_000_000;
+export const BASE_HOURLY_USD: number | null = 1;
 
 export function tomanToUsd(toman: number, rate: number | null): number | null {
   if (rate === null || rate <= 0) return null;
