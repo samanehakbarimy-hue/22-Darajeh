@@ -96,6 +96,7 @@ export default function MentorProfileForm({
   initialMeetingLink,
   initialPhone,
   initialSeniority,
+  googleConnected,
 }: {
   initialPhotoUrl: string;
   initialHeadline: string;
@@ -106,6 +107,8 @@ export default function MentorProfileForm({
   initialMeetingLink: string;
   initialPhone: string;
   initialSeniority: string;
+  /** Connected specialists get a link per booking and need no fallback. */
+  googleConnected: boolean;
 }) {
   const [state, action, pending] = useActionState(saveMentorProfile, undefined);
   const [preview, setPreview] = useState(initialPhotoUrl);
@@ -410,14 +413,14 @@ export default function MentorProfileForm({
             dir="ltr"
             value={meetingLink}
             onChange={(e) => setMeetingLink(e.target.value)}
-            required
+            required={!googleConnected}
             placeholder="https://meet.google.com/..."
             className={`${FIELD_CLASS} text-left`}
           />
-          <p className="mt-1.5 text-xs text-muted">
-            یک لینک ثابت Google Meet بساز و همین‌جا بگذار — رایگان است و چند
-            ثانیه طول می‌کشد. بدون این لینک، کسی که وقتش را رزرو کرده جایی
-            برای آمدن ندارد، و پروفایل بدون آن تأیید نمی‌شود.
+          <p className="mt-1.5 text-xs leading-6 text-muted">
+            {googleConnected
+              ? "لازم نیست پرش کنی — حساب گوگلت وصل است و برای هر جلسه لینک جدا ساخته می‌شود. اگر اینجا هم لینکی بگذاری، فقط وقتی استفاده می‌شود که ساختن خودکار به مشکل بخورد."
+              : "یک لینک ثابت Google Meet بساز و همین‌جا بگذار، یا حساب گوگلت را وصل کن تا لینک‌ها خودکار ساخته شوند. بدون یکی از این دو، کسی که وقتت را رزرو کرده جایی برای آمدن ندارد."}
           </p>
         </div>
       </Section>

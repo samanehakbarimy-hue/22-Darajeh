@@ -35,7 +35,14 @@ export async function approveMentor(formData: FormData) {
     .eq("id", id)
     .maybeSingle();
 
-  if (!link?.meeting_link) {
+  // Connected to Google counts: their bookings get links automatically.
+  const { data: google } = await supabase
+    .from("mentor_google_connected")
+    .select("id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!link?.meeting_link && !google) {
     await setMentorStatus(
       id,
       "changes_requested",

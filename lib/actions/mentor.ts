@@ -38,12 +38,20 @@ export async function saveMentorProfile(
     return { error: "میزان تجربه‌ات را انتخاب کن." };
   }
 
-  // Without this an accepted booking leads nowhere. It is as necessary as
-  // the bio, and it used to be optional — which is exactly how it went
-  // missing on the one approved specialist.
-  if (!meetingLink) {
+  // An accepted booking must lead somewhere, but there are two ways to get
+  // there. A specialist who has connected Google gets a link generated for
+  // every booking, so demanding they also paste one is asking them to do by
+  // hand the thing the system already does — and most will not know how.
+  const { data: googleAccount } = await supabase
+    .from("mentor_google_accounts")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!meetingLink && !googleAccount) {
     return {
-      error: "لینک جلسه آنلاین را بگذار — بدون آن کسی نمی‌تواند به جلسه بیاید.",
+      error:
+        "یا حساب گوگلت را وصل کن تا لینک‌ها خودکار ساخته شوند، یا یک لینک ثابت اینجا بگذار.",
     };
   }
   try {

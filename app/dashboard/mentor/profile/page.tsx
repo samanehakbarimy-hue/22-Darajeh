@@ -160,6 +160,7 @@ export default async function MentorProfilePage({
         initialMeetingLink={link?.meeting_link ?? ""}
         initialPhone={contact?.phone ?? ""}
         initialSeniority={mentorProfile?.seniority ?? ""}
+        googleConnected={googleConnected}
       />
     </div>
   );
