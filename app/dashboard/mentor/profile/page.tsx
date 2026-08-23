@@ -124,6 +124,24 @@ export default async function MentorProfilePage({
                 اگر حساب گوگلت را وصل کنی، دیگر لازم نیست لینک ثابت بگذاری —
                 برای هر جلسه یک لینک جدا ساخته می‌شود و در تقویمت ثبت می‌شود.
               </p>
+
+              {/* Google shows an "unverified app" warning for any app it has
+                  not reviewed, and the word it uses is "unsafe". A specialist
+                  meeting that unprepared reads it as a warning about us. Said
+                  here first, in their language, it is an expected step
+                  instead. Remove this once the app is verified. */}
+              <p className="mt-3 rounded-xl border border-card-border bg-background p-3 text-xs leading-6 text-muted">
+                گوگل هنوز اپ ما را بررسی نکرده، برای همین یک صفحه هشدار نشان
+                می‌دهد و کلمه «unsafe» را می‌نویسد. این درباره امنیت سایت ما
+                نیست؛ برای هر اپ تازه‌ای همین را نشان می‌دهد. روی{" "}
+                <span dir="ltr" className="text-foreground">Advanced</span> و
+                بعد{" "}
+                <span dir="ltr" className="text-foreground">
+                  Go to 22darajeh.com
+                </span>{" "}
+                بزن. تنها دسترسی‌ای که می‌گیریم ساختن رویداد در تقویم خودت
+                است، و هر وقت خواستی می‌تونی قطعش کنی.
+              </p>
               <a
                 href="/api/google/connect"
                 className="mt-4 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
