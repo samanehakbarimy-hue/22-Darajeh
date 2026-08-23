@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { deleteAvailabilitySlots } from "@/lib/actions/availability";
 import AddSlotForm from "./add-slot-form";
+import { dateFormats } from "@/lib/persian";
 
 export default async function MentorAvailabilityPage() {
   const supabase = await createClient();
@@ -39,21 +40,11 @@ export default async function MentorAvailabilityPage() {
     .maybeSingle();
 
   const country = (mentorProfile?.country ?? "").trim().toLowerCase();
-  const useJalali =
-    country === "" || country === "iran" || country === "ایران";
+  const useJalali = country === "" || country === "iran" || country === "ایران";
 
-  const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  const weekdayFormatter = new Intl.DateTimeFormat("fa-IR", { weekday: "long" });
-  const clockFormatter = new Intl.DateTimeFormat("fa-IR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const timeFormatter = dateFormats.full;
+  const weekdayFormatter = dateFormats.weekday;
+  const clockFormatter = dateFormats.clock;
 
   // One weekly choice creates a slot per week, which listed individually
   // buries the page in near-identical rows. Group them back into the series

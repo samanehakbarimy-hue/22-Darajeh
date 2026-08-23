@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
+import { dateFormats } from "@/lib/persian";
 
 export default async function SpecialistPage({
   params,
@@ -55,17 +56,8 @@ export default async function SpecialistPage({
   const tags = specialist.expertise_tags ?? [];
   const held = heldCount ?? 0;
 
-  const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  const monthFormatter = new Intl.DateTimeFormat("fa-IR", {
-    month: "long",
-    year: "numeric",
-  });
+  const timeFormatter = dateFormats.full;
+  const monthFormatter = dateFormats.monthYear;
 
   return (
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
@@ -169,7 +161,9 @@ export default async function SpecialistPage({
                 <div className="font-bold">
                   {held.toLocaleString("fa-IR")} جلسه
                 </div>
-                <div className="mt-0.5 text-xs text-muted">تا حالا برگزار کرده</div>
+                <div className="mt-0.5 text-xs text-muted">
+                  تا حالا برگزار کرده
+                </div>
               </div>
             )}
           </div>

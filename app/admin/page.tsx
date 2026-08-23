@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { approveMentor, rejectMentor } from "@/lib/actions/admin";
 import Avatar from "@/components/Avatar";
+import { dateFormats } from "@/lib/persian";
 
 type Member = {
   id: string;
@@ -70,11 +71,7 @@ export default async function AdminPage() {
     .select("id", { count: "exact", head: true });
 
   const mentors = members.filter((m) => m.role === "mentor");
-  const dateFormatter = new Intl.DateTimeFormat("fa-IR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const dateFormatter = dateFormats.fullDate;
 
   return (
     <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
@@ -207,7 +204,9 @@ export default async function AdminPage() {
                       {ROLE_LABEL[member.role]}
                     </td>
                     <td className="px-4 py-3 text-muted">
-                      {member.status ? (STATUS_LABEL[member.status] ?? member.status) : "—"}
+                      {member.status
+                        ? (STATUS_LABEL[member.status] ?? member.status)
+                        : "—"}
                     </td>
                     <td className="px-4 py-3 text-muted">
                       {dateFormatter.format(new Date(member.created_at))}

@@ -73,7 +73,9 @@ export default function BookingForm({
       </div>
 
       <div>
-        <span className="mb-3 block text-sm font-medium">یک زمان انتخاب کن</span>
+        <span className="mb-3 block text-sm font-medium">
+          یک زمان انتخاب کن
+        </span>
 
         {slots.length === 0 ? (
           <p className="text-sm text-muted">

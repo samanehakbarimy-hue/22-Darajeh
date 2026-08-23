@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
 import RequestMessage from "../request-message";
+import { dateFormats } from "@/lib/persian";
 
 // Each status carries a mark as well as a colour. Simulated against
 // deuteranopia the green and red chips land at a 1.10 luminance ratio — all
@@ -67,17 +68,8 @@ export default async function MyRequestsPage() {
     (links ?? []).map((l) => [l.id, l.meeting_link] as const),
   );
 
-  const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  const sentFormatter = new Intl.DateTimeFormat("fa-IR", {
-    month: "long",
-    day: "numeric",
-  });
+  const timeFormatter = dateFormats.full;
+  const sentFormatter = dateFormats.shortDay;
 
   return (
     <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">

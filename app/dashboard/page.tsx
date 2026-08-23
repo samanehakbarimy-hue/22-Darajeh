@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import RequestMessage from "./request-message";
+import { dateFormats } from "@/lib/persian";
 
 export default async function DashboardPage({
   searchParams,
@@ -32,13 +33,7 @@ export default async function DashboardPage({
         ? "ادمین"
         : "متقاضی";
 
-  const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const timeFormatter = dateFormats.full;
 
   let mentorStatus: string | null = null;
   let mentorBookings: {
@@ -144,7 +139,9 @@ export default async function DashboardPage({
           : "هنوز پروفایل متخصص‌ت رو تکمیل نکردی";
 
   const pendingRequests = mentorBookings.filter((b) => b.status === "pending");
-  const upcomingSessions = mentorBookings.filter((b) => b.status === "confirmed");
+  const upcomingSessions = mentorBookings.filter(
+    (b) => b.status === "confirmed",
+  );
 
   return (
     <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
@@ -233,7 +230,6 @@ export default async function DashboardPage({
           </div>
         </section>
       )}
-
 
       {/* Shown whenever there is something to show, whatever the role. */}
       {(profile?.role === "seeker" || seekerBookings.length > 0) && (
@@ -333,7 +329,10 @@ export default async function DashboardPage({
 
       {/* Account actions are housekeeping, so they sit quietly at the end. */}
       <div className="mt-12 flex items-center gap-4 border-t border-card-border pt-6 text-sm">
-        <Link href="/dashboard/account" className="text-muted hover:text-foreground">
+        <Link
+          href="/dashboard/account"
+          className="text-muted hover:text-foreground"
+        >
           تنظیمات حساب
         </Link>
         <form action={logout}>

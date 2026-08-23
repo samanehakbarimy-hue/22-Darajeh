@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { acceptBooking, declineBooking } from "@/lib/actions/booking-response";
 import SubmitButton from "@/components/SubmitButton";
+import { dateFormats } from "@/lib/persian";
 
 export default async function MySessionsPage() {
   const supabase = await createClient();
@@ -63,13 +64,7 @@ export default async function MySessionsPage() {
     ["declined", "cancelled"].includes(b.status),
   );
 
-  const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const timeFormatter = dateFormats.full;
 
   return (
     <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">

@@ -55,8 +55,8 @@ export default async function AccountPage({
         ) : (
           <>
             <p className="text-sm text-muted">
-              با وصل کردن لینکدین، عکس و اسمت خودکار از اونجا میاد — لازم
-              نیست دستی پر کنی.
+              با وصل کردن لینکدین، عکس و اسمت خودکار از اونجا میاد — لازم نیست
+              دستی پر کنی.
             </p>
             <form action={linkLinkedIn} className="mt-3">
               <button

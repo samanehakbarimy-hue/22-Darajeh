@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { tehranWallTimeToInstant, addDays } from "@/lib/persian";
 
 export type AvailabilityState =
-  | { error?: string; added?: number; skipped?: number }
-  | undefined;
+  { error?: string; added?: number; skipped?: number } | undefined;
 
 const SESSION_MINUTES = 22;
 // "هر هفته" in the form means the next three months.
@@ -45,16 +45,18 @@ export async function addAvailabilitySlots(
     MAX_REPEAT_WEEKS,
   );
 
-  const rows: { mentor_id: string; start_time: string; end_time: string }[] = [];
+  const rows: { mentor_id: string; start_time: string; end_time: string }[] =
+    [];
   let skipped = 0;
 
   for (let week = 0; week < repeatWeeks; week++) {
     for (const time of times) {
-      const startTime = new Date(`${date}T${time}:00`);
-      if (Number.isNaN(startTime.getTime())) {
+      // The repeat advances the calendar date, not the instant: adding
+      // 7*24h would drift if the offset ever changed between the two dates.
+      const startTime = tehranWallTimeToInstant(addDays(date, week * 7), time);
+      if (!startTime) {
         return { error: "تاریخ یا ساعت نامعتبر است." };
       }
-      startTime.setDate(startTime.getDate() + week * 7);
 
       // A repeat that reaches into the past is skipped rather than failing the
       // whole batch, so one stale time can't discard the rest.
