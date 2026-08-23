@@ -36,6 +36,8 @@ export default async function DashboardPage({
   const timeFormatter = dateFormats.full;
 
   let mentorStatus: string | null = null;
+  let hasFutureSlots = false;
+  let hasMeetingRoute = false;
   let mentorBookings: {
     id: string;
     message: string;
@@ -51,6 +53,27 @@ export default async function DashboardPage({
       .eq("id", user.id)
       .maybeSingle();
     mentorStatus = mentorProfile?.status ?? null;
+
+    // Everything the checklist reports on. Small counts, not rows.
+    const [slots, google, link] = await Promise.all([
+      supabase
+        .from("availability_slots")
+        .select("id", { count: "exact", head: true })
+        .eq("mentor_id", user.id)
+        .gt("start_time", new Date().toISOString()),
+      supabase
+        .from("mentor_google_connected")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("mentor_meeting_links")
+        .select("meeting_link")
+        .eq("id", user.id)
+        .maybeSingle(),
+    ]);
+    hasFutureSlots = (slots.count ?? 0) > 0;
+    hasMeetingRoute = Boolean(google.data || link.data?.meeting_link);
 
     // Opening the dashboard is reading the requests, so the people who sent
     // them can see they landed — and can no longer quietly reword them.
@@ -209,6 +232,71 @@ export default async function DashboardPage({
           )}
         </div>
       </div>
+
+      {/* A specialist waiting for approval has no idea whether to sit still
+          or keep going. This says which, and shows the work that can be done
+          meanwhile — so the wait is useful instead of dead. */}
+      {profile?.role === "mentor" && mentorStatus !== "approved" && (
+        <section className="mt-6 rounded-2xl border border-card-border bg-card p-5">
+          <h2 className="font-bold">قدم بعدی</h2>
+          <p className="mt-2 text-sm leading-7 text-muted">
+            {!mentorStatus
+              ? "اول پروفایلت را کامل کن. تا وقتی نفرستی، چیزی برای بررسی وجود ندارد."
+              : mentorStatus === "changes_requested"
+                ? "ادمین چیزی خواسته که اصلاح کنی — توضیحش بالای صفحه پروفایلت نوشته شده. بعد از ذخیره، دوباره خودکار برای بررسی می‌رود."
+                : mentorStatus === "rejected"
+                  ? "پروفایلت تأیید نشد. اگر فکر می‌کنی اشتباهی شده، از صفحه تماس با ما بنویس."
+                  : "پروفایلت فرستاده شد و در نوبت بررسی است. تا آن موقع می‌تونی بقیه کارها را جلو ببری تا بعد از تأیید آماده باشی."}
+          </p>
+
+          <ul className="mt-4 flex flex-col gap-2 text-sm">
+            {[
+              {
+                done: Boolean(mentorStatus),
+                label: "پروفایلت را کامل کن",
+                href: "/dashboard/mentor/profile",
+              },
+              {
+                done: hasMeetingRoute,
+                label: "حساب گوگل را وصل کن یا یک لینک جلسه بگذار",
+                href: "/dashboard/mentor/profile",
+              },
+              {
+                done: hasFutureSlots,
+                label: "زمان‌های آزادت را اضافه کن",
+                href: "/dashboard/mentor/availability",
+              },
+              {
+                done: mentorStatus === "approved",
+                label: "تأیید ادمین",
+                href: null,
+              },
+            ].map((step) => (
+              <li key={step.label} className="flex items-center gap-2">
+                <span
+                  aria-hidden
+                  className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs ${
+                    step.done
+                      ? "bg-success-light text-success"
+                      : "border border-card-border text-muted"
+                  }`}
+                >
+                  {step.done ? "✓" : "•"}
+                </span>
+                {step.href && !step.done ? (
+                  <Link href={step.href} className="text-brand hover:underline">
+                    {step.label}
+                  </Link>
+                ) : (
+                  <span className={step.done ? "text-muted" : ""}>
+                    {step.label}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {profile?.role === "mentor" && (
         <section className="mt-8">
