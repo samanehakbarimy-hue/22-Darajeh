@@ -10,6 +10,7 @@ import {
 import { seniorityBadge } from "@/lib/seniority";
 import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
+import SendBackForReview from "@/components/SendBackForReview";
 
 type Member = {
   id: string;
@@ -269,6 +270,13 @@ export default async function AdminPage() {
                         : "—"}
                       {/* A rejection has to be undoable: it is one click
                           away from approval and asks nothing first. */}
+                      {member.role === "mentor" &&
+                        member.status === "approved" && (
+                          <SendBackForReview
+                            mentorId={member.id}
+                            name={member.full_name}
+                          />
+                        )}
                       {(member.status === "rejected" ||
                         member.status === "changes_requested") && (
                         <form action={reopenMentorReview} className="mt-1">
