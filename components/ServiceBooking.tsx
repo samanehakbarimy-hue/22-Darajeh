@@ -58,11 +58,14 @@ export default function ServiceBooking({
   hasSlots,
   nearestSlotLabel,
   services,
+  usdRate,
 }: {
   specialistId: string;
   hasSlots: boolean;
   nearestSlotLabel: string | null;
   services: MentorService[];
+  /** Toman per dollar, or null when the live rate was unavailable. */
+  usdRate: number | null;
 }) {
   const [active, setActive] = useState<ServiceType>("free_call");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -172,7 +175,7 @@ export default function ServiceBooking({
                   title={service.title}
                   description={service.description}
                   meta={formatDuration(service)}
-                  price={formatServicePrice(service)}
+                  price={formatServicePrice(service, usdRate)}
                   action={
                     // Inert until there is a way to take payment. A live
                     // button would collect money nobody can receive.

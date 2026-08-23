@@ -1,29 +1,11 @@
 /**
- * Money reference. The one file to edit when rates move.
+ * Money reference. The one file that decides how an amount is written.
  *
- * Everything the product suggests about price is derived from the two numbers
- * below, so nothing else in the codebase contains an amount. In an economy
- * where the rial moves faster than a release cycle, any figure written into a
- * component is wrong within months and nobody remembers where it was.
- *
- * ── Updating ──────────────────────────────────────────────────────────────
- * USD_TO_TOMAN is the one that goes stale. Change it, and every suggested
- * band across the site moves with it — no other file needs touching.
- * Update RATE_CHECKED at the same time so the next person can see how old the
- * number is.
+ * The exchange rate is NOT here — it moves weekly and sometimes daily, so it
+ * is fetched live in lib/exchange-rate.ts and passed in. Every formatter below
+ * takes it as an argument and treats null as "no rate available", falling back
+ * to Toman alone rather than inventing a dollar figure.
  */
-
-/**
- * The market rate, Toman per US dollar.
- *
- * Deliberately null: I have no reliable source for it, and a wrong exchange
- * rate is worse than none — it would quietly misprice every service on the
- * site while looking authoritative. Set it and the dollar figures appear.
- */
-export const USD_TO_TOMAN: number | null = null;
-
-/** When USD_TO_TOMAN was last checked against reality. ISO date. */
-export const RATE_CHECKED = "not set";
 
 /**
  * What one hour of a mid-level specialist's time is worth, in Toman.
@@ -31,16 +13,15 @@ export const RATE_CHECKED = "not set";
  * Seniority and duration scale this — see lib/seniority.ts. Set by the
  * founder, who knows the market; it is not derived from anything.
  *
- * Once USD_TO_TOMAN is set, consider moving the anchor here to dollars: a
- * dollar figure holds its meaning across a devaluation, so only the exchange
- * rate would ever need editing.
+ * This one is safe to hardcode because it is a judgement, not an observation:
+ * it changes when the business decides it should, not when the market moves.
+ * The exchange rate then carries it into dollars.
  */
 export const BASE_HOURLY_TOMAN: number | null = 1_000_000;
 
-/** Toman converted to dollars, or null while there is no rate to use. */
-export function tomanToUsd(toman: number): number | null {
-  if (USD_TO_TOMAN === null || USD_TO_TOMAN <= 0) return null;
-  return toman / USD_TO_TOMAN;
+export function tomanToUsd(toman: number, rate: number | null): number | null {
+  if (rate === null || rate <= 0) return null;
+  return toman / rate;
 }
 
 function faToman(toman: number): string {
@@ -48,30 +29,35 @@ function faToman(toman: number): string {
 }
 
 function faUsd(usd: number): string {
-  // Whole dollars below ten look falsely precise at one decimal; above it,
-  // decimals are noise.
+  // Below ten, whole dollars are too coarse and one decimal is false
+  // precision; halves read naturally. Above it, decimals are noise.
   const rounded = usd < 10 ? Math.round(usd * 2) / 2 : Math.round(usd);
   return `${rounded.toLocaleString("fa-IR")} دلار`;
 }
 
 /**
- * "۱۰ دلار (۱٬۰۰۰٬۰۰۰ تومان)" — dollars lead because they are the figure that
- * still means something next year; Toman follows because it is what people
- * actually pay in. Falls back to Toman alone until a rate is set.
+ * "۵ دلار (۱٬۰۰۰٬۰۰۰ تومان)" — dollars lead because that figure still means
+ * something after a devaluation; Toman follows because it is what people
+ * actually pay in. Toman alone when there is no rate.
  */
-export function formatMoney(toman: number): string {
-  const usd = tomanToUsd(toman);
+export function formatMoney(toman: number, rate: number | null): string {
+  const usd = tomanToUsd(toman, rate);
   if (usd === null) return faToman(toman);
   return `${faUsd(usd)} (${faToman(toman)})`;
 }
 
-/** The same, for a range: "۱۰ تا ۱۸ دلار (۱٬۰۰۰٬۰۰۰ تا ۱٬۸۰۰٬۰۰۰ تومان)". */
-export function formatMoneyRange(low: number, high: number): string {
-  const lowUsd = tomanToUsd(low);
-  const highUsd = tomanToUsd(high);
-  const toman = `${Math.round(low).toLocaleString("fa-IR")} تا ${faToman(high)}`;
-  if (lowUsd === null || highUsd === null) return toman;
-  return `${lowUsd.toLocaleString("fa-IR", { maximumFractionDigits: 0 })} تا ${faUsd(
-    highUsd,
-  )} (${toman})`;
+/** The same for a range, with the currency named once at each end. */
+export function formatMoneyRange(
+  low: number,
+  high: number,
+  rate: number | null,
+): string {
+  const lowUsd = tomanToUsd(low, rate);
+  const highUsd = tomanToUsd(high, rate);
+  const tomanPart = `${Math.round(low).toLocaleString("fa-IR")} تا ${faToman(high)}`;
+  if (lowUsd === null || highUsd === null) return tomanPart;
+
+  const lowLabel = (lowUsd < 10 ? Math.round(lowUsd * 2) / 2 : Math.round(lowUsd))
+    .toLocaleString("fa-IR");
+  return `${lowLabel} تا ${faUsd(highUsd)} (${tomanPart})`;
 }

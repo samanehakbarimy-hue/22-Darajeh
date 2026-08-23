@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ServicesEditor from "./services-editor";
 import type { MentorService } from "@/lib/services";
+import { getUsdToToman } from "@/lib/exchange-rate";
 
 export default async function MentorServicesPage() {
   const supabase = await createClient();
@@ -22,6 +23,8 @@ export default async function MentorServicesPage() {
   if (profile?.role !== "mentor") {
     redirect("/dashboard");
   }
+
+  const usdRate = await getUsdToToman();
 
   const { data: mentorProfile } = await supabase
     .from("mentor_profiles")
@@ -52,6 +55,7 @@ export default async function MentorServicesPage() {
 
       <ServicesEditor
         seniority={mentorProfile?.seniority ?? null}
+        usdRate={usdRate}
         services={(data ?? []) as MentorService[]}
         tableMissing={tableMissing}
       />

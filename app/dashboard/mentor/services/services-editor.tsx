@@ -51,10 +51,13 @@ export default function ServicesEditor({
   services,
   tableMissing,
   seniority,
+  usdRate,
 }: {
   services: MentorService[];
   tableMissing: boolean;
   seniority: string | null;
+  /** Toman per dollar, or null when the live rate was unavailable. */
+  usdRate: number | null;
 }) {
   const [saveState, saveAction] = useActionState(saveService, undefined);
   const [deleteState, deleteAction] = useActionState(deleteService, undefined);
@@ -124,7 +127,7 @@ export default function ServicesEditor({
                     <p className="mt-2 text-xs text-muted">
                       {formatDuration(service)} —{" "}
                       <span className="font-bold text-foreground">
-                        {formatServicePrice(service)}
+                        {formatServicePrice(service, usdRate)}
                       </span>
                     </p>
                   </div>
@@ -294,7 +297,7 @@ export default function ServicesEditor({
               {suggestion && (
                 <span className="text-xs leading-6 text-brand">
                   پیشنهاد ۲۲ درجه برای این مدت و تجربه‌ات:{" "}
-                  {formatRange(suggestion)}
+                  {formatRange(suggestion, usdRate)}
                 </span>
               )}
               <span className="text-xs leading-6 text-muted">

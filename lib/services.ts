@@ -99,9 +99,9 @@ export const TEMPLATES: {
 ];
 
 /** Currency display lives in lib/rates.ts, so amounts appear one way. */
-export function formatPrice(price: number | null): string {
+export function formatPrice(price: number | null, rate: number | null): string {
   if (price === null) return "به‌زودی";
-  return formatMoney(price);
+  return formatMoney(price, rate);
 }
 
 /** "۴۵ دقیقه" for a session, "حداقل ۳ ساعت" for project work. */
@@ -113,8 +113,11 @@ export function formatDuration(service: MentorService): string {
 }
 
 /** Hourly work is priced per hour, and the label has to say so. */
-export function formatServicePrice(service: MentorService): string {
+export function formatServicePrice(
+  service: MentorService,
+  rate: number | null,
+): string {
   if (service.price_toman === null) return "به‌زودی";
-  const amount = formatPrice(service.price_toman);
+  const amount = formatPrice(service.price_toman, rate);
   return service.kind === "hourly_project" ? `${amount} در ساعت` : amount;
 }

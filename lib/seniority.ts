@@ -65,6 +65,9 @@ export function suggestedRange(
 }
 
 /** Delegates, so currency and exchange rate stay in one file. */
-export function formatRange(range: { low: number; high: number }): string {
-  return formatMoneyRange(range.low, range.high);
+export function formatRange(
+  range: { low: number; high: number },
+  rate: number | null,
+): string {
+  return formatMoneyRange(range.low, range.high, rate);
 }

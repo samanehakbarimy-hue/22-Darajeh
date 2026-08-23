@@ -6,6 +6,7 @@ import { dateFormats } from "@/lib/persian";
 import ServiceBooking from "@/components/ServiceBooking";
 import type { MentorService } from "@/lib/services";
 import { seniorityBadge } from "@/lib/seniority";
+import { getUsdToToman } from "@/lib/exchange-rate";
 
 export default async function SpecialistPage({
   params,
@@ -70,6 +71,10 @@ export default async function SpecialistPage({
     .eq("is_active", true)
     .order("sort_order")
     .order("created_at");
+
+  // Fetched here, not in the client component: it is a network call, and
+  // Next caches it for six hours across every render.
+  const usdRate = await getUsdToToman();
 
   const timeFormatter = dateFormats.full;
   const monthFormatter = dateFormats.monthYear;
@@ -197,6 +202,7 @@ export default async function SpecialistPage({
             // Formatted here rather than in the client component: the server
             // pins Tehran, and a device in another zone would print its own.
             services={(serviceRows ?? []) as MentorService[]}
+            usdRate={usdRate}
             nearestSlotLabel={
               nextSlot ? timeFormatter.format(new Date(nextSlot)) : null
             }
