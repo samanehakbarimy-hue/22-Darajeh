@@ -92,6 +92,13 @@ export async function notifyDeclined(bookingId: string): Promise<void> {
   const p = await partiesFor(bookingId);
   if (!p) return;
 
+  // A request left unanswered until its time passed can still be cleared off
+  // the specialist's list, and that goes through the same decline path. The
+  // seeker has already watched it expire and been told so; posting them a
+  // rejection days afterwards is both stale and not quite true.
+  const ended = new Date(p.ends_at ?? p.starts_at).getTime();
+  if (ended < Date.now()) return;
+
   await sendEmail({
     to: p.seeker_email,
     subject: "درخواستت این بار جور نشد",

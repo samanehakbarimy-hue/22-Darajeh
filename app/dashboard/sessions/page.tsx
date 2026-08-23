@@ -286,7 +286,7 @@ export default async function MySessionsPage() {
                     <input type="hidden" name="booking_id" value={b.id} />
                     <SubmitButton
                       variant="outline"
-                      pendingLabel="..."
+                      pendingLabel="در حال بستن..."
                       className="px-5 py-2 text-sm font-medium"
                     >
                       بستن
