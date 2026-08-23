@@ -144,9 +144,17 @@ export default async function MySessionsPage() {
               ? "یک جلسه قبول‌شده داری که هیچ لینکی ندارد و کسی نمی‌تواند به آن بیاید."
               : "جلسه‌های فعلی‌ات لینک دارند. اگر یک لینک ثابت هم بگذاری، هر وقت ساختن لینک خودکار به مشکل خورد، همان استفاده می‌شود."}
           </p>
+          {/* Solid brand red is for the case where a session really has
+              nowhere to go. When every session already has a link this is a
+              suggestion, and dressing a suggestion as an alarm teaches people
+              to ignore the alarm. */}
           <Link
             href="/dashboard/mentor/profile"
-            className="mt-4 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+            className={`mt-4 inline-block rounded-full px-5 py-2.5 text-sm ${
+              stranded.length > 0
+                ? "bg-brand font-semibold text-background hover:bg-brand-hover"
+                : "border border-card-border font-medium text-muted hover:border-brand hover:text-brand"
+            }`}
           >
             افزودن لینک جلسه
           </Link>

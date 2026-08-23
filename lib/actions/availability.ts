@@ -128,13 +128,3 @@ export async function deleteAvailabilitySlots(formData: FormData) {
 
   revalidatePath("/dashboard/mentor/availability");
 }
-
-export async function deleteAvailabilitySlot(formData: FormData) {
-  const slotId = String(formData.get("slot_id") ?? "");
-  if (!slotId) return;
-
-  const supabase = await createClient();
-  await supabase.from("availability_slots").delete().eq("id", slotId);
-
-  revalidatePath("/dashboard/mentor/availability");
-}
