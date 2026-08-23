@@ -27,9 +27,13 @@ function CardGrid({ rows }: { rows: Row[] }) {
       {rows.map((row) => {
         const profile = nameOf(row);
         return (
+          // Capped, and stepped rather than jumping straight from a quarter
+          // to a half. Without the cap a lone specialist stretched to fill the
+          // row: below lg the card doubled to ~434px and blew a small photo up
+          // past four times its size, which read as the picture changing.
           <div
             key={row.id}
-            className="w-[calc(50%-10px)] lg:w-[calc(25%-15px)]"
+            className="w-[calc(50%-10px)] max-w-[260px] md:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)]"
           >
             <SpecialistCard
               specialist={{
