@@ -7,12 +7,14 @@ import {
   TABS,
   formatDuration,
   formatServicePrice,
+  serviceDescription,
+  serviceTitle,
   type MentorService,
-  type ServiceType,
+  type ServiceTab,
 } from "@/lib/services";
 import { fa } from "@/lib/persian";
 
-/** One service, laid out the same whether it is sold by session or by hour. */
+/** One offer: what it is on the right, what it costs on the left. */
 function ServiceRow({
   title,
   description,
@@ -27,21 +29,20 @@ function ServiceRow({
   action: React.ReactNode;
 }) {
   return (
-    <li className="rounded-xl border border-card-border p-4">
-      <div className="flex items-start justify-between gap-3">
+    <li className="border-b border-card-border py-4 last:border-0">
+      <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h4 className="font-bold">{title}</h4>
           {description && (
             <p className="mt-1 text-sm leading-6 text-muted">{description}</p>
           )}
         </div>
-        {action}
+        <div className="shrink-0 text-left">
+          <div className="text-xs text-muted">{meta}</div>
+          <div className="mt-0.5 text-sm font-bold">{price}</div>
+        </div>
       </div>
-      <div className="mt-3 flex items-center gap-2 border-t border-card-border pt-3 text-xs text-muted">
-        <span>{meta}</span>
-        <span aria-hidden>•</span>
-        <span className="font-bold text-foreground">{price}</span>
-      </div>
+      {action && <div className="mt-3">{action}</div>}
     </li>
   );
 }
@@ -49,9 +50,9 @@ function ServiceRow({
 /**
  * Everything a specialist offers, in one card.
  *
- * The free call is live. Paid services come from the specialist's own rows;
- * a price they have not set shows as به‌زودی and its button stays inert,
- * because there is nowhere for the money to go yet.
+ * Sessions have fixed lengths from the catalogue, so a price here means the
+ * same thing as the same price on another profile. Project work is priced by
+ * the hour, on terms the specialist wrote.
  */
 export default function ServiceBooking({
   specialistId,
@@ -67,7 +68,7 @@ export default function ServiceBooking({
   /** Toman per dollar, or null when the live rate was unavailable. */
   usdRate: number | null;
 }) {
-  const [active, setActive] = useState<ServiceType>("free_call");
+  const [active, setActive] = useState<ServiceTab>("sessions");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Arrow keys move between tabs, which is how a tablist is expected to
@@ -78,42 +79,51 @@ export default function ServiceBooking({
     if (!delta) return;
     event.preventDefault();
     const next = (index + delta + TABS.length) % TABS.length;
-    setActive(TABS[next].type);
+    setActive(TABS[next].tab);
     tabRefs.current[next]?.focus();
   }
 
-  const paid =
-    active === "free_call"
-      ? []
-      : services.filter((service) => service.kind === active);
+  const sessions = services.filter((s) => s.kind === "consultation");
+  const projects = services.filter((s) => s.kind === "hourly_project");
+
+  const inertCta = (label: string) => (
+    // Inert until there is a way to take payment. A live button would collect
+    // money nobody can receive.
+    <span
+      className="inline-block cursor-not-allowed rounded-full border border-card-border px-4 py-2 text-xs text-muted"
+      aria-disabled
+    >
+      {label}
+    </span>
+  );
 
   return (
     <div className="rounded-2xl border border-card-border bg-card p-5">
       <div
         role="tablist"
         aria-label="راه‌های کار با این متخصص"
-        className="flex gap-1 rounded-full border border-card-border p-1"
+        className="flex border-b border-card-border"
       >
         {TABS.map((tab, index) => {
-          const selected = tab.type === active;
+          const selected = tab.tab === active;
           return (
             <button
-              key={tab.type}
+              key={tab.tab}
               ref={(el) => {
                 tabRefs.current[index] = el;
               }}
               role="tab"
               type="button"
-              id={`tab-${tab.type}`}
+              id={`tab-${tab.tab}`}
               aria-selected={selected}
-              aria-controls={`panel-${tab.type}`}
+              aria-controls={`panel-${tab.tab}`}
               tabIndex={selected ? 0 : -1}
-              onClick={() => setActive(tab.type)}
+              onClick={() => setActive(tab.tab)}
               onKeyDown={(event) => onKeyDown(event, index)}
-              className={`flex-1 whitespace-nowrap rounded-full px-2 py-2 text-xs font-medium transition sm:text-sm ${
+              className={`flex-1 whitespace-nowrap border-b-2 px-2 pb-3 text-sm font-medium transition ${
                 selected
-                  ? "bg-brand text-background"
-                  : "text-muted hover:text-foreground"
+                  ? "border-brand text-foreground"
+                  : "border-transparent text-muted hover:text-foreground"
               }`}
             >
               {tab.label}
@@ -126,11 +136,12 @@ export default function ServiceBooking({
         role="tabpanel"
         id={`panel-${active}`}
         aria-labelledby={`tab-${active}`}
-        className="mt-5"
       >
-        {active === "free_call" ? (
+        {active === "sessions" ? (
           <>
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col">
+              {/* The free call leads: it is how most people start, and it is
+                  the only thing on this card anyone can actually book. */}
               <ServiceRow
                 title={FREE_CALL.title}
                 description={FREE_CALL.description}
@@ -140,63 +151,63 @@ export default function ServiceBooking({
                   hasSlots ? (
                     <Link
                       href={`/specialists/${specialistId}/book`}
-                      className="shrink-0 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-hover"
+                      className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-hover"
                     >
-                      رزرو
+                      رزرو جلسه
                     </Link>
                   ) : (
-                    <span className="shrink-0 rounded-full border border-card-border px-4 py-2.5 text-xs text-muted">
+                    <span className="inline-block rounded-full border border-card-border px-4 py-2 text-xs text-muted">
                       زمان آزاد نیست
                     </span>
                   )
                 }
               />
-            </ul>
 
-            {nearestSlotLabel && (
-              <p className="mt-3 text-xs text-muted">
-                نزدیک‌ترین زمان: {nearestSlotLabel}
-              </p>
-            )}
-          </>
-        ) : paid.length === 0 ? (
-          <p className="rounded-xl border border-card-border bg-background p-4 text-sm leading-7 text-muted">
-            این متخصص هنوز{" "}
-            {active === "consultation" ? "جلسه مشاوره‌ای" : "همکاری پروژه‌ای"}{" "}
-            اضافه نکرده. می‌تونی تماس رایگان ۲۲ دقیقه‌ای را رزرو کنی و نیازت را
-            با او در میان بگذاری.
-          </p>
-        ) : (
-          <>
-            <ul className="flex flex-col gap-3">
-              {paid.map((service) => (
+              {sessions.map((service) => (
                 <ServiceRow
                   key={service.id}
-                  title={service.title}
-                  description={service.description}
+                  title={serviceTitle(service)}
+                  description={serviceDescription(service)}
                   meta={formatDuration(service)}
                   price={formatServicePrice(service, usdRate)}
-                  action={
-                    // Inert until there is a way to take payment. A live
-                    // button would collect money nobody can receive.
-                    <span
-                      className="shrink-0 cursor-not-allowed rounded-full border border-card-border px-4 py-2.5 text-xs text-muted"
-                      aria-disabled
-                    >
-                      {service.kind === "consultation"
-                        ? "رزرو"
-                        : "درخواست همکاری"}
-                    </span>
-                  }
+                  action={inertCta("رزرو")}
                 />
               ))}
             </ul>
 
-            <p className="mt-4 rounded-xl border border-card-border bg-background p-3 text-xs leading-6 text-muted">
-              پرداخت آنلاین هنوز فعال نیست. فعلاً تماس رایگان را رزرو کن و
-              درباره این خدمت با متخصص حرف بزن.
-            </p>
+            {nearestSlotLabel && (
+              <p className="mt-4 rounded-xl border border-card-border bg-background px-4 py-3 text-xs leading-6 text-muted">
+                نزدیک‌ترین زمان: {nearestSlotLabel}
+                <br />
+                (به وقت تهران)
+              </p>
+            )}
           </>
+        ) : projects.length === 0 ? (
+          <p className="py-6 text-sm leading-7 text-muted">
+            این متخصص هنوز همکاری پروژه‌ای اضافه نکرده. می‌تونی تماس رایگان ۲۲
+            دقیقه‌ای را رزرو کنی و نیازت را با او در میان بگذاری.
+          </p>
+        ) : (
+          <ul className="flex flex-col">
+            {projects.map((service) => (
+              <ServiceRow
+                key={service.id}
+                title={serviceTitle(service)}
+                description={serviceDescription(service)}
+                meta={formatDuration(service)}
+                price={formatServicePrice(service, usdRate)}
+                action={inertCta("درخواست همکاری")}
+              />
+            ))}
+          </ul>
+        )}
+
+        {(active === "projects" ? projects : sessions).length > 0 && (
+          <p className="mt-4 text-xs leading-6 text-muted">
+            پرداخت آنلاین هنوز فعال نیست. فعلاً تماس رایگان را رزرو کن و درباره
+            این خدمت با متخصص حرف بزن.
+          </p>
         )}
       </div>
     </div>

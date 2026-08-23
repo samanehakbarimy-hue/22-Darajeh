@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { SESSION_TYPES } from "@/lib/services";
 
 export type ServiceState = { error?: string; success?: boolean } | undefined;
 
@@ -37,21 +38,31 @@ export async function saveService(
   const kind = String(formData.get("kind") ?? "") as Kind;
   if (!KINDS.includes(kind)) return { error: "نوع خدمت نامعتبر است." };
 
-  const title = String(formData.get("title") ?? "").trim();
-  if (!title) return { error: "عنوان خدمت را بنویس." };
-  if (title.length > 80) return { error: "عنوان خیلی بلند است." };
+  // A session is one of the fixed catalogue entries: its title, description
+  // and length come from code, and the specialist sets only a price. Project
+  // work is theirs to describe, so it is validated the old way.
+  const sessionKey = String(formData.get("session_key") ?? "").trim();
 
-  const description = String(formData.get("description") ?? "").trim();
-  if (description.length > 300) return { error: "توضیح خیلی بلند است." };
+  let title = "";
+  let description = "";
+  let minHours: number | null = null;
 
-  const minutes = kind === "consultation" ? toNumber(String(formData.get("minutes") ?? "")) : null;
-  const minHours = kind === "hourly_project" ? toNumber(String(formData.get("min_hours") ?? "")) : null;
+  if (kind === "consultation") {
+    if (!SESSION_TYPES.some((s) => s.key === sessionKey)) {
+      return { error: "این جلسه شناخته نشد." };
+    }
+  } else {
+    title = String(formData.get("title") ?? "").trim();
+    if (!title) return { error: "عنوان را بنویس." };
+    if (title.length > 80) return { error: "عنوان خیلی بلند است." };
 
-  if (kind === "consultation" && (minutes === null || minutes < 5 || minutes > 480)) {
-    return { error: "مدت جلسه را بین ۵ تا ۴۸۰ دقیقه بنویس." };
-  }
-  if (kind === "hourly_project" && (minHours === null || minHours < 1 || minHours > 200)) {
-    return { error: "حداقل ساعت را بین ۱ تا ۲۰۰ بنویس." };
+    description = String(formData.get("description") ?? "").trim();
+    if (description.length > 300) return { error: "توضیح خیلی بلند است." };
+
+    minHours = toNumber(String(formData.get("min_hours") ?? ""));
+    if (minHours === null || minHours < 1 || minHours > 200) {
+      return { error: "حداقل ساعت را بین ۱ تا ۲۰۰ بنویس." };
+    }
   }
 
   // Left blank on purpose means "not priced yet", which the profile shows as
@@ -61,13 +72,14 @@ export async function saveService(
   if (priceRaw && (price === null || price < 0)) {
     return { error: "قیمت را با عدد بنویس." };
   }
-
   const row = {
     mentor_id: user.id,
     kind,
+    session_key: kind === "consultation" ? sessionKey : null,
     title,
     description,
-    minutes,
+    // Length is the catalogue's for a session, and irrelevant to a project.
+    minutes: null,
     min_hours: minHours,
     price_toman: price,
     is_active: formData.get("is_active") !== null,
@@ -76,7 +88,11 @@ export async function saveService(
   // RLS scopes both paths to this specialist, so an id from elsewhere updates
   // nothing rather than someone else's row.
   const { error } = id
-    ? await supabase.from("mentor_services").update(row).eq("id", id).eq("mentor_id", user.id)
+    ? await supabase
+        .from("mentor_services")
+        .update(row)
+        .eq("id", id)
+        .eq("mentor_id", user.id)
     : await supabase.from("mentor_services").insert(row);
 
   if (error) {
