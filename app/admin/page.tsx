@@ -69,7 +69,7 @@ export default async function AdminPage() {
   const { data: pendingMentors } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, bio, expertise_tags, linkedin_url, headline, seniority, profiles(full_name)",
+      "id, bio, expertise_tags, linkedin_url, headline, seniority, profiles(full_name), mentor_meeting_links(meeting_link)",
     )
     .eq("status", "pending")
     .order("created_at", { ascending: true });
@@ -119,6 +119,18 @@ export default async function AdminPage() {
                 )}
                 {/* The claim being checked: does the headline and bio
                     support this much experience? */}
+                {!(
+                  mentor.mentor_meeting_links as unknown as {
+                    meeting_link: string | null;
+                  } | null
+                )?.meeting_link && (
+                  <p className="mt-2 rounded-xl border border-brand/40 bg-brand-light px-3 py-2 text-xs leading-6 text-brand">
+                    لینک جلسه ندارد. تأیید کردن، پروفایلی را منتشر می‌کند که
+                    می‌شود رزروش کرد ولی نمی‌شود دیدش — دکمه تأیید به‌جایش
+                    درخواست اصلاح می‌فرستد.
+                  </p>
+                )}
+
                 {seniorityBadge(mentor.seniority) && (
                   <p className="mt-2 inline-block rounded-full border border-brand/40 bg-brand-light px-3 py-1 text-xs text-brand">
                     ادعای تجربه: {seniorityBadge(mentor.seniority)}

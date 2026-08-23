@@ -24,6 +24,26 @@ async function setMentorStatus(
 export async function approveMentor(formData: FormData) {
   const id = String(formData.get("mentor_id") ?? "");
   if (!id) return;
+
+  // Checked here rather than only in the page, because a hidden button is
+  // not a rule. Approving without a link publishes someone who can be
+  // booked and then cannot be met.
+  const supabase = await createClient();
+  const { data: link } = await supabase
+    .from("mentor_meeting_links")
+    .select("meeting_link")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!link?.meeting_link) {
+    await setMentorStatus(
+      id,
+      "changes_requested",
+      "برای تأیید پروفایل، لینک جلسه آنلاین‌ات را در صفحه پروفایل اضافه کن. بدون آن کسی که وقتت را رزرو می‌کند جایی برای آمدن ندارد.",
+    );
+    return;
+  }
+
   await setMentorStatus(id, "approved");
 }
 

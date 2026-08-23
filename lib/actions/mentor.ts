@@ -38,6 +38,23 @@ export async function saveMentorProfile(
     return { error: "میزان تجربه‌ات را انتخاب کن." };
   }
 
+  // Without this an accepted booking leads nowhere. It is as necessary as
+  // the bio, and it used to be optional — which is exactly how it went
+  // missing on the one approved specialist.
+  if (!meetingLink) {
+    return {
+      error: "لینک جلسه آنلاین را بگذار — بدون آن کسی نمی‌تواند به جلسه بیاید.",
+    };
+  }
+  try {
+    const parsed = new URL(meetingLink);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      return { error: "لینک جلسه باید با https:// شروع شود." };
+    }
+  } catch {
+    return { error: "لینک جلسه معتبر نیست. کامل و با https:// بنویس." };
+  }
+
   const expertiseTags = tagsRaw
     .split(/[,،]/)
     .map((tag) => tag.trim())

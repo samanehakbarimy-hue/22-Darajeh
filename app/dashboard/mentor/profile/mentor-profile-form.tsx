@@ -410,12 +410,14 @@ export default function MentorProfileForm({
             dir="ltr"
             value={meetingLink}
             onChange={(e) => setMeetingLink(e.target.value)}
+            required
             placeholder="https://meet.google.com/..."
             className={`${FIELD_CLASS} text-left`}
           />
           <p className="mt-1.5 text-xs text-muted">
-            لینک ثابت Google Meet، Zoom یا Microsoft Teams. می‌تونی بعداً پرش
-            کنی.
+            یک لینک ثابت Google Meet بساز و همین‌جا بگذار — رایگان است و چند
+            ثانیه طول می‌کشد. بدون این لینک، کسی که وقتش را رزرو کرده جایی
+            برای آمدن ندارد، و پروفایل بدون آن تأیید نمی‌شود.
           </p>
         </div>
       </Section>
