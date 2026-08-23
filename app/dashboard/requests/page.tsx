@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
 import RequestMessage from "../request-message";
-import { dateFormats } from "@/lib/persian";
+import { dateFormats, sessionTiming } from "@/lib/persian";
 
 // Each status carries a mark as well as a colour. Simulated against
 // deuteranopia the green and red chips land at a 1.10 luminance ratio — all
@@ -48,7 +48,7 @@ export default async function MyRequestsPage() {
   const { data: bookings } = await supabase
     .from("bookings")
     .select(
-      "id, mentor_id, status, message, seen_at, edited_at, created_at, meeting_link, availability_slots(start_time), mentor_profiles(headline, profiles(full_name, photo_url))",
+      "id, mentor_id, status, message, seen_at, edited_at, created_at, meeting_link, availability_slots(start_time, end_time), mentor_profiles(headline, profiles(full_name, photo_url))",
     )
     .eq("seeker_id", user.id)
     .order("created_at", { ascending: false });
@@ -97,6 +97,7 @@ export default async function MyRequestsPage() {
             } | null;
             const slot = b.availability_slots as unknown as {
               start_time: string;
+              end_time: string | null;
             } | null;
             const name = mentor?.profiles?.full_name ?? "";
             const status =
@@ -161,7 +162,18 @@ export default async function MyRequestsPage() {
                   edited={!!b.edited_at}
                 />
 
-                {b.status === "confirmed" && (
+                {b.status === "confirmed" &&
+                  slot &&
+                  sessionTiming(slot.start_time, slot.end_time) === "past" && (
+                    <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
+                      این جلسه برگزار شد.
+                    </p>
+                  )}
+
+                {b.status === "confirmed" &&
+                  (!slot ||
+                    sessionTiming(slot.start_time, slot.end_time) !==
+                      "past") && (
                   <div className="mt-4 border-t border-card-border pt-4">
                     {meetingLink ? (
                       <a

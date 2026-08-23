@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import RequestMessage from "./request-message";
-import { dateFormats } from "@/lib/persian";
+import { dateFormats, sessionTiming } from "@/lib/persian";
 
 export default async function DashboardPage({
   searchParams,
@@ -42,7 +42,7 @@ export default async function DashboardPage({
     id: string;
     message: string;
     status: string;
-    slot: { start_time: string } | null;
+    slot: { start_time: string; end_time: string | null } | null;
     seeker: { full_name: string } | null;
   }[] = [];
 
@@ -82,7 +82,7 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, message, status, edited_at, availability_slots(start_time), profiles!bookings_seeker_id_fkey(full_name)",
+        "id, message, status, edited_at, availability_slots(start_time, end_time), profiles!bookings_seeker_id_fkey(full_name)",
       )
       .eq("mentor_id", user.id)
       .in("status", ["pending", "confirmed"])
@@ -92,14 +92,17 @@ export default async function DashboardPage({
       id: b.id,
       message: b.message,
       status: b.status,
-      slot: b.availability_slots as unknown as { start_time: string } | null,
+      slot: b.availability_slots as unknown as {
+        start_time: string;
+        end_time: string | null;
+      } | null,
       seeker: b.profiles as unknown as { full_name: string } | null,
     }));
   }
 
   let seekerBookings: {
     id: string;
-    slot: { start_time: string } | null;
+    slot: { start_time: string; end_time: string | null } | null;
     mentor: { full_name: string } | null;
     status: string;
     message: string;
@@ -114,7 +117,7 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, mentor_id, status, message, seen_at, edited_at, meeting_link, availability_slots(start_time), mentor_profiles(profiles(full_name))",
+        "id, mentor_id, status, message, seen_at, edited_at, meeting_link, availability_slots(start_time, end_time), mentor_profiles(profiles(full_name))",
       )
       .eq("seeker_id", user.id)
       .in("status", ["pending", "confirmed"])
@@ -135,9 +138,22 @@ export default async function DashboardPage({
       (links ?? []).map((l) => [l.id, l.meeting_link] as const),
     );
 
-    seekerBookings = (data ?? []).map((b) => ({
+    seekerBookings = (data ?? [])
+      .filter((b) => {
+        const slot = b.availability_slots as unknown as {
+          start_time: string;
+          end_time: string | null;
+        } | null;
+        return (
+          !slot || sessionTiming(slot.start_time, slot.end_time) !== "past"
+        );
+      })
+      .map((b) => ({
       id: b.id,
-      slot: b.availability_slots as unknown as { start_time: string } | null,
+      slot: b.availability_slots as unknown as {
+        start_time: string;
+        end_time: string | null;
+      } | null,
       mentor:
         (
           b.mentor_profiles as unknown as {
@@ -151,7 +167,7 @@ export default async function DashboardPage({
       // A link made for this booking beats the profile-wide one.
       meetingLink:
         (b.meeting_link as string | null) ?? linkById.get(b.mentor_id) ?? null,
-    }));
+      }));
   }
 
   // Every status a mentor_profiles row can hold needs a label here.
@@ -169,9 +185,17 @@ export default async function DashboardPage({
             ? "در انتظار تأیید ادمین"
             : "هنوز پروفایل متخصص‌ت رو تکمیل نکردی";
 
-  const pendingRequests = mentorBookings.filter((b) => b.status === "pending");
+  // Both counts are of things still to come. Counting sessions that already
+  // happened made the number climb forever and told the specialist nothing
+  // about what they had to do next.
+  const stillAhead = (b: (typeof mentorBookings)[number]) =>
+    !b.slot || sessionTiming(b.slot.start_time, b.slot.end_time) !== "past";
+
+  const pendingRequests = mentorBookings.filter(
+    (b) => b.status === "pending" && stillAhead(b),
+  );
   const upcomingSessions = mentorBookings.filter(
-    (b) => b.status === "confirmed",
+    (b) => b.status === "confirmed" && stillAhead(b),
   );
 
   return (
@@ -327,7 +351,7 @@ export default async function DashboardPage({
               <div className="text-2xl font-bold">
                 {upcomingSessions.length.toLocaleString("fa-IR")}
               </div>
-              <div className="mt-0.5 text-xs text-muted">جلسه قبول‌شده</div>
+              <div className="mt-0.5 text-xs text-muted">جلسه پیش رو</div>
             </Link>
           </div>
         </section>

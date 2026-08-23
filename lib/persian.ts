@@ -148,3 +148,31 @@ export const dateFormats = {
     weekday: "long",
   }),
 } as const;
+
+export type SessionTiming = "upcoming" | "live" | "past";
+
+/**
+ * Where a session sits relative to now.
+ *
+ * Nothing marks a session finished — there is no scheduled job and no
+ * "completed" status — so past and upcoming are told apart by the clock each
+ * time a page renders.
+ *
+ * Keyed on the END of the slot, never the start. A 22-minute call that began
+ * five minutes ago is in progress, and that is exactly when its link matters
+ * most; going by start_time would pull the join button away at the moment the
+ * two of them were trying to meet.
+ */
+export function sessionTiming(
+  startTime: string,
+  endTime: string | null,
+  now: number = Date.now(),
+): SessionTiming {
+  const start = new Date(startTime).getTime();
+  const end = endTime
+    ? new Date(endTime).getTime()
+    : start + 22 * 60 * 1000; // the standard call, when the slot's end is not to hand
+  if (now > end) return "past";
+  if (now >= start) return "live";
+  return "upcoming";
+}

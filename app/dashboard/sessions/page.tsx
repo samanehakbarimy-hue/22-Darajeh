@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { acceptBooking, declineBooking } from "@/lib/actions/booking-response";
 import SubmitButton from "@/components/SubmitButton";
 import ConfirmedSessionLink from "./confirmed-session-link";
-import { dateFormats } from "@/lib/persian";
+import { dateFormats, sessionTiming } from "@/lib/persian";
 
 export default async function MySessionsPage() {
   const supabase = await createClient();
@@ -32,7 +32,7 @@ export default async function MySessionsPage() {
   const { data } = await supabase
     .from("bookings")
     .select(
-      "id, message, status, edited_at, meeting_link, availability_slots(start_time), profiles!bookings_seeker_id_fkey(full_name, photo_url)",
+      "id, message, status, edited_at, meeting_link, availability_slots(start_time, end_time), profiles!bookings_seeker_id_fkey(full_name, photo_url)",
     )
     .eq("mentor_id", user.id)
     .order("created_at", { ascending: false });
@@ -61,21 +61,48 @@ export default async function MySessionsPage() {
     status: b.status as string,
     editedAt: b.edited_at as string | null,
     meetingLink: (b.meeting_link as string | null) ?? null,
-    slot: b.availability_slots as unknown as { start_time: string } | null,
+    slot: b.availability_slots as unknown as {
+      start_time: string;
+      end_time: string | null;
+    } | null,
     seeker: b.profiles as unknown as {
       full_name: string;
       photo_url: string | null;
     } | null,
   }));
 
-  const pending = rows.filter((b) => b.status === "pending");
-  const confirmed = rows.filter((b) => b.status === "confirmed");
-  // A session is stranded only if it has neither its own link nor the
-  // pasted fallback.
+  // Nothing marks a session finished, so the clock decides. A slot whose time
+  // has gone by is not something to act on any more, and showing it beside
+  // tomorrow's — same badge, same live join button — was the whole problem.
+  const timingOf = (b: (typeof rows)[number]) =>
+    b.slot ? sessionTiming(b.slot.start_time, b.slot.end_time) : "upcoming";
+
+  const allPending = rows.filter((b) => b.status === "pending");
+  // These can no longer be answered in time — the database now refuses to
+  // accept them — so offering the accept button would be a lie.
+  const pending = allPending.filter((b) => timingOf(b) !== "past");
+  const expired = allPending.filter((b) => timingOf(b) === "past");
+
+  const allConfirmed = rows.filter((b) => b.status === "confirmed");
+  // Soonest first: what is about to happen is what they opened this to check.
+  const confirmed = allConfirmed
+    .filter((b) => timingOf(b) !== "past")
+    .sort((a, z) =>
+      (a.slot?.start_time ?? "").localeCompare(z.slot?.start_time ?? ""),
+    );
+  const held = allConfirmed
+    .filter((b) => timingOf(b) === "past")
+    .sort((a, z) =>
+      (z.slot?.start_time ?? "").localeCompare(a.slot?.start_time ?? ""),
+    );
+
   const closed = rows.filter((b) =>
     ["declined", "cancelled"].includes(b.status),
   );
 
+  // A session is stranded only if it has neither its own link nor the pasted
+  // fallback — and only while it can still be attended. Chasing a link for a
+  // session that already went by helps nobody.
   const stranded = hasMeetingLink
     ? []
     : confirmed.filter((b) => !b.meetingLink);
@@ -192,7 +219,7 @@ export default async function MySessionsPage() {
 
       {confirmed.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-lg font-bold">جلسه‌های قبول‌شده</h2>
+          <h2 className="text-lg font-bold">جلسه‌های پیش رو</h2>
           <ul className="mt-4 flex flex-col gap-3">
             {confirmed.map((b) => (
               <li
@@ -220,6 +247,71 @@ export default async function MySessionsPage() {
                   fallbackLink={link?.meeting_link ?? null}
                   googleConnected={googleConnected}
                 />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {expired.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-bold text-muted">فرصتشان گذشت</h2>
+          <p className="mt-1.5 text-sm leading-7 text-muted">
+            به این‌ها جواب داده نشد و زمانشان رسید و رد شد. دیگر نمی‌شود
+            قبولشان کرد؛ فقط می‌توانی از لیست پاکشان کنی.
+          </p>
+          <ul className="mt-4 flex flex-col gap-3">
+            {expired.map((b) => (
+              <li
+                key={b.id}
+                className="rounded-2xl border border-card-border p-5"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-bold text-muted">
+                      {b.seeker?.full_name}
+                    </p>
+                    {b.slot && (
+                      <p className="mt-1 text-sm text-muted/70">
+                        {timeFormatter.format(new Date(b.slot.start_time))}
+                      </p>
+                    )}
+                  </div>
+                  <form action={declineBooking}>
+                    <input type="hidden" name="booking_id" value={b.id} />
+                    <SubmitButton
+                      variant="outline"
+                      pendingLabel="..."
+                      className="px-5 py-2 text-sm font-medium"
+                    >
+                      بستن
+                    </SubmitButton>
+                  </form>
+                </div>
+                <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted">
+                  {b.message}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {held.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-bold text-muted">برگزار شده</h2>
+          <ul className="mt-4 flex flex-col gap-2">
+            {held.map((b) => (
+              <li
+                key={b.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-card-border px-4 py-3 text-sm"
+              >
+                <span className="text-muted">{b.seeker?.full_name}</span>
+                {b.slot && (
+                  <span className="text-xs text-muted/70">
+                    {timeFormatter.format(new Date(b.slot.start_time))}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
