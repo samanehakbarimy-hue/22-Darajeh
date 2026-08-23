@@ -8,7 +8,7 @@ const GOOGLE_MESSAGE: Record<string, string> = {
   cancelled: "اتصال به گوگل انجام نشد. اشکالی ندارد — لینک ثابتت همچنان کار می‌کند.",
   failed: "اتصال به گوگل ناموفق بود. یک بار دیگر امتحان کن.",
   "no-calendar":
-    "تیک دسترسی به تقویم را نزدی، برای همین لینک جلسه ساخته نمی‌شود. دوباره وصل کن و این بار تیک تقویم را بزن.",
+    "موقع اتصال، تیک دسترسی به تقویم را نزدی. گوگل فقط ایمیلت را داد و بدون تقویم نمی‌شود لینک جلسه ساخت — چیزی ذخیره نشد. دوباره «وصل کردن حساب گوگل» را بزن و این بار کنار «View and edit events on all your calendars» تیک بزن.",
 };
 
 export default async function MentorProfilePage({
@@ -94,7 +94,18 @@ export default async function MentorProfilePage({
         </div>
       )}
       {google && GOOGLE_MESSAGE[google] && (
-        <p className="mt-6 rounded-2xl border border-card-border bg-card p-4 text-sm leading-7 text-muted">
+        <p
+          className={`mt-6 rounded-2xl border p-4 text-sm leading-7 ${
+            google === "connected"
+              ? "border-card-border bg-card text-muted"
+              : "border-brand/40 bg-brand-light text-foreground"
+          }`}
+        >
+          {google !== "connected" && (
+            <span className="mb-1 block font-bold text-brand">
+              اتصال کامل نشد
+            </span>
+          )}
           {GOOGLE_MESSAGE[google]}
         </p>
       )}
