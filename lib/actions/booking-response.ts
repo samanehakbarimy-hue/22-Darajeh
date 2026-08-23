@@ -5,6 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { createMeetLink, isGoogleConfigured } from "@/lib/google/meet";
 import { dateFormats } from "@/lib/persian";
 
+type LinkResult = "ok" | "not-connected" | "failed";
+export type LinkState = { error?: string; success?: boolean } | undefined;
+
 /**
  * Answers a booking request. The database function checks the caller is the
  * specialist being asked and that the request is still pending, so neither
@@ -40,14 +43,14 @@ async function respond(formData: FormData, accept: boolean) {
  * Runs in the specialist's own session, so RLS lets it read their refresh
  * token without any elevated key.
  */
-async function attachMeetLink(bookingId: string) {
-  if (!isGoogleConfigured()) return;
+async function attachMeetLink(bookingId: string): Promise<LinkResult> {
+  if (!isGoogleConfigured()) return "not-connected";
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!user) return "failed";
 
   const { data: account } = await supabase
     .from("mentor_google_accounts")
@@ -56,7 +59,7 @@ async function attachMeetLink(bookingId: string) {
     .maybeSingle();
 
   const refreshToken = account?.refresh_token as string | undefined;
-  if (!refreshToken) return;
+  if (!refreshToken) return "not-connected";
 
   const { data: booking } = await supabase
     .from("bookings")
@@ -70,7 +73,7 @@ async function attachMeetLink(bookingId: string) {
     start_time: string;
     end_time: string;
   } | null;
-  if (!slot) return;
+  if (!slot) return "failed";
 
   const seeker = booking?.profiles as unknown as {
     full_name: string | null;
@@ -91,13 +94,46 @@ async function attachMeetLink(bookingId: string) {
     endsAt: slot.end_time,
   });
 
-  if (!link) return;
+  if (!link) return "failed";
 
   await supabase
     .from("bookings")
     .update({ meeting_link: link })
     .eq("id", bookingId)
     .eq("mentor_id", user.id);
+
+  return "ok";
+}
+
+/**
+ * Makes a link for a booking that was confirmed BEFORE the specialist
+ * connected Google, or before this existed at all.
+ *
+ * Generation normally happens the moment a request is accepted, which does
+ * nothing for bookings already sitting confirmed — and one of those was a
+ * real session, four days out, with nowhere to join.
+ */
+export async function generateMeetingLink(
+  _prev: LinkState,
+  formData: FormData,
+): Promise<LinkState> {
+  const bookingId = String(formData.get("booking_id") ?? "");
+  if (!bookingId) return { error: "جلسه پیدا نشد." };
+
+  const result = await attachMeetLink(bookingId);
+
+  revalidatePath("/dashboard/sessions");
+  revalidatePath("/dashboard/requests");
+  revalidatePath("/dashboard");
+
+  if (result === "ok") return { success: true };
+  if (result === "not-connected") {
+    return {
+      error:
+        "اول باید حساب گوگلت را وصل کنی. از صفحه پروفایل این کار را بکن.",
+    };
+  }
+  return { error: "ساختن لینک ناموفق بود. یک بار دیگر امتحان کن." };
 }
 
 export async function acceptBooking(formData: FormData) {

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { acceptBooking, declineBooking } from "@/lib/actions/booking-response";
 import SubmitButton from "@/components/SubmitButton";
+import ConfirmedSessionLink from "./confirmed-session-link";
 import { dateFormats } from "@/lib/persian";
 
 export default async function MySessionsPage() {
@@ -31,7 +32,7 @@ export default async function MySessionsPage() {
   const { data } = await supabase
     .from("bookings")
     .select(
-      "id, message, status, edited_at, availability_slots(start_time), profiles!bookings_seeker_id_fkey(full_name, photo_url)",
+      "id, message, status, edited_at, meeting_link, availability_slots(start_time), profiles!bookings_seeker_id_fkey(full_name, photo_url)",
     )
     .eq("mentor_id", user.id)
     .order("created_at", { ascending: false });
@@ -46,11 +47,20 @@ export default async function MySessionsPage() {
     .maybeSingle();
   const hasMeetingLink = Boolean(link?.meeting_link);
 
+  // Whether they can mint a link per booking, or only have the pasted one.
+  const { data: googleAccount } = await supabase
+    .from("mentor_google_connected")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+  const googleConnected = Boolean(googleAccount);
+
   const rows = (data ?? []).map((b) => ({
     id: b.id,
     message: b.message,
     status: b.status as string,
     editedAt: b.edited_at as string | null,
+    meetingLink: (b.meeting_link as string | null) ?? null,
     slot: b.availability_slots as unknown as { start_time: string } | null,
     seeker: b.profiles as unknown as {
       full_name: string;
@@ -180,6 +190,13 @@ export default async function MySessionsPage() {
                 <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted">
                   {b.message}
                 </p>
+
+                <ConfirmedSessionLink
+                  bookingId={b.id}
+                  bookingLink={b.meetingLink}
+                  fallbackLink={link?.meeting_link ?? null}
+                  googleConnected={googleConnected}
+                />
               </li>
             ))}
           </ul>
