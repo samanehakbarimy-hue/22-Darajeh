@@ -19,6 +19,9 @@ export async function editBookingMessage(
 
   if (!bookingId) return { error: "درخواست پیدا نشد." };
   if (!message) return { error: "متن پیام نمی‌تونه خالی باشه." };
+  if (message.length > 2000) {
+    return { error: "پیامت خیلی بلنده. کوتاه‌ترش کن." };
+  }
   if (message.split(/\s+/).filter(Boolean).length > 120) {
     return { error: "پیامت باید حداکثر ۱۲۰ کلمه باشه." };
   }

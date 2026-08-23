@@ -55,6 +55,7 @@ export default function BookingForm({
         <textarea
           id="message"
           name="message"
+          maxLength={2000}
           rows={6}
           required
           value={message}

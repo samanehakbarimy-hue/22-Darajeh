@@ -30,6 +30,9 @@ export async function createBooking(
   if (!message) {
     return { error: "لطفاً یک معرفی بنویس." };
   }
+  if (message.length > 2000) {
+    return { error: "پیامت خیلی بلنده. کوتاه‌ترش کن." };
+  }
   if (message.split(/\s+/).filter(Boolean).length > 120) {
     return { error: "معرفی‌ات باید حداکثر ۱۲۰ کلمه باشه." };
   }
