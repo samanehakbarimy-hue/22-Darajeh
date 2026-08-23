@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { consentUrl, isGoogleConfigured } from "@/lib/google/meet";
+import { consentUrl, isGoogleConnectOffered } from "@/lib/google/meet";
 
 const STATE_COOKIE = "google_oauth_state";
 
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   // it against what is registered.
   const to = (path: string) => NextResponse.redirect(new URL(path, request.url));
 
-  if (!isGoogleConfigured()) {
+  if (!isGoogleConnectOffered()) {
     return to("/dashboard/mentor/profile?google=off");
   }
 

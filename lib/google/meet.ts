@@ -36,6 +36,25 @@ const SCOPES = [
   "https://www.googleapis.com/auth/userinfo.email",
 ];
 
+/**
+ * Whether to OFFER the connection to specialists.
+ *
+ * Separate from whether it works. Until Google verifies the app, consent
+ * shows an "unverified app" page that uses the word "unsafe" — and a
+ * specialist being recruited reads that as a warning about us. The pasted
+ * link works and warns nobody, so the convenience is not worth the trust
+ * on the side of a marketplace that is hardest to build.
+ *
+ * Off unless GOOGLE_CONNECT_ENABLED is "true", so it cannot switch itself
+ * on by accident. Set that variable once the app is verified.
+ *
+ * Anyone ALREADY connected keeps working: this hides the invitation, not
+ * the feature.
+ */
+export function isGoogleConnectOffered(): boolean {
+  return isGoogleConfigured() && process.env.GOOGLE_CONNECT_ENABLED === "true";
+}
+
 export function isGoogleConfigured(): boolean {
   return Boolean(
     process.env.GOOGLE_CLIENT_ID &&

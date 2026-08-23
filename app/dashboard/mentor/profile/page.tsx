@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import MentorProfileForm from "./mentor-profile-form";
+import { isGoogleConnectOffered } from "@/lib/google/meet";
 
 const GOOGLE_MESSAGE: Record<string, string> = {
   connected: "حساب گوگلت وصل شد. از این به بعد برای هر جلسه‌ای که قبول کنی لینک ساخته می‌شود.",
@@ -61,11 +62,11 @@ export default async function MentorProfilePage({
     .eq("id", user.id)
     .maybeSingle();
 
-  const googleReady = Boolean(
-    process.env.GOOGLE_CLIENT_ID &&
-      process.env.GOOGLE_CLIENT_SECRET &&
-      process.env.NEXT_PUBLIC_SITE_URL,
-  );
+  // Someone already connected still sees it, so they can check or change
+  // it. Everyone else is only offered it once the app is verified — see
+  // isGoogleConnectOffered for why.
+  const googleConnected = Boolean(googleAccount?.google_email);
+  const showGoogleSection = googleConnected || isGoogleConnectOffered();
 
   return (
     <div className="mx-auto w-full max-w-xl flex-1 px-6 py-16">
@@ -98,7 +99,7 @@ export default async function MentorProfilePage({
 
       {/* Hidden entirely until the Google credentials exist, so nobody is
           offered a button that cannot work. */}
-      {googleReady && (
+      {showGoogleSection && (
         <div className="mt-6 rounded-2xl border border-card-border bg-card p-5">
           <h2 className="font-bold">ساخت خودکار لینک جلسه</h2>
           {googleAccount?.google_email ? (
