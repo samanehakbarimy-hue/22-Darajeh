@@ -112,6 +112,7 @@ export default async function DashboardPage({
     meetingLink: string | null;
     cancelledByMe: boolean;
     cancelReason: string | null;
+    expired: boolean;
   }[] = [];
 
   // Not gated on role: a mentor or an admin can book a specialist too, and
@@ -147,9 +148,24 @@ export default async function DashboardPage({
           start_time: string;
           end_time: string | null;
         } | null;
-        return (
-          !slot || sessionTiming(slot.start_time, slot.end_time) !== "past"
-        );
+        const past =
+          slot && sessionTiming(slot.start_time, slot.end_time) === "past";
+        // A request whose time went by without an answer stays. Dropping it
+        // silently was the seeker watching it disappear with no idea whether
+        // it was ever read — and there is no email to tell them otherwise.
+        // They can clear it themselves once they have seen it.
+        if (past && b.status !== "pending") {
+          return false;
+        }
+        // A cancellation is kept here so the seeker finds out — there is no
+        // email, so this is the only place they would learn. That reasoning
+        // does not apply to one they made themselves: they already know, and
+        // leaving it sitting on the dashboard for days is just clutter. The
+        // full record is on /dashboard/requests either way.
+        if (b.status === "cancelled" && b.cancelled_by === user.id) {
+          return false;
+        }
+        return true;
       })
       .map((b) => ({
       id: b.id,
@@ -172,6 +188,15 @@ export default async function DashboardPage({
         (b.meeting_link as string | null) ?? linkById.get(b.mentor_id) ?? null,
       cancelledByMe: b.cancelled_by === user.id,
       cancelReason: (b.cancel_reason as string | null) ?? null,
+      expired: (() => {
+        const slot = b.availability_slots as unknown as {
+          start_time: string;
+          end_time: string | null;
+        } | null;
+        return Boolean(
+          slot && sessionTiming(slot.start_time, slot.end_time) === "past",
+        );
+      })(),
       }));
   }
 
@@ -405,7 +430,8 @@ export default async function DashboardPage({
                     </div>
                     <span
                       className={`shrink-0 rounded-full px-3 py-1 text-xs ${
-                        b.status === "cancelled"
+                        b.status === "cancelled" ||
+                        (b.status === "pending" && b.expired)
                           ? "border border-red-400/40 text-red-400"
                           : b.status === "confirmed"
                             ? "bg-brand-light text-brand"
@@ -414,7 +440,9 @@ export default async function DashboardPage({
                     >
                       {b.status === "cancelled"
                         ? "لغو شده"
-                        : b.status === "confirmed"
+                        : b.status === "pending" && b.expired
+                          ? "بی‌جواب ماند"
+                          : b.status === "confirmed"
                           ? "تأیید شده"
                           : b.seenAt
                             ? "دیده شده"
@@ -452,6 +480,20 @@ export default async function DashboardPage({
                           وقت دیگری پیدا کن
                         </Link>
                       )}
+                    </div>
+                  ) : b.status === "pending" && b.expired ? (
+                    <div className="mt-4 border-t border-card-border pt-4 text-sm leading-7 text-muted">
+                      <p>
+                        زمان این درخواست گذشت و متخصص جوابی نداد. جلسه‌ای برگزار
+                        نشد.
+                      </p>
+                      <Link
+                        href="/specialists"
+                        className="mt-3 inline-block rounded-full border border-card-border px-5 py-2 text-sm hover:border-brand hover:text-brand"
+                      >
+                        وقت دیگری پیدا کن
+                      </Link>
+                      <CancelBooking bookingId={b.id} kind="request" />
                     </div>
                   ) : b.status === "pending" ? (
                     <>
