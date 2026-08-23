@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
+import ServiceBooking from "@/components/ServiceBooking";
 
 export default async function SpecialistPage({
   params,
@@ -170,43 +171,15 @@ export default async function SpecialistPage({
         </div>
 
         <aside className="h-fit lg:sticky lg:top-6">
-          <div className="rounded-2xl border border-card-border bg-card p-5">
-            <h3 className="font-bold">جلسات موجود</h3>
-            <p className="mt-1 text-sm text-muted">
-              جلسه را رزرو کن و زمانش را انتخاب کن.
-            </p>
-
-            {/* The session on offer, not a list of times — choosing a time is
-                the booking page's job, and a wall of dates here buried it. */}
-            <div className="mt-4 rounded-xl border border-card-border p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="font-bold">تماس راهنمایی</div>
-                  <div className="mt-0.5 text-sm text-muted">۲۲ دقیقه</div>
-                  <div className="mt-2 font-bold text-brand">رایگان</div>
-                </div>
-
-                {slots && slots.length > 0 ? (
-                  <Link
-                    href={`/specialists/${specialist.id}/book`}
-                    className="shrink-0 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-hover"
-                  >
-                    رزرو
-                  </Link>
-                ) : (
-                  <span className="shrink-0 rounded-full border border-card-border px-4 py-2.5 text-xs text-muted">
-                    زمان آزاد نیست
-                  </span>
-                )}
-              </div>
-
-              {nextSlot && (
-                <p className="mt-3 border-t border-card-border pt-3 text-xs text-muted">
-                  نزدیک‌ترین زمان: {timeFormatter.format(new Date(nextSlot))}
-                </p>
-              )}
-            </div>
-          </div>
+          <ServiceBooking
+            specialistId={specialist.id}
+            hasSlots={Boolean(slots && slots.length > 0)}
+            // Formatted here rather than in the client component: the server
+            // pins Tehran, and a device in another zone would print its own.
+            nearestSlotLabel={
+              nextSlot ? timeFormatter.format(new Date(nextSlot)) : null
+            }
+          />
         </aside>
       </div>
     </div>

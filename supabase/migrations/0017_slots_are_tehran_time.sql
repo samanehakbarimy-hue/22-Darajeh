@@ -12,7 +12,11 @@
 -- same face as Tehran. Correct across any offset change, unlike subtracting a
 -- fixed interval.
 --
--- ONE-SHOT. Running this twice shifts every slot a second time.
+-- ONE-SHOT, and that was the flaw: it shifts by a relative amount, so it
+-- was in fact applied twice and moved every slot 7 hours instead of 3.5.
+-- 0018 repairs it with absolute timestamps, which cannot compound.
+--
+-- ALREADY APPLIED. Do not run again.
 update availability_slots
 set start_time = (start_time at time zone 'UTC') at time zone 'Asia/Tehran',
     end_time   = (end_time   at time zone 'UTC') at time zone 'Asia/Tehran';
