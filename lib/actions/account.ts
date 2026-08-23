@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { processAvatar } from "@/lib/images";
 
 export type AccountState = { error?: string; success?: boolean } | undefined;
 
@@ -32,11 +33,20 @@ export async function updateAccount(
     if (photo.size > 3 * 1024 * 1024) {
       return { error: "حجم عکس باید کمتر از ۳ مگابایت باشد." };
     }
-    const ext = photo.name.split(".").pop() ?? "jpg";
-    const path = `${user.id}/avatar.${ext}`;
+    // Shrunk and re-encoded before it is stored, so the browse page is not
+    // asking every visitor to download a full-size phone photo per specialist.
+    const processed = await processAvatar(photo);
+    if (!processed.ok) {
+      return { error: processed.error };
+    }
+
+    const path = `${user.id}/avatar.${processed.extension}`;
     const { error: uploadError } = await supabase.storage
       .from("avatars")
-      .upload(path, photo, { upsert: true, contentType: photo.type });
+      .upload(path, processed.data, {
+        upsert: true,
+        contentType: processed.contentType,
+      });
 
     if (uploadError) {
       return { error: uploadError.message };

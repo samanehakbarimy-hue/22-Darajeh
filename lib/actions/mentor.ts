@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { processAvatar } from "@/lib/images";
 
 export type MentorProfileState = { error?: string; success?: boolean } | undefined;
 
@@ -54,13 +55,19 @@ export async function saveMentorProfile(
         "یا حساب گوگلت را وصل کن تا لینک‌ها خودکار ساخته شوند، یا یک لینک ثابت اینجا بگذار.",
     };
   }
-  try {
-    const parsed = new URL(meetingLink);
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-      return { error: "لینک جلسه باید با https:// شروع شود." };
+  // Only if one was actually given. The check above already decided whether a
+  // link is needed at all; a specialist with Google connected is told plainly
+  // they can leave this empty, and validating "" would throw and hand them
+  // "your link is invalid" for a field they were invited to skip.
+  if (meetingLink) {
+    try {
+      const parsed = new URL(meetingLink);
+      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+        return { error: "لینک جلسه باید با https:// شروع شود." };
+      }
+    } catch {
+      return { error: "لینک جلسه معتبر نیست. کامل و با https:// بنویس." };
     }
-  } catch {
-    return { error: "لینک جلسه معتبر نیست. کامل و با https:// بنویس." };
   }
 
   const expertiseTags = tagsRaw
@@ -73,11 +80,20 @@ export async function saveMentorProfile(
     if (photo.size > 3 * 1024 * 1024) {
       return { error: "حجم عکس باید کمتر از ۳ مگابایت باشد." };
     }
-    const ext = photo.name.split(".").pop() ?? "jpg";
-    const path = `${user.id}/avatar.${ext}`;
+    // Shrunk and re-encoded before it is stored, so the browse page is not
+    // asking every visitor to download a full-size phone photo per specialist.
+    const processed = await processAvatar(photo);
+    if (!processed.ok) {
+      return { error: processed.error };
+    }
+
+    const path = `${user.id}/avatar.${processed.extension}`;
     const { error: uploadError } = await supabase.storage
       .from("avatars")
-      .upload(path, photo, { upsert: true, contentType: photo.type });
+      .upload(path, processed.data, {
+        upsert: true,
+        contentType: processed.contentType,
+      });
 
     if (uploadError) {
       return { error: uploadError.message };
