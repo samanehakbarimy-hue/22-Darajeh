@@ -70,9 +70,15 @@ export default async function MySessionsPage() {
 
   const pending = rows.filter((b) => b.status === "pending");
   const confirmed = rows.filter((b) => b.status === "confirmed");
+  // A session is stranded only if it has neither its own link nor the
+  // pasted fallback.
   const closed = rows.filter((b) =>
     ["declined", "cancelled"].includes(b.status),
   );
+
+  const stranded = hasMeetingLink
+    ? []
+    : confirmed.filter((b) => !b.meetingLink);
 
   const timeFormatter = dateFormats.full;
 
@@ -83,13 +89,30 @@ export default async function MySessionsPage() {
         درخواست‌هایی که برات فرستاده شده و جلسه‌هایی که قبول کردی.
       </p>
 
-      {!hasMeetingLink && (
-        <div className="mt-6 rounded-2xl border border-brand/40 bg-brand-light p-5">
-          <p className="font-bold text-brand">لینک جلسه‌ات را اضافه کن</p>
+      {/* Only shout when a session genuinely has nowhere to go. A booking
+          with its own generated link is fine even if no permanent link was
+          ever pasted — warning about it then is crying wolf. */}
+      {(stranded.length > 0 || !hasMeetingLink) && (
+        <div
+          className={`mt-6 rounded-2xl border p-5 ${
+            stranded.length > 0
+              ? "border-brand/40 bg-brand-light"
+              : "border-card-border bg-card"
+          }`}
+        >
+          <p
+            className={`font-bold ${
+              stranded.length > 0 ? "text-brand" : "text-foreground"
+            }`}
+          >
+            {stranded.length > 0
+              ? "لینک جلسه‌ات را اضافه کن"
+              : "لینک ثابت نداری"}
+          </p>
           <p className="mt-1.5 text-sm leading-7 text-muted">
-            {confirmed.length > 0
-              ? "یک درخواست را قبول کرده‌ای، ولی چون لینک جلسه نداری کسی نمی‌تواند به جلسه بیاید."
-              : "بدون لینک جلسه، بعد از قبول کردن یک درخواست کسی نمی‌تواند به جلسه بیاید."}
+            {stranded.length > 0
+              ? "یک جلسه قبول‌شده داری که هیچ لینکی ندارد و کسی نمی‌تواند به آن بیاید."
+              : "جلسه‌های فعلی‌ات لینک دارند. اگر یک لینک ثابت هم بگذاری، هر وقت ساختن لینک خودکار به مشکل خورد، همان استفاده می‌شود."}
           </p>
           <Link
             href="/dashboard/mentor/profile"
