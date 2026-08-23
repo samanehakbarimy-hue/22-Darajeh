@@ -27,13 +27,17 @@ export default function SendBackForReview({
 
   if (!open) {
     return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="mt-1 text-xs text-muted underline-offset-4 hover:text-brand hover:underline"
-      >
-        بازبینی دوباره
-      </button>
+      // A bare button is inline, so it ran straight into the status text
+      // beside it. The block wrapper is what puts it on its own line.
+      <div className="mt-1">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="text-xs text-muted underline-offset-4 hover:text-brand hover:underline"
+        >
+          بازبینی دوباره
+        </button>
+      </div>
     );
   }
 
