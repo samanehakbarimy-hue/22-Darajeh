@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
   approveMentor,
+  reopenMentorReview,
   rejectMentor,
   requestMentorChanges,
  } from "@/lib/actions/admin";
@@ -266,6 +267,24 @@ export default async function AdminPage() {
                       {member.status
                         ? (STATUS_LABEL[member.status] ?? member.status)
                         : "—"}
+                      {/* A rejection has to be undoable: it is one click
+                          away from approval and asks nothing first. */}
+                      {(member.status === "rejected" ||
+                        member.status === "changes_requested") && (
+                        <form action={reopenMentorReview} className="mt-1">
+                          <input
+                            type="hidden"
+                            name="mentor_id"
+                            value={member.id}
+                          />
+                          <button
+                            type="submit"
+                            className="text-xs text-brand hover:underline"
+                          >
+                            بازگرداندن به بررسی
+                          </button>
+                        </form>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-muted">
                       {dateFormatter.format(new Date(member.created_at))}

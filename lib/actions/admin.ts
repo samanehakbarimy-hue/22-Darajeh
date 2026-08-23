@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 
 async function setMentorStatus(
   mentorId: string,
-  status: "approved" | "rejected" | "changes_requested",
+  status: "approved" | "rejected" | "changes_requested" | "pending",
   reviewNote: string | null = null,
 ) {
   const supabase = await createClient();
@@ -63,6 +63,20 @@ export async function requestMentorChanges(formData: FormData) {
   const note = String(formData.get("review_note") ?? "").trim();
   if (!id || !note) return;
   await setMentorStatus(id, "changes_requested", note.slice(0, 500));
+}
+
+/**
+ * Puts a specialist back in the review queue.
+ *
+ * Rejecting is one click, sits beside approving, and asks for no
+ * confirmation — and until this existed it was permanent: the specialist
+ * could not resubmit and no screen could undo it, so a misclick ended
+ * someone's account and only hand-written SQL could bring it back.
+ */
+export async function reopenMentorReview(formData: FormData) {
+  const id = String(formData.get("mentor_id") ?? "");
+  if (!id) return;
+  await setMentorStatus(id, "pending", null);
 }
 
 export async function rejectMentor(formData: FormData) {
