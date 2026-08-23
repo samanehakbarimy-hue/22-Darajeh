@@ -147,3 +147,68 @@ export async function logout() {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+export type ResetState = { error?: string; sent?: boolean } | undefined;
+
+/**
+ * Sends a link that lets someone back into their own account.
+ *
+ * Until this existed, forgetting a password was the end of the account: the
+ * login page offered no way back and no screen could reset one, so the only
+ * remedy was editing auth.users by hand. Reza hit exactly this.
+ *
+ * The reply is the same whether or not the address has an account. Saying
+ * "no account with that email" turns this form into a way of finding out who
+ * has registered.
+ */
+export async function requestPasswordReset(
+  _prevState: ResetState,
+  formData: FormData,
+): Promise<ResetState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) {
+    return { error: "ایمیلت را وارد کن." };
+  }
+
+  const supabase = await createClient();
+  const origin = (await headers()).get("origin");
+
+  // Recovery arrives as a code, the same as any other OAuth-style return, so
+  // it goes through the existing callback and lands on the page that asks for
+  // the new password with a session already in hand.
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=/reset-password`,
+  });
+
+  return { sent: true };
+}
+
+/**
+ * Sets a new password for whoever is currently signed in.
+ *
+ * Reached from the recovery link, which signs them in first — the page itself
+ * refuses to render without a session, so there is nothing here to abuse.
+ */
+export async function updatePassword(
+  _prevState: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+
+  if (password.length < 6) {
+    return { error: "رمز عبور باید حداقل ۶ کاراکتر باشد." };
+  }
+  if (password !== confirm) {
+    return { error: "دو رمزی که نوشتی یکی نیستند." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    return { error: "رمز عبور عوض نشد. یک بار دیگر امتحان کن." };
+  }
+
+  redirect("/dashboard?password=changed");
+}

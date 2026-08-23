@@ -82,9 +82,19 @@ export default function LoginForm({
           />
         </div>
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium">
-            رمز عبور
-          </label>
+          <div className="mb-1 flex items-baseline justify-between gap-3">
+            <label htmlFor="password" className="block text-sm font-medium">
+              رمز عبور
+            </label>
+            {/* The way back in has to live where people notice they cannot
+                get in, which is here, not on some other page. */}
+            <Link
+              href="/forgot-password"
+              className="text-xs text-muted hover:text-brand"
+            >
+              فراموشش کردی؟
+            </Link>
+          </div>
           <PasswordInput
             id="password"
             name="password"
