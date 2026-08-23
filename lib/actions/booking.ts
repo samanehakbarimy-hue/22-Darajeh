@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { notifyNewRequest } from "@/lib/email/notifications";
 
 export type BookingState = { error?: string } | undefined;
 
@@ -45,18 +46,28 @@ export async function createBooking(
     return { error: "این زمان دیگر در دسترس نیست." };
   }
 
-  const { error } = await supabase.from("bookings").insert({
-    mentor_id: slot.mentor_id,
-    slot_id: slotId,
-    seeker_id: user.id,
-    message,
-  });
+  const { data: created, error } = await supabase
+    .from("bookings")
+    .insert({
+      mentor_id: slot.mentor_id,
+      slot_id: slotId,
+      seeker_id: user.id,
+      message,
+    })
+    .select("id")
+    .maybeSingle();
 
   if (error) {
     if (error.code === "23505") {
       return { error: "این زمان همین الان توسط شخص دیگه‌ای رزرو شد." };
     }
     return { error: error.message };
+  }
+
+  // The request is saved either way; telling the specialist is best effort.
+  // This has to run before the redirect below, which throws by design.
+  if (created?.id) {
+    await notifyNewRequest(created.id);
   }
 
   redirect("/dashboard?booked=1");

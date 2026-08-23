@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { notifyCancelled } from "@/lib/email/notifications";
 
 export type CancelState = { error?: string } | undefined;
 
@@ -26,10 +27,29 @@ export async function cancelBooking(
     .slice(0, 500);
 
   const supabase = await createClient();
+
+  // Read before cancelling: afterwards this is still readable, but knowing
+  // which side the canceller is on is what decides who gets written to, and
+  // there is no reason to ask twice.
+  const [{ data: booking }, { data: auth }] = await Promise.all([
+    supabase.from("bookings").select("mentor_id").eq("id", bookingId).maybeSingle(),
+    supabase.auth.getUser(),
+  ]);
+
   const { error } = await supabase.rpc("cancel_booking", {
     booking_id: bookingId,
     reason: reason || null,
   });
+
+  // Only the other side hears about it, and only once it actually happened.
+  if (!error && booking?.mentor_id && auth?.user) {
+    await notifyCancelled(
+      bookingId,
+      auth.user.id,
+      booking.mentor_id as string,
+      reason || null,
+    );
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/sessions");

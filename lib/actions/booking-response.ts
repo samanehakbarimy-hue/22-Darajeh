@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createMeetLink, isGoogleConfigured } from "@/lib/google/meet";
 import { dateFormats } from "@/lib/persian";
+import { notifyAccepted, notifyDeclined } from "@/lib/email/notifications";
 
 type LinkResult = "ok" | "not-connected" | "failed";
 export type LinkState = { error?: string; success?: boolean } | undefined;
@@ -25,6 +26,12 @@ async function respond(formData: FormData, accept: boolean) {
 
   if (!error && accept) {
     await attachMeetLink(bookingId);
+  }
+
+  // After the answer is recorded, and never in a way that can undo it. The
+  // link is generated first so the acceptance email can carry it.
+  if (!error) {
+    await (accept ? notifyAccepted(bookingId) : notifyDeclined(bookingId));
   }
 
   revalidatePath("/dashboard");

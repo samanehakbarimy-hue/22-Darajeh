@@ -45,3 +45,6 @@ next-env.d.ts
 
 # supabase cli scratch
 supabase/.temp
+
+# local email preview scratch
+email-preview.html
