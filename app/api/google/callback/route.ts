@@ -42,6 +42,11 @@ export async function GET(request: NextRequest) {
   const tokens = await exchangeCode(code);
   if (!tokens) return back("failed");
 
+  // Calendar access is a checkbox on Google's screen, and leaving it
+  // unticked still returns a valid token. Storing that would look like a
+  // success and fail only later, when a booking is accepted.
+  if (tokens === "missing-calendar-scope") return back("no-calendar");
+
   const email = await googleEmail(tokens.accessToken);
 
   // RLS scopes this to the caller, so a specialist can only ever attach an

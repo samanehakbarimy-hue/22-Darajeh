@@ -91,13 +91,21 @@ export function consentUrl(state: string): string {
 type TokenResponse = {
   access_token?: string;
   refresh_token?: string;
+  scope?: string;
   error?: string;
 };
+
+/** The one permission the feature cannot work without. */
+const CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.events";
 
 /** Swaps the one-time code from the callback for a lasting refresh token. */
 export async function exchangeCode(
   code: string,
-): Promise<{ refreshToken: string; accessToken: string } | null> {
+): Promise<
+  | { refreshToken: string; accessToken: string }
+  | "missing-calendar-scope"
+  | null
+> {
   const response = await fetch(TOKEN_ENDPOINT, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
@@ -113,6 +121,14 @@ export async function exchangeCode(
 
   const data = (await response.json()) as TokenResponse;
   if (!data.refresh_token || !data.access_token) return null;
+
+  // Google shows calendar access as a checkbox the person can leave
+  // unticked, and still returns a perfectly valid token without it. Storing
+  // that token would look like success and then fail silently at the moment
+  // a booking is accepted — so refuse it here, where we can still say why.
+  const granted = (data.scope ?? "").split(" ");
+  if (!granted.includes(CALENDAR_SCOPE)) return "missing-calendar-scope";
+
   return { refreshToken: data.refresh_token, accessToken: data.access_token };
 }
 
