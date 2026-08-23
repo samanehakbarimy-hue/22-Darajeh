@@ -178,12 +178,6 @@ export default async function MyRequestsPage() {
 
                 {b.status === "confirmed" &&
                   slot &&
-                  sessionTiming(slot.start_time, slot.end_time) !== "past" && (
-                    <CancelBooking bookingId={b.id} kind="session" />
-                  )}
-
-                {b.status === "confirmed" &&
-                  slot &&
                   sessionTiming(slot.start_time, slot.end_time) === "past" && (
                     <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
                       این جلسه برگزار شد.
@@ -210,6 +204,12 @@ export default async function MyRequestsPage() {
                         نکرده. به‌محض اینکه اضافه کند همین‌جا می‌بینی‌اش.
                       </p>
                     )}
+
+                    {slot &&
+                      sessionTiming(slot.start_time, slot.end_time) !==
+                        "past" && (
+                        <CancelBooking bookingId={b.id} kind="session" />
+                      )}
                   </div>
                 )}
               </li>
