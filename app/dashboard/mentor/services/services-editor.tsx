@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import SubmitButton from "@/components/SubmitButton";
 import { deleteService, saveService } from "@/lib/actions/services";
+import { formatRange, suggestedRange } from "@/lib/seniority";
 import {
   KIND_LABEL,
   TEMPLATES,
@@ -49,9 +50,11 @@ function toDraft(service: MentorService): Draft {
 export default function ServicesEditor({
   services,
   tableMissing,
+  seniority,
 }: {
   services: MentorService[];
   tableMissing: boolean;
+  seniority: string | null;
 }) {
   const [saveState, saveAction] = useActionState(saveService, undefined);
   const [deleteState, deleteAction] = useActionState(deleteService, undefined);
@@ -59,6 +62,16 @@ export default function ServicesEditor({
 
   // React 19 resets uncontrolled fields once a form action finishes, which has
   // eaten typed text in this project before. Every field here is controlled.
+  // Scaled by how long the work is, so a 45-minute session and a 3-hour
+  // minimum come from the same base rate rather than two invented numbers.
+  const hours =
+    draft === null
+      ? 0
+      : draft.kind === "consultation"
+        ? (Number(draft.minutes) || 0) / 60
+        : Number(draft.minHours) || 0;
+  const suggestion = suggestedRange(seniority, hours);
+
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((current) => (current ? { ...current, [key]: value } : current));
 
@@ -278,6 +291,12 @@ export default function ServicesEditor({
                 placeholder="خالی بگذار تا «به‌زودی» نمایش داده شود"
                 className="w-full max-w-xs rounded-xl border border-card-border bg-background px-4 py-3 text-sm outline-none focus:border-brand"
               />
+              {suggestion && (
+                <span className="text-xs leading-6 text-brand">
+                  پیشنهاد ۲۲ درجه برای این مدت و تجربه‌ات:{" "}
+                  {formatRange(suggestion)}
+                </span>
+              )}
               <span className="text-xs leading-6 text-muted">
                 تا وقتی قیمت نگذاری، روی پروفایلت «به‌زودی» نوشته می‌شود. صفر
                 ننویس — رایگان فقط همان تماس ۲۲ دقیقه‌ای است.

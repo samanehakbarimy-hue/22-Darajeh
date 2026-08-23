@@ -19,6 +19,10 @@ export async function saveMentorProfile(
 
   const headline = String(formData.get("headline") ?? "").trim();
   const country = String(formData.get("country") ?? "").trim();
+  // Blank is a real answer: the column is nullable and its check
+  // constraint would reject an empty string.
+  const seniorityRaw = String(formData.get("seniority") ?? "").trim();
+  const seniority = seniorityRaw === "" ? null : seniorityRaw;
   const bio = String(formData.get("bio") ?? "").trim();
   const tagsRaw = String(formData.get("expertise_tags") ?? "").trim();
   const linkedinUrl = String(formData.get("linkedin_url") ?? "").trim();
@@ -63,6 +67,7 @@ export async function saveMentorProfile(
     id: user.id,
     headline,
     country,
+    seniority,
     bio,
     expertise_tags: expertiseTags,
     linkedin_url: linkedinUrl || null,

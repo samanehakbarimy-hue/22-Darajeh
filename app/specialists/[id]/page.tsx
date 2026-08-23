@@ -5,6 +5,7 @@ import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
 import ServiceBooking from "@/components/ServiceBooking";
 import type { MentorService } from "@/lib/services";
+import { seniorityBadge } from "@/lib/seniority";
 
 export default async function SpecialistPage({
   params,
@@ -17,7 +18,7 @@ export default async function SpecialistPage({
   const { data: specialist } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, country, bio, expertise_tags, linkedin_url, status, profiles(full_name, photo_url, created_at)",
+      "id, headline, country, bio, expertise_tags, linkedin_url, seniority, status, profiles(full_name, photo_url, created_at)",
     )
     .eq("id", id)
     .eq("status", "approved")
@@ -98,6 +99,12 @@ export default async function SpecialistPage({
                 {specialist.headline && (
                   <p className="mt-0.5 text-muted">{specialist.headline}</p>
                 )}
+                {seniorityBadge(specialist.seniority) && (
+                  <p className="mt-2 inline-block rounded-full border border-card-border px-3 py-1 text-xs text-muted">
+                    {seniorityBadge(specialist.seniority)}
+                  </p>
+                )}
+
                 {specialist.country && (
                   <p className="mt-1 flex items-center gap-1 text-sm text-muted">
                     <svg

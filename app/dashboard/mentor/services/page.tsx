@@ -23,6 +23,12 @@ export default async function MentorServicesPage() {
     redirect("/dashboard");
   }
 
+  const { data: mentorProfile } = await supabase
+    .from("mentor_profiles")
+    .select("seniority")
+    .eq("id", user.id)
+    .maybeSingle();
+
   const { data, error } = await supabase
     .from("mentor_services")
     .select("id, kind, title, description, minutes, min_hours, price_toman, is_active")
@@ -45,6 +51,7 @@ export default async function MentorServicesPage() {
       </p>
 
       <ServicesEditor
+        seniority={mentorProfile?.seniority ?? null}
         services={(data ?? []) as MentorService[]}
         tableMissing={tableMissing}
       />

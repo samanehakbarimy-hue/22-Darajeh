@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { saveMentorProfile } from "@/lib/actions/mentor";
 import Spinner from "@/components/Spinner";
+import { SENIORITY_LEVELS } from "@/lib/seniority";
 
 const SUGGESTED_TAGS = [
   // فناوری
@@ -94,6 +95,7 @@ export default function MentorProfileForm({
   initialLinkedin,
   initialMeetingLink,
   initialPhone,
+  initialSeniority,
 }: {
   initialPhotoUrl: string;
   initialHeadline: string;
@@ -103,6 +105,7 @@ export default function MentorProfileForm({
   initialLinkedin: string;
   initialMeetingLink: string;
   initialPhone: string;
+  initialSeniority: string;
 }) {
   const [state, action, pending] = useActionState(saveMentorProfile, undefined);
   const [preview, setPreview] = useState(initialPhotoUrl);
@@ -116,6 +119,7 @@ export default function MentorProfileForm({
   const [linkedin, setLinkedin] = useState(initialLinkedin);
   const [meetingLink, setMeetingLink] = useState(initialMeetingLink);
   const [phone, setPhone] = useState(initialPhone);
+  const [seniority, setSeniority] = useState(initialSeniority);
 
   const [tags, setTags] = useState<string[]>(parseTags(initialTags));
   const [draft, setDraft] = useState("");
@@ -232,6 +236,34 @@ export default function MentorProfileForm({
             placeholder="مثلاً «ایران» یا «آلمان»"
             className={FIELD_CLASS}
           />
+        </div>
+
+        <div>
+          <span className="mb-1.5 block text-sm font-medium">
+            چقدر تجربه داری؟
+          </span>
+          {/* Shown to seekers, and what a price suggestion scales from
+              when this specialist adds a paid service. */}
+          <input type="hidden" name="seniority" value={seniority} />
+          <div className="flex flex-wrap gap-2">
+            {SENIORITY_LEVELS.map((level) => (
+              <button
+                key={level.value}
+                type="button"
+                onClick={() =>
+                  setSeniority(seniority === level.value ? "" : level.value)
+                }
+                aria-pressed={seniority === level.value}
+                className={`rounded-full border px-4 py-2 text-sm transition ${
+                  seniority === level.value
+                    ? "border-brand bg-brand-light text-brand"
+                    : "border-card-border text-muted hover:border-brand hover:text-brand"
+                }`}
+              >
+                {level.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>
