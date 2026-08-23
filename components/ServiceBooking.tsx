@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import {
-  CONSULTATIONS,
   FREE_CALL,
-  HOURLY_PROJECTS,
   TABS,
-  formatPrice,
-  type Service,
+  formatDuration,
+  formatServicePrice,
+  type MentorService,
   type ServiceType,
 } from "@/lib/services";
 import { fa } from "@/lib/persian";
@@ -32,7 +31,9 @@ function ServiceRow({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h4 className="font-bold">{title}</h4>
-          <p className="mt-1 text-sm leading-6 text-muted">{description}</p>
+          {description && (
+            <p className="mt-1 text-sm leading-6 text-muted">{description}</p>
+          )}
         </div>
         {action}
       </div>
@@ -48,19 +49,20 @@ function ServiceRow({
 /**
  * Everything a specialist offers, in one card.
  *
- * Only the free call is live. The other two tabs render from the catalogue in
- * lib/services.ts with their prices unset, so the layout is real while the
- * numbers wait for the specialist — see that file for why they are not
- * invented.
+ * The free call is live. Paid services come from the specialist's own rows;
+ * a price they have not set shows as به‌زودی and its button stays inert,
+ * because there is nowhere for the money to go yet.
  */
 export default function ServiceBooking({
   specialistId,
   hasSlots,
   nearestSlotLabel,
+  services,
 }: {
   specialistId: string;
   hasSlots: boolean;
   nearestSlotLabel: string | null;
+  services: MentorService[];
 }) {
   const [active, setActive] = useState<ServiceType>("free_call");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -77,7 +79,10 @@ export default function ServiceBooking({
     tabRefs.current[next]?.focus();
   }
 
-  const paid = active === "consultation" ? CONSULTATIONS : HOURLY_PROJECTS;
+  const paid =
+    active === "free_call"
+      ? []
+      : services.filter((service) => service.kind === active);
 
   return (
     <div className="rounded-2xl border border-card-border bg-card p-5">
@@ -151,35 +156,33 @@ export default function ServiceBooking({
               </p>
             )}
           </>
+        ) : paid.length === 0 ? (
+          <p className="rounded-xl border border-card-border bg-background p-4 text-sm leading-7 text-muted">
+            این متخصص هنوز{" "}
+            {active === "consultation" ? "جلسه مشاوره‌ای" : "همکاری پروژه‌ای"}{" "}
+            اضافه نکرده. می‌تونی تماس رایگان ۲۲ دقیقه‌ای را رزرو کنی و نیازت را
+            با او در میان بگذاری.
+          </p>
         ) : (
           <>
             <ul className="flex flex-col gap-3">
-              {paid.map((service: Service) => (
+              {paid.map((service) => (
                 <ServiceRow
                   key={service.id}
                   title={service.title}
                   description={service.description}
-                  meta={
-                    service.minutes
-                      ? `${fa(service.minutes)} دقیقه`
-                      : `حداقل ${fa(service.minHours ?? 1)} ساعت`
-                  }
-                  price={
-                    service.minutes
-                      ? formatPrice(service.price)
-                      : service.price === null
-                        ? "به‌زودی"
-                        : `${formatPrice(service.price)} در ساعت`
-                  }
+                  meta={formatDuration(service)}
+                  price={formatServicePrice(service)}
                   action={
-                    // Nothing to press yet: no specialist has priced these and
-                    // there is no way to pay. A live button would take money
-                    // nobody can accept.
+                    // Inert until there is a way to take payment. A live
+                    // button would collect money nobody can receive.
                     <span
                       className="shrink-0 cursor-not-allowed rounded-full border border-card-border px-4 py-2.5 text-xs text-muted"
                       aria-disabled
                     >
-                      {service.cta}
+                      {service.kind === "consultation"
+                        ? "رزرو"
+                        : "درخواست همکاری"}
                     </span>
                   }
                 />
@@ -187,8 +190,8 @@ export default function ServiceBooking({
             </ul>
 
             <p className="mt-4 rounded-xl border border-card-border bg-background p-3 text-xs leading-6 text-muted">
-              این متخصص هنوز قیمت‌هایش را تعیین نکرده. فعلاً می‌تونی تماس
-              رایگان ۲۲ دقیقه‌ای را رزرو کنی و نیازت را با او در میان بگذاری.
+              پرداخت آنلاین هنوز فعال نیست. فعلاً تماس رایگان را رزرو کن و
+              درباره این خدمت با متخصص حرف بزن.
             </p>
           </>
         )}

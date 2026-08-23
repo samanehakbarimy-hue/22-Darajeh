@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
 import ServiceBooking from "@/components/ServiceBooking";
+import type { MentorService } from "@/lib/services";
 
 export default async function SpecialistPage({
   params,
@@ -56,6 +57,18 @@ export default async function SpecialistPage({
   const name = profile?.full_name ?? "";
   const tags = specialist.expertise_tags ?? [];
   const held = heldCount ?? 0;
+
+  // Only the active ones, and an unapplied migration must not take the
+  // whole profile down — the free call is the important part of this page.
+  const { data: serviceRows } = await supabase
+    .from("mentor_services")
+    .select(
+      "id, kind, title, description, minutes, min_hours, price_toman, is_active",
+    )
+    .eq("mentor_id", id)
+    .eq("is_active", true)
+    .order("sort_order")
+    .order("created_at");
 
   const timeFormatter = dateFormats.full;
   const monthFormatter = dateFormats.monthYear;
@@ -176,6 +189,7 @@ export default async function SpecialistPage({
             hasSlots={Boolean(slots && slots.length > 0)}
             // Formatted here rather than in the client component: the server
             // pins Tehran, and a device in another zone would print its own.
+            services={(serviceRows ?? []) as MentorService[]}
             nearestSlotLabel={
               nextSlot ? timeFormatter.format(new Date(nextSlot)) : null
             }

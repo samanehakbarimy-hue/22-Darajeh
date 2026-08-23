@@ -33,6 +33,7 @@ export default async function Navbar() {
       ? [
           { href: "/dashboard/sessions", label: "جلسات من" },
           { href: "/dashboard/mentor/availability", label: "زمان‌های آزاد" },
+          { href: "/dashboard/mentor/services", label: "خدمات و قیمت‌ها" },
           { href: "/dashboard/mentor/profile", label: "پروفایل من" },
         ]
       : role === "admin"

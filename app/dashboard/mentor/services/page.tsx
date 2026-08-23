@@ -1,0 +1,53 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import ServicesEditor from "./services-editor";
+import type { MentorService } from "@/lib/services";
+
+export default async function MentorServicesPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login?next=/dashboard/mentor/services");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "mentor") {
+    redirect("/dashboard");
+  }
+
+  const { data, error } = await supabase
+    .from("mentor_services")
+    .select("id, kind, title, description, minutes, min_hours, price_toman, is_active")
+    .eq("mentor_id", user.id)
+    .order("kind")
+    .order("sort_order")
+    .order("created_at");
+
+  // 42P01 is "relation does not exist": migration 0019 has not been applied.
+  // Saying so beats a blank page that looks like the feature is broken.
+  const tableMissing = error?.code === "42P01";
+
+  return (
+    <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+      <h1 className="text-2xl font-bold">خدمات و قیمت‌ها</h1>
+      <p className="mt-2 leading-8 text-muted">
+        غیر از تماس رایگان ۲۲ دقیقه‌ای، می‌تونی جلسه مشاوره یا همکاری پروژه‌ای
+        هم پیشنهاد بدی. قیمت‌ها را خودت تعیین می‌کنی و هر وقت خواستی عوضشان
+        می‌کنی.
+      </p>
+
+      <ServicesEditor
+        services={(data ?? []) as MentorService[]}
+        tableMissing={tableMissing}
+      />
+    </div>
+  );
+}
