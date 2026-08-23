@@ -23,7 +23,7 @@
  * Seniority and duration scale it — see lib/seniority.ts. Set by the founder,
  * who knows what this market can pay; it is not derived from anything.
  */
-export const BASE_HOURLY_USD: number | null = 1;
+export const BASE_HOURLY_USD: number | null = 2;
 
 export function tomanToUsd(toman: number, rate: number | null): number | null {
   if (rate === null || rate <= 0) return null;
