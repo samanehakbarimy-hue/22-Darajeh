@@ -93,6 +93,12 @@ export default function ServicesEditor({
           مدت هر جلسه ثابت است تا قیمت‌ها بین متخصص‌ها قابل مقایسه باشد. تو فقط
           تصمیم می‌گیری کدام را ارائه بدهی و چقدر بگیری.
         </p>
+        <p className="mt-2 text-sm leading-7 text-muted">
+          قیمت را خالی بگذاری، روی پروفایلت «به‌زودی» می‌آید. صفر ننویس —
+          رایگان فقط همان تماس ۲۲ دقیقه‌ای است. بیشتر کسانی که اینجا رزرو
+          می‌کنند اول راهشان‌اند و از جیب خودشان می‌دهند، پس پایین بازه هم قیمت
+          درستی است.
+        </p>
 
         <ul className="mt-5 flex flex-col gap-3">
           {SESSION_TYPES.map((session) => {
@@ -143,7 +149,7 @@ export default function ServicesEditor({
                             ? ""
                             : String(existing.price_toman)
                         }
-                        placeholder="خالی = به‌زودی"
+                        placeholder="۵۰۰,۰۰۰"
                         className={`w-48 ${FIELD}`}
                       />
                     </label>
@@ -179,9 +185,11 @@ export default function ServicesEditor({
                   </div>
 
                   {suggestion && (
-                    <p className="text-xs leading-6 text-brand">
+                    <p className="text-xs leading-6 text-muted">
                       پیشنهاد ۲۲ درجه برای این مدت و تجربه‌ات:{" "}
-                      {formatRange(suggestion, usdRate)}
+                      <span className="font-medium text-foreground">
+                        {formatRange(suggestion, usdRate)}
+                      </span>
                     </p>
                   )}
                 </form>
@@ -189,13 +197,6 @@ export default function ServicesEditor({
             );
           })}
         </ul>
-
-        <p className="mt-4 text-xs leading-6 text-muted">
-          بیشتر کسانی که اینجا رزرو می‌کنند اول راهشان‌اند و از جیب خودشان
-          می‌دهند؛ پایین بازه هم قیمت درستی است. تا وقتی قیمت نگذاری روی
-          پروفایلت «به‌زودی» نوشته می‌شود، و صفر ننویس — رایگان فقط همان تماس ۲۲
-          دقیقه‌ای است.
-        </p>
 
         {saveState?.error && (
           <p className="mt-3 text-sm text-red-400">{saveState.error}</p>
@@ -362,9 +363,11 @@ export default function ServicesEditor({
                 className={`w-full max-w-xs ${FIELD}`}
               />
               {projectSuggestion && (
-                <span className="text-xs leading-6 text-brand">
+                <span className="text-xs leading-6 text-muted">
                   پیشنهاد ۲۲ درجه برای این حجم کار:{" "}
-                  {formatRange(projectSuggestion, usdRate)}
+                  <span className="font-medium text-foreground">
+                    {formatRange(projectSuggestion, usdRate)}
+                  </span>
                 </span>
               )}
             </label>
