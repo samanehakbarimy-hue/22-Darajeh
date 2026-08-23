@@ -18,7 +18,6 @@ export async function createBooking(
     redirect("/login");
   }
 
-  const mentorId = String(formData.get("mentor_id") ?? "");
   const slotId = String(formData.get("slot_id") ?? "");
   const message = String(formData.get("message") ?? "").trim();
 
@@ -34,8 +33,20 @@ export async function createBooking(
     return { error: "معرفی‌ات باید حداکثر ۱۲۰ کلمه باشه." };
   }
 
+  // Whose slot it is comes from the slot, never from the form. The database
+  // refuses a mismatch either way, but sending one at all would be a bug.
+  const { data: slot } = await supabase
+    .from("availability_slots")
+    .select("mentor_id")
+    .eq("id", slotId)
+    .maybeSingle();
+
+  if (!slot) {
+    return { error: "این زمان دیگر در دسترس نیست." };
+  }
+
   const { error } = await supabase.from("bookings").insert({
-    mentor_id: mentorId,
+    mentor_id: slot.mentor_id,
     slot_id: slotId,
     seeker_id: user.id,
     message,
