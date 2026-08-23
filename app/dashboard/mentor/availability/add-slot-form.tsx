@@ -36,10 +36,7 @@ export default function AddSlotForm({
 }) {
   const taken = useMemo(() => new Set(takenDates), [takenDates]);
 
-  const [state, action, pending] = useActionState(
-    addAvailabilitySlots,
-    undefined,
-  );
+  const [state, action, pending] = useActionState(addAvailabilitySlots, undefined);
 
   const today = useMemo(() => startOfToday(), []);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -97,15 +94,8 @@ export default function AddSlotForm({
   const chosenCount = allTimes.length;
 
   return (
-    <form
-      action={action}
-      className="rounded-2xl border border-card-border bg-card p-6"
-    >
-      <input
-        type="hidden"
-        name="date"
-        value={selectedDate ? isoDate(selectedDate) : ""}
-      />
+    <form action={action} className="rounded-2xl border border-card-border bg-card p-6">
+      <input type="hidden" name="date" value={selectedDate ? isoDate(selectedDate) : ""} />
       <input type="hidden" name="times" value={allTimes.join(",")} />
       <input type="hidden" name="repeat_weeks" value={REPEAT_WEEKS} />
 
@@ -124,88 +114,90 @@ export default function AddSlotForm({
             isDisabled={(day) => day < today}
             isMarked={(day) => taken.has(isoDate(day))}
           />
+
         </div>
 
         {selectedDate && (
           <div>
-            <p className="mb-3 text-sm">
-              <span className="text-muted">روز انتخاب‌شده: </span>
-              <span className="font-bold">{selectedLabel}</span>
-            </p>
+              <p className="mb-3 text-sm">
+                <span className="text-muted">روز انتخاب‌شده: </span>
+                <span className="font-bold">{selectedLabel}</span>
+              </p>
 
-            {allTimes.length > 0 && (
-              <div className="mb-3 flex flex-wrap gap-2">
-                {allTimes.map((t) => (
-                  <span
-                    key={t}
-                    className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-xs text-brand"
-                  >
-                    <span dir="ltr">
-                      {useJalali
-                        ? `${fa(t)} تا ${fa(hhmm(toMinutes(t) + SESSION_MINUTES))}`
-                        : `${t}–${hhmm(toMinutes(t) + SESSION_MINUTES)}`}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeTime(t)}
-                      aria-label={`حذف ${t}`}
-                      className="text-brand/60 transition hover:text-brand"
+              {allTimes.length > 0 && (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {allTimes.map((t) => (
+                    <span
+                      key={t}
+                      className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-xs text-brand"
                     >
-                      ×
+                      <span dir="ltr">
+                        {useJalali
+                          ? `${fa(t)} تا ${fa(hhmm(toMinutes(t) + SESSION_MINUTES))}`
+                          : `${t}–${hhmm(toMinutes(t) + SESSION_MINUTES)}`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeTime(t)}
+                        aria-label={`حذف ${t}`}
+                        className="text-brand/60 transition hover:text-brand"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <p className="mb-2 text-xs text-muted">
+                ساعت شروع را انتخاب کن؛ جلسه ۲۲ دقیقه بعد تمام می‌شه.
+              </p>
+              <div
+                dir="ltr"
+                className="grid max-h-48 grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4"
+              >
+                {TIME_OPTIONS.map(({ start, end }) => {
+                  const on = times.includes(start);
+                  return (
+                    <button
+                      key={start}
+                      type="button"
+                      onClick={() => toggleTime(start)}
+                      className={`rounded-lg border px-2 py-2 transition ${
+                        on
+                          ? "border-brand bg-brand-light text-brand"
+                          : "border-card-border text-muted hover:border-brand hover:text-brand"
+                      }`}
+                    >
+                      <span className="block text-sm font-bold" dir="ltr">
+                        {useJalali ? fa(start) : start}
+                      </span>
+                      <span className="block text-[10px] opacity-70" dir="ltr">
+                        {useJalali ? `تا ${fa(end)}` : `to ${end}`}
+                      </span>
                     </button>
-                  </span>
-                ))}
+                  );
+                })}
               </div>
-            )}
 
-            <p className="mb-2 text-xs text-muted">
-              ساعت شروع را انتخاب کن؛ جلسه ۲۲ دقیقه بعد تمام می‌شه.
-            </p>
-            <div
-              dir="ltr"
-              className="grid max-h-48 grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4"
-            >
-              {TIME_OPTIONS.map(({ start, end }) => {
-                const on = times.includes(start);
-                return (
-                  <button
-                    key={start}
-                    type="button"
-                    onClick={() => toggleTime(start)}
-                    className={`rounded-lg border px-2 py-2 transition ${
-                      on
-                        ? "border-brand bg-brand-light text-brand"
-                        : "border-card-border text-muted hover:border-brand hover:text-brand"
-                    }`}
-                  >
-                    <span className="block text-sm font-bold" dir="ltr">
-                      {useJalali ? fa(start) : start}
-                    </span>
-                    <span className="block text-[10px] opacity-70" dir="ltr">
-                      {useJalali ? `تا ${fa(end)}` : `to ${end}`}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="mt-4">
-              <span className="mb-1.5 block text-xs text-muted">
-                ساعت دلخواه
-              </span>
-              <div className="flex items-center gap-3">
-                <TimeWheel
-                  hour={wheelHour}
-                  minute={wheelMinute}
-                  usePersianDigits={useJalali}
-                  onChange={(h, m) => {
-                    setWheelHour(h);
-                    setWheelMinute(m);
-                    setWheelTouched(true);
-                  }}
-                />
+              <div className="mt-4">
+                <span className="mb-1.5 block text-xs text-muted">
+                  ساعت دلخواه
+                </span>
+                <div className="flex items-center gap-3">
+                  <TimeWheel
+                    hour={wheelHour}
+                    minute={wheelMinute}
+                    usePersianDigits={useJalali}
+                    onChange={(h, m) => {
+                      setWheelHour(h);
+                      setWheelMinute(m);
+                      setWheelTouched(true);
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+
           </div>
         )}
       </div>

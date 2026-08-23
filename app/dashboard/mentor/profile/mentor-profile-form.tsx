@@ -207,10 +207,7 @@ export default function MentorProfileForm({
         {photoError && <p className="text-sm text-red-400">{photoError}</p>}
 
         <div>
-          <label
-            htmlFor="headline"
-            className="mb-1.5 block text-sm font-medium"
-          >
+          <label htmlFor="headline" className="mb-1.5 block text-sm font-medium">
             سمت فعلی
           </label>
           <input
@@ -347,7 +344,9 @@ export default function MentorProfileForm({
         <div>
           <label htmlFor="phone" className="mb-1.5 block text-sm font-medium">
             شماره تماس
-            <span className="mr-1 text-xs font-normal text-muted">(خصوصی)</span>
+            <span className="mr-1 text-xs font-normal text-muted">
+              (خصوصی)
+            </span>
           </label>
           <input
             id="phone"

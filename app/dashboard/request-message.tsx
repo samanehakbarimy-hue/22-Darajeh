@@ -19,10 +19,7 @@ export default function RequestMessage({
   editable: boolean;
   edited?: boolean;
 }) {
-  const [state, action, pending] = useActionState(
-    editBookingMessage,
-    undefined,
-  );
+  const [state, action, pending] = useActionState(editBookingMessage, undefined);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(message);
 
@@ -98,7 +95,7 @@ export default function RequestMessage({
           className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-background disabled:opacity-50"
         >
           {pending && <Spinner />}
-          {pending ? "در حال ذخیره..." : "ذخیره"}
+        {pending ? "در حال ذخیره..." : "ذخیره"}
         </button>
         <button
           type="button"
