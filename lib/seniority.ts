@@ -2,7 +2,7 @@
  * Experience level, and the price suggestion built on it.
  */
 
-export type Seniority = "junior" | "mid" | "senior" | "principal";
+export type Seniority = "mid" | "senior" | "principal";
 
 export const SENIORITY_LEVELS: {
   value: Seniority;
@@ -12,13 +12,12 @@ export const SENIORITY_LEVELS: {
   /** Multiplier against the base hourly rate. */
   factor: number;
 }[] = [
-  { value: "junior", label: "۱ تا ۳ سال تجربه", badge: "۱ تا ۳ سال تجربه", factor: 0.6 },
   { value: "mid", label: "۳ تا ۷ سال تجربه", badge: "۳ تا ۷ سال تجربه", factor: 1 },
-  { value: "senior", label: "۷ تا ۱۲ سال تجربه", badge: "۷ تا ۱۲ سال تجربه", factor: 1.7 },
+  { value: "senior", label: "۷ تا ۱۴ سال تجربه", badge: "۷ تا ۱۴ سال تجربه", factor: 1.7 },
   {
     value: "principal",
-    label: "بیش از ۱۲ سال تجربه یا سطح مدیریتی",
-    badge: "بیش از ۱۲ سال تجربه",
+    label: "بیش از ۱۴ سال تجربه",
+    badge: "بیش از ۱۴ سال تجربه",
     factor: 2.6,
   },
 ];

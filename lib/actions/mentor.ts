@@ -33,6 +33,11 @@ export async function saveMentorProfile(
     return { error: "بیو و حوزه‌های تخصص الزامی هستند." };
   }
 
+  // An admin checks this claim before approving, so it cannot be optional.
+  if (!seniority) {
+    return { error: "میزان تجربه‌ات را انتخاب کن." };
+  }
+
   const expertiseTags = tagsRaw
     .split(/[,،]/)
     .map((tag) => tag.trim())
@@ -101,6 +106,12 @@ export async function saveMentorProfile(
   if (linkError) {
     return { error: linkError.message };
   }
+
+  // A corrected profile goes back in the queue. The specialist cannot set
+  // their own status — the guard trigger stops that, and should — so a narrow
+  // definer function makes exactly this one move, and only out of
+  // changes_requested. It is a no-op in every other state.
+  await supabase.rpc("resubmit_profile_for_review");
 
   return { success: true };
 }

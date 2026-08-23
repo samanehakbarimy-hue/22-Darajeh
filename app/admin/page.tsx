@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { approveMentor, rejectMentor } from "@/lib/actions/admin";
+import {
+  approveMentor,
+  rejectMentor,
+  requestMentorChanges,
+ } from "@/lib/actions/admin";
+import { seniorityBadge } from "@/lib/seniority";
 import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
 
@@ -11,7 +16,7 @@ type Member = {
   email: string;
   role: "mentor" | "seeker" | "admin";
   photo_url: string | null;
-  status: "pending" | "approved" | "rejected" | null;
+  status: "pending" | "approved" | "rejected" | "changes_requested" | null;
   created_at: string;
 };
 
@@ -25,6 +30,7 @@ const STATUS_LABEL: Record<string, string> = {
   pending: "در انتظار تأیید",
   approved: "تأیید‌شده",
   rejected: "رد‌شده",
+  changes_requested: "نیاز به اصلاح",
 };
 
 function Stat({ label, value }: { label: string; value: number }) {
@@ -62,7 +68,9 @@ export default async function AdminPage() {
 
   const { data: pendingMentors } = await supabase
     .from("mentor_profiles")
-    .select("id, bio, expertise_tags, linkedin_url, profiles(full_name)")
+    .select(
+      "id, bio, expertise_tags, linkedin_url, headline, seniority, profiles(full_name)",
+    )
     .eq("status", "pending")
     .order("created_at", { ascending: true });
 
@@ -106,6 +114,16 @@ export default async function AdminPage() {
                       ?.full_name
                   }
                 </h3>
+                {mentor.headline && (
+                  <p className="mt-1 text-sm text-muted">{mentor.headline}</p>
+                )}
+                {/* The claim being checked: does the headline and bio
+                    support this much experience? */}
+                {seniorityBadge(mentor.seniority) && (
+                  <p className="mt-2 inline-block rounded-full border border-brand/40 bg-brand-light px-3 py-1 text-xs text-brand">
+                    ادعای تجربه: {seniorityBadge(mentor.seniority)}
+                  </p>
+                )}
                 <p className="mt-2 text-sm text-muted">{mentor.bio}</p>
                 <p className="mt-2 text-sm text-muted">
                   حوزه‌ها: {(mentor.expertise_tags ?? []).join("، ")}
@@ -140,6 +158,35 @@ export default async function AdminPage() {
                     </button>
                   </form>
                 </div>
+
+                {/* Between yes and no: hand it back with a reason. */}
+                <form
+                  action={requestMentorChanges}
+                  className="mt-4 border-t border-card-border pt-4"
+                >
+                  <input type="hidden" name="mentor_id" value={mentor.id} />
+                  <label
+                    htmlFor={`note-${mentor.id}`}
+                    className="mb-1.5 block text-sm font-medium"
+                  >
+                    درخواست اصلاح
+                  </label>
+                  <textarea
+                    id={`note-${mentor.id}`}
+                    name="review_note"
+                    rows={2}
+                    required
+                    maxLength={500}
+                    placeholder="چه چیزی باید اصلاح شود؟ همین متن را خودش می‌بیند."
+                    className="w-full rounded-xl border border-card-border bg-background px-4 py-3 text-sm leading-7 outline-none focus:border-brand"
+                  />
+                  <button
+                    type="submit"
+                    className="mt-3 rounded-full border border-card-border px-4 py-2 text-sm font-medium hover:border-brand hover:text-brand"
+                  >
+                    فرستادن برای اصلاح
+                  </button>
+                </form>
               </li>
             ))}
           </ul>
