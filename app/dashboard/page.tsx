@@ -131,14 +131,20 @@ export default async function DashboardPage({
     }));
   }
 
+  // Every status a mentor_profiles row can hold needs a label here.
+  // changes_requested was added later and fell through to "you have not
+  // filled your profile", which told a specialist the opposite of the
+  // truth and hid the fact that a note was waiting for them.
   const statusLabel =
     mentorStatus === "approved"
       ? "تأیید شده ✅"
       : mentorStatus === "rejected"
         ? "رد شده"
-        : mentorStatus === "pending"
-          ? "در انتظار تأیید ادمین"
-          : "هنوز پروفایل متخصص‌ت رو تکمیل نکردی";
+        : mentorStatus === "changes_requested"
+          ? "نیاز به اصلاح — توضیحش در پروفایل"
+          : mentorStatus === "pending"
+            ? "در انتظار تأیید ادمین"
+            : "هنوز پروفایل متخصص‌ت رو تکمیل نکردی";
 
   const pendingRequests = mentorBookings.filter((b) => b.status === "pending");
   const upcomingSessions = mentorBookings.filter(
@@ -184,6 +190,12 @@ export default async function DashboardPage({
                 className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand"
               >
                 زمان‌های آزاد
+              </Link>
+              <Link
+                href="/dashboard/mentor/services"
+                className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand"
+              >
+                خدمات و قیمت‌ها
               </Link>
             </>
           )}
