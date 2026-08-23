@@ -78,6 +78,43 @@ export default function PrivacyPage() {
         </p>
       </Section>
 
+      {/* Google will not verify the app until the data it asks for is
+          disclosed here, and a credential that can write to a calendar is
+          worth saying out loud regardless. */}
+      <Section title="اتصال به تقویم گوگل (اختیاری)">
+        <p>
+          متخصص‌ها می‌توانند حساب گوگلشان را وصل کنند تا برای هر جلسه‌ای که
+          قبول می‌کنند لینک Google Meet جداگانه ساخته شود. این کار اختیاری
+          است؛ اگر انجامش ندهی، همان لینک ثابتی که خودت گذاشته‌ای استفاده
+          می‌شود.
+        </p>
+        <p>
+          اگر وصلش کنی، تنها دسترسی‌ای که می‌گیریم ساختن و ویرایش رویداد در
+          تقویم خودت است. رویدادهای دیگرت را نمی‌خوانیم و به ایمیل، فایل‌ها و
+          مخاطبینت کاری نداریم. فقط یک توکن برای همین کار ذخیره می‌شود و
+          آدرس ایمیل گوگلت، که تنها به خودت نشان داده می‌شود تا بدانی کدام
+          حساب وصل است. این توکن به هیچ‌کس دیگری — از جمله ادمین — نشان داده
+          نمی‌شود.
+        </p>
+        <p>
+          هر وقت بخواهی می‌توانی این دسترسی را از تنظیمات حساب گوگلت قطع کنی:
+        </p>
+        <p>
+          <a
+            href="https://myaccount.google.com/permissions"
+            target="_blank"
+            rel="noopener noreferrer"
+            dir="ltr"
+            className="text-brand hover:underline"
+          >
+            myaccount.google.com/permissions
+          </a>
+        </p>
+        <p>
+          بعد از قطع کردن، دیگر لینک تازه‌ای ساخته نمی‌شود و لینک‌هایی که
+          قبلاً ساخته شده دست‌نخورده می‌ماند.
+        </p>
+      </Section>
       <Section title="حذف حساب">
         <p>
           هر وقت بخواهی می‌توانی از «تنظیمات حساب» حسابت را پاک کنی. با این کار
