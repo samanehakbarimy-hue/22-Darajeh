@@ -249,7 +249,7 @@ export default async function AdminPage() {
                         member.status === "approved" ? (
                           <Link
                             href={`/specialists/${member.id}`}
-                            className="hover:text-brand"
+                            className="inline-block py-1 hover:text-brand"
                           >
                             {member.full_name}
                           </Link>

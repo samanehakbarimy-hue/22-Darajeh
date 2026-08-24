@@ -33,7 +33,7 @@ export default function SendBackForReview({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="text-xs text-muted underline-offset-4 hover:text-brand hover:underline"
+          className="py-1.5 text-xs text-muted underline-offset-4 hover:text-brand hover:underline"
         >
           بازبینی دوباره
         </button>
