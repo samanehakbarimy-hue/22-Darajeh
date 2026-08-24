@@ -57,7 +57,7 @@ export default async function Navbar() {
           <Link
             key={link.href}
             href={link.href}
-            className="text-muted hover:text-foreground"
+            className="py-1 text-muted hover:text-foreground"
           >
             {link.label}
           </Link>
