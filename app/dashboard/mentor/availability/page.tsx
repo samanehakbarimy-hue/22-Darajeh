@@ -3,12 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import { deleteAvailabilitySlots } from "@/lib/actions/availability";
 import AddSlotForm from "./add-slot-form";
 import { dateFormats } from "@/lib/persian";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function MentorAvailabilityPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");

@@ -6,6 +6,7 @@ import RequestMessage from "../request-message";
 import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
 import { signAttachment } from "@/lib/briefs";
+import { getCurrentUser } from "@/lib/auth";
 
 // Each status carries a mark as well as a colour. Simulated against
 // deuteranopia the green and red chips land at a 1.10 luminance ratio — all
@@ -37,9 +38,7 @@ const STATUS = {
 
 export default async function MyRequestsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login?next=/dashboard/requests");

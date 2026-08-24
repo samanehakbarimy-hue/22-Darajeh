@@ -5,6 +5,7 @@ import { logout } from "@/lib/actions/auth";
 import RequestMessage from "./request-message";
 import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function DashboardPage({
   searchParams,
@@ -13,9 +14,7 @@ export default async function DashboardPage({
 }) {
   const { booked } = await searchParams;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");

@@ -8,12 +8,11 @@ import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
 import BriefReply from "@/components/BriefReply";
 import { signAttachment } from "@/lib/briefs";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function MySessionsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login?next=/dashboard/sessions");

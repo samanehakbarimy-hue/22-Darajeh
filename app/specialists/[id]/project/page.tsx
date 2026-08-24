@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatServicePrice } from "@/lib/services";
 import BriefForm from "./brief-form";
+import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "درخواست همکاری پروژه‌ای — ۲۲ درجه" };
 
@@ -14,9 +15,7 @@ export default async function ProjectBriefPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     redirect(`/login?next=/specialists/${id}/project`);
   }

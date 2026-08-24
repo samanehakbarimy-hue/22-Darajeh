@@ -3,12 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import ServicesEditor from "./services-editor";
 import type { MentorService } from "@/lib/services";
 import { getUsdToToman } from "@/lib/exchange-rate";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function MentorServicesPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login?next=/dashboard/mentor/services");

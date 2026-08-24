@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
 import BookingForm from "./booking-form";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function BookSpecialistPage({
   params,
@@ -12,9 +13,7 @@ export default async function BookSpecialistPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect(`/login?next=/specialists/${id}/book`);

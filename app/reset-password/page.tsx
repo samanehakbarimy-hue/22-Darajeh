@@ -1,14 +1,11 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import ResetPasswordForm from "./reset-password-form";
+import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "رمز تازه — ۲۲ درجه" };
 
 export default async function ResetPasswordPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   // Reaching this page means the recovery link already signed them in. Without
   // a session there is nothing to change, and the link has probably expired —

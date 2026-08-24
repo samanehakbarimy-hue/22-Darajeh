@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import MentorProfileForm from "./mentor-profile-form";
 import { isGoogleConnectOffered } from "@/lib/google/meet";
+import { getCurrentUser } from "@/lib/auth";
 
 const GOOGLE_MESSAGE: Record<string, string> = {
   connected: "حساب گوگلت وصل شد. از این به بعد برای هر جلسه‌ای که قبول کنی لینک ساخته می‌شود.",
@@ -18,9 +19,7 @@ export default async function MentorProfilePage({
 }) {
   const { google } = await searchParams;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");

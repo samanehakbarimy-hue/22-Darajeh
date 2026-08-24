@@ -11,6 +11,7 @@ import { seniorityBadge } from "@/lib/seniority";
 import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
 import SendBackForReview from "@/components/SendBackForReview";
+import { getCurrentUser } from "@/lib/auth";
 
 type Member = {
   id: string;
@@ -46,9 +47,7 @@ function Stat({ label, value }: { label: string; value: number }) {
 
 export default async function AdminPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");

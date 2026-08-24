@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { linkLinkedIn } from "@/lib/actions/auth";
 import AccountForm from "./account-form";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function AccountPage({
   searchParams,
@@ -10,9 +11,7 @@ export default async function AccountPage({
 }) {
   const { error } = await searchParams;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");

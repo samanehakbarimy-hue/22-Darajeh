@@ -3,12 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import Avatar from "@/components/Avatar";
 import Logo from "@/components/Logo";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function Navbar() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   let fullName: string | null = null;
   let photoUrl: string | null = null;

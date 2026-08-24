@@ -6,6 +6,10 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    // Node runs the tests by stripping types, and it needs the .ts extension
+    // in the import to find the file. noEmit is already on, which is the only
+    // thing this flag requires.
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
