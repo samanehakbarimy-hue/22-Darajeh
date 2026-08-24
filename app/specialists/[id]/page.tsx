@@ -90,7 +90,14 @@ export default async function SpecialistPage({
         ← بازگشت به فهرست متخصص‌ها
       </Link>
 
-      <div className="mt-4 overflow-hidden rounded-2xl border border-card-border bg-card">
+      {/* Two columns from the top, not from below the header. The header was
+          full width with the name pinned to the start, so more than half of it
+          was empty by construction — and the one thing anyone came here to do
+          sat below the fold. */}
+      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_340px]">
+        <div className="flex flex-col gap-6">
+
+      <div className="overflow-hidden rounded-2xl border border-card-border bg-card">
         {/* A banner gives the page a top edge to sit against; without one the
             name floated in empty space. */}
         <div className="h-28 bg-gradient-to-l from-brand/25 via-brand/10 to-transparent sm:h-36" />
@@ -163,23 +170,26 @@ export default async function SpecialistPage({
             )}
           </div>
 
-          {tags.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2 border-t border-card-border pt-5">
-              {tags.map((tag: string) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-brand-light px-3 py-1.5 text-sm text-brand"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px]">
+      {tags.length > 0 && (
         <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
+          <h2 className="text-lg font-bold">حوزه‌های تخصص</h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {tags.map((tag: string) => (
+              <span
+                key={tag}
+                className="rounded-full bg-brand-light px-3 py-1.5 text-sm text-brand"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
           <h2 className="text-lg font-bold">درباره من</h2>
           <p className="mt-3 whitespace-pre-line leading-8 text-muted">
             {specialist.bio}
@@ -197,6 +207,8 @@ export default async function SpecialistPage({
               </div>
             )}
           </div>
+        </div>
+
         </div>
 
         <aside className="h-fit lg:sticky lg:top-6">
