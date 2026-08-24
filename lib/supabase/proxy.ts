@@ -25,8 +25,11 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Keeps the login session fresh on every request.
-  await supabase.auth.getUser();
+  // Keeps the login session fresh on every request. The user comes back too,
+  // so the caller can decide who is allowed where without asking twice.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return response;
+  return { response, user };
 }
