@@ -62,11 +62,13 @@ export function suggestedRange(
 
   const centre = BASE_HOURLY_USD * usdRate * level.factor * hours;
 
-  // Deliberately wide, and wider downwards than up. Most people booking here
-  // are early in their careers and paying for themselves, so the floor has to
-  // be somewhere a specialist can comfortably sit without feeling they have
-  // undercut the platform. A narrow band reads as a price with extra steps.
-  return { low: roundToman(centre * 0.55), high: roundToman(centre * 1.5) };
+  // Wider downwards than up, because most people booking here are early in
+  // their careers and paying for themselves. But the floor used to sit at
+  // 0.55, which put an hour with a ۷–۱۴ سال engineer below what that engineer
+  // earns as an employee — a suggestion that quietly says the work is not
+  // worth much. Anyone who wants to help for nothing already has the free
+  // 22-minute call; a paid session should be a real price.
+  return { low: roundToman(centre * 0.7), high: roundToman(centre * 1.5) };
 }
 
 /** Delegates, so currency and exchange rate stay in one file. */
