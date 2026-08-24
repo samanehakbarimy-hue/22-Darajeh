@@ -7,6 +7,7 @@ import ConfirmedSessionLink from "./confirmed-session-link";
 import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
 import BriefReply from "@/components/BriefReply";
+import { signAttachment } from "@/lib/briefs";
 
 export default async function MySessionsPage() {
   const supabase = await createClient();
@@ -59,17 +60,28 @@ export default async function MySessionsPage() {
 
   const { data: briefRows } = await supabase
     .from("project_briefs")
-    .select("id, brief, created_at, profiles!project_briefs_seeker_id_fkey(full_name)")
+    .select(
+      "id, brief, created_at, attachment_path, attachment_name, profiles!project_briefs_seeker_id_fkey(full_name)",
+    )
     .eq("mentor_id", user.id)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 
-  const briefs = (briefRows ?? []).map((b) => ({
-    id: b.id as string,
-    brief: b.brief as string,
-    createdAt: b.created_at as string,
-    seeker: (b.profiles as unknown as { full_name: string } | null)?.full_name ?? "متقاضی",
-  }));
+  const briefs = await Promise.all(
+    (briefRows ?? []).map(async (b) => ({
+      id: b.id as string,
+      brief: b.brief as string,
+      createdAt: b.created_at as string,
+      seeker:
+        (b.profiles as unknown as { full_name: string } | null)?.full_name ??
+        "متقاضی",
+      fileName: (b.attachment_name as string | null) ?? null,
+      fileUrl: await signAttachment(
+        supabase,
+        b.attachment_path as string | null,
+      ),
+    })),
+  );
 
   const rows = (data ?? []).map((b) => ({
     id: b.id,
@@ -268,6 +280,17 @@ export default async function MySessionsPage() {
                 <p className="mt-4 whitespace-pre-line leading-7 text-muted">
                   {b.brief}
                 </p>
+                {b.fileUrl && (
+                  <a
+                    href={b.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-block rounded-full border border-card-border px-4 py-2 text-sm hover:border-brand hover:text-brand"
+                  >
+                    📎 {b.fileName}
+                  </a>
+                )}
+
                 <BriefReply briefId={b.id} />
               </li>
             ))}

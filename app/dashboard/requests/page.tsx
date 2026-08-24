@@ -5,6 +5,7 @@ import Avatar from "@/components/Avatar";
 import RequestMessage from "../request-message";
 import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
+import { signAttachment } from "@/lib/briefs";
 
 // Each status carries a mark as well as a colour. Simulated against
 // deuteranopia the green and red chips land at a 1.10 luminance ratio — all
@@ -61,12 +62,13 @@ export default async function MyRequestsPage() {
   const { data: briefRows } = await supabase
     .from("project_briefs")
     .select(
-      "id, brief, status, quoted_rate_toman, estimated_hours, reply_note, created_at, mentor_profiles(profiles(full_name))",
+      "id, brief, status, quoted_rate_toman, estimated_hours, reply_note, created_at, attachment_path, attachment_name, mentor_profiles(profiles(full_name))",
     )
     .eq("seeker_id", user.id)
     .order("created_at", { ascending: false });
 
-  const briefs = (briefRows ?? []).map((b) => ({
+  const briefs = await Promise.all(
+    (briefRows ?? []).map(async (b) => ({
     id: b.id as string,
     brief: b.brief as string,
     status: b.status as string,
@@ -80,7 +82,13 @@ export default async function MyRequestsPage() {
           profiles: { full_name: string } | null;
         } | null
       )?.profiles?.full_name ?? "متخصص",
-  }));
+      fileName: (b.attachment_name as string | null) ?? null,
+      fileUrl: await signAttachment(
+        supabase,
+        b.attachment_path as string | null,
+      ),
+    })),
+  );
 
   const mentorIds = rows
     .filter((b) => b.status === "confirmed")
@@ -138,6 +146,17 @@ export default async function MyRequestsPage() {
                 <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted">
                   {b.brief}
                 </p>
+
+                {b.fileUrl && (
+                  <a
+                    href={b.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-block rounded-full border border-card-border px-4 py-2 text-xs hover:border-brand hover:text-brand"
+                  >
+                    📎 {b.fileName}
+                  </a>
+                )}
 
                 {b.status === "accepted" && (
                   <div className="mt-4 border-t border-card-border pt-4 text-sm leading-7">

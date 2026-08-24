@@ -48,9 +48,26 @@ export async function sendBrief(
   } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=/specialists/${mentorId}/project`);
 
-  const { error } = await supabase
-    .from("project_briefs")
-    .insert({ mentor_id: mentorId, seeker_id: user.id, brief });
+  // The browser uploads the file itself and hands back where it put it. The
+  // storage policy only lets someone write into a folder named after them, so
+  // a path claiming to be somebody else's is a forgery — refuse it here rather
+  // than store a pointer to a file this person cannot have written.
+  const attachmentPath = String(formData.get("attachment_path") ?? "").trim();
+  const attachmentName = String(formData.get("attachment_name") ?? "")
+    .trim()
+    .slice(0, 200);
+
+  if (attachmentPath && !attachmentPath.startsWith(`${user.id}/`)) {
+    return { error: "این فایل مال تو نیست." };
+  }
+
+  const { error } = await supabase.from("project_briefs").insert({
+    mentor_id: mentorId,
+    seeker_id: user.id,
+    brief,
+    attachment_path: attachmentPath || null,
+    attachment_name: attachmentPath ? attachmentName || "فایل" : null,
+  });
 
   if (error) {
     // The partial unique index is the only one a person can hit by accident.
