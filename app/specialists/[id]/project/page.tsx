@@ -58,6 +58,27 @@ export default async function ProjectBriefPage({
     );
   }
 
+  // A specialist cannot brief themselves: the insert policy refuses
+  // mentor_id = auth.uid(). Offering the form anyway would let them write the
+  // whole thing out and only fail on send.
+  if (user.id === id) {
+    return (
+      <div className="mx-auto w-full max-w-lg flex-1 px-6 py-16">
+        <h1 className="text-2xl font-bold">این صفحه‌ی توست</h1>
+        <p className="mt-2 leading-7 text-muted">
+          متقاضی‌ها از همین‌جا کارشان را برایت می‌نویسند. هر درخواستی که برسد
+          در «جلسات من» نشانت داده می‌شود.
+        </p>
+        <Link
+          href="/dashboard/sessions"
+          className="mt-6 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover"
+        >
+          دیدن درخواست‌ها
+        </Link>
+      </div>
+    );
+  }
+
   const name =
     (mentor.profiles as unknown as { full_name: string } | null)?.full_name ??
     "متخصص";
@@ -92,7 +113,7 @@ export default async function ProjectBriefPage({
                 usdRate,
               )}
         </span>{" "}
-        — برای هر ساعت. برای کار تو ممکن است فرق کند.
+        — برای کار تو ممکن است فرق کند.
       </p>
 
       <BriefForm mentorId={id} />
