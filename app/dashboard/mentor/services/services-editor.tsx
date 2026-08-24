@@ -139,22 +139,22 @@ export default function ServicesEditor({
                     )}
                   </div>
 
-                  <div className="flex flex-wrap items-end gap-3">
-                    <label className="flex flex-col gap-1.5">
-                      <span className="text-xs text-muted">قیمت (تومان)</span>
-                      <PriceInput
-                        name="price_toman"
-                        defaultValue={
-                          existing?.price_toman == null
-                            ? ""
-                            : String(existing.price_toman)
-                        }
-                        placeholder="۵۰۰,۰۰۰"
-                        className={`w-48 ${FIELD}`}
-                      />
-                    </label>
+                  <label className="flex w-fit flex-col gap-1.5">
+                    <span className="text-xs text-muted">قیمت (تومان)</span>
+                    <PriceInput
+                      name="price_toman"
+                      defaultValue={
+                        existing?.price_toman == null
+                          ? ""
+                          : String(existing.price_toman)
+                      }
+                      placeholder="۵۰۰,۰۰۰"
+                      className={`w-48 ${FIELD}`}
+                    />
+                  </label>
 
-                    <label className="flex items-center gap-2 pb-3 text-sm">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <label className="flex items-center gap-2 text-sm">
                       <input
                         type="checkbox"
                         name="is_active"
@@ -166,7 +166,7 @@ export default function ServicesEditor({
 
                     <SubmitButton
                       pendingLabel="ذخیره..."
-                      className="mb-2 px-5 py-2 text-sm"
+                      className="px-5 py-2 text-sm"
                     >
                       {existing ? "به‌روزرسانی" : "اضافه کن"}
                     </SubmitButton>
@@ -177,7 +177,7 @@ export default function ServicesEditor({
                         formAction={deleteAction}
                         name="id"
                         value={existing.id}
-                        className="mb-2 rounded-full border border-card-border px-4 py-2 text-xs text-red-400 hover:border-red-400"
+                        className="rounded-full border border-card-border px-4 py-2 text-xs text-red-400 hover:border-red-400"
                       >
                         حذف
                       </button>

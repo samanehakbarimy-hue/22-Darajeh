@@ -52,30 +52,6 @@ export default async function MentorServicesPage() {
         می‌کنی.
       </p>
 
-      {/* The dollar figures beside every suggestion come from somewhere, and
-          "somewhere" is not checkable. Naming the rate and its source lets a
-          specialist compare it against what they already know the dollar is
-          worth — and if the feed is down, saying so beats quietly dropping
-          every dollar figure and leaving them to wonder. */}
-      <p className="mt-4 rounded-xl border border-card-border bg-card px-4 py-3 text-xs leading-6 text-muted">
-        {usdRate === null ? (
-          <>
-            نرخ دلار الان در دسترس نیست، برای همین مبلغ دلاری کنار پیشنهادها
-            نوشته نمی‌شود. قیمت‌های تومانی سر جایشان‌اند.
-          </>
-        ) : (
-          <>
-            مبلغ‌های دلاری بر اساس نرخ{" "}
-            <span className="font-medium text-foreground">
-              {usdRate.toLocaleString("fa-IR")} تومان
-            </span>{" "}
-            برای هر دلار حساب شده‌اند — از بازار آزاد (tgju.org)، چند بار در
-            روز به‌روز می‌شود. اگر با چیزی که می‌دانی جور نیست، به تومانش نگاه
-            کن.
-          </>
-        )}
-      </p>
-
       <ServicesEditor
         seniority={mentorProfile?.seniority ?? null}
         usdRate={usdRate}

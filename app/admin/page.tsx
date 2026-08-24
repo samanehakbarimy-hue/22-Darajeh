@@ -12,6 +12,7 @@ import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
 import SendBackForReview from "@/components/SendBackForReview";
 import { getCurrentUser } from "@/lib/auth";
+import { getUsdToToman } from "@/lib/exchange-rate";
 
 type Member = {
   id: string;
@@ -48,6 +49,7 @@ function Stat({ label, value }: { label: string; value: number }) {
 export default async function AdminPage() {
   const supabase = await createClient();
   const user = await getCurrentUser();
+  const usdRate = await getUsdToToman();
 
   if (!user) {
     redirect("/login");
@@ -102,7 +104,25 @@ export default async function AdminPage() {
       {/* Pending approvals first — this is the only part that needs action. */}
       {pendingMentors && pendingMentors.length > 0 && (
         <section className="mt-12">
-          <h2 className="text-lg font-bold">در انتظار تأیید</h2>
+          {/* The rate every suggested price is built from. Nobody else needs to
+          see it, but somebody should be able to check it — a feed that starts
+          returning nonsense would otherwise move every price on the site with
+          no sign that anything had changed. */}
+      <p className="mt-6 rounded-xl border border-card-border bg-card px-4 py-3 text-xs leading-6 text-muted">
+        {usdRate === null ? (
+          <>نرخ دلار در دسترس نیست، پس پیشنهادهای قیمت فعلاً مبلغ دلاری ندارند.</>
+        ) : (
+          <>
+            نرخ دلار برای پیشنهادهای قیمت:{" "}
+            <span className="font-medium text-foreground">
+              {usdRate.toLocaleString("fa-IR")} تومان
+            </span>{" "}
+            — از بازار آزاد (tgju.org).
+          </>
+        )}
+      </p>
+
+      <h2 className="text-lg font-bold">در انتظار تأیید</h2>
           <ul className="mt-4 flex flex-col gap-4">
             {pendingMentors.map((mentor) => (
               <li
