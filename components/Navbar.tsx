@@ -73,7 +73,10 @@ export default async function Navbar() {
               {fullName ?? "پروفایل من"}
             </Link>
             <form action={logout}>
-              <button type="submit" className="text-muted hover:text-foreground">
+              <button
+                type="submit"
+                className="py-1 text-muted hover:text-foreground"
+              >
                 خروج
               </button>
             </form>
