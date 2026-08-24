@@ -6,6 +6,8 @@ import { dateFormats } from "@/lib/persian";
 import ServiceBooking from "@/components/ServiceBooking";
 import type { MentorService } from "@/lib/services";
 import { seniorityBadge } from "@/lib/seniority";
+import { FREE_CALL } from "@/lib/services";
+import { fa } from "@/lib/persian";
 
 export default async function SpecialistPage({
   params,
@@ -94,7 +96,8 @@ export default async function SpecialistPage({
       </Link>
 
       <div className="mt-4 rounded-2xl border border-card-border bg-card p-6 sm:p-8">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
           <div className="shrink-0">
             <Avatar photoUrl={profile?.photo_url} name={name} size={96} />
           </div>
@@ -169,6 +172,33 @@ export default async function SpecialistPage({
                 ))}
               </div>
             )}
+            </div>
+          </div>
+
+          <div className="shrink-0 rounded-xl border border-brand/40 p-4 sm:w-56">
+            <p className="font-bold">{FREE_CALL.title}</p>
+            <p className="mt-1 text-xs leading-6 text-muted">
+              {fa(FREE_CALL.minutes)} دقیقه ·{" "}
+              <span className="text-brand">رایگان</span>
+            </p>
+            {slots && slots.length > 0 ? (
+              <Link
+                href={`/specialists/${specialist.id}/book`}
+                className="mt-3 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-hover"
+              >
+                رزرو جلسه
+              </Link>
+            ) : (
+              <span className="mt-3 inline-block rounded-full border border-card-border px-4 py-2 text-xs text-muted">
+                زمان آزاد نیست
+              </span>
+            )}
+            {nextSlot && (
+              <p className="mt-3 text-xs leading-6 text-muted">
+                نزدیک‌ترین زمان: {timeFormatter.format(new Date(nextSlot))} (به
+                وقت تهران)
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -176,13 +206,7 @@ export default async function SpecialistPage({
       <div className="mt-6">
         <ServiceBooking
           specialistId={specialist.id}
-          hasSlots={Boolean(slots && slots.length > 0)}
-          // Formatted here rather than in the client component: the server
-          // pins Tehran, and a device in another zone would print its own.
           services={(serviceRows ?? []) as MentorService[]}
-          nearestSlotLabel={
-            nextSlot ? timeFormatter.format(new Date(nextSlot)) : null
-          }
         />
       </div>
 
