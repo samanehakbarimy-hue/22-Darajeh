@@ -56,6 +56,32 @@ export default async function MyRequestsPage() {
 
   const rows = bookings ?? [];
 
+  // Project briefs are a separate conversation from session requests, so they
+  // are listed separately rather than sorted in among them.
+  const { data: briefRows } = await supabase
+    .from("project_briefs")
+    .select(
+      "id, brief, status, quoted_rate_toman, estimated_hours, reply_note, created_at, mentor_profiles(profiles(full_name))",
+    )
+    .eq("seeker_id", user.id)
+    .order("created_at", { ascending: false });
+
+  const briefs = (briefRows ?? []).map((b) => ({
+    id: b.id as string,
+    brief: b.brief as string,
+    status: b.status as string,
+    rate: b.quoted_rate_toman as number | null,
+    hours: b.estimated_hours as number | null,
+    note: b.reply_note as string | null,
+    createdAt: b.created_at as string,
+    mentor:
+      (
+        b.mentor_profiles as unknown as {
+          profiles: { full_name: string } | null;
+        } | null
+      )?.profiles?.full_name ?? "متخصص",
+  }));
+
   const mentorIds = rows
     .filter((b) => b.status === "confirmed")
     .map((b) => b.mentor_id);
@@ -79,7 +105,75 @@ export default async function MyRequestsPage() {
         هر درخواستی که فرستادی، برای چه کسی و چه زمانی، و جوابی که گرفتی.
       </p>
 
-      {rows.length === 0 ? (
+      {briefs.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-lg font-bold">کارهای پروژه‌ای</h2>
+          <ul className="mt-4 flex flex-col gap-4">
+            {briefs.map((b) => (
+              <li
+                key={b.id}
+                className="rounded-2xl border border-card-border bg-card p-6"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <p className="font-bold">{b.mentor}</p>
+                  <span
+                    className={`shrink-0 rounded-full px-3 py-1 text-xs ${
+                      b.status === "accepted"
+                        ? "bg-success-light text-success"
+                        : b.status === "pending"
+                          ? "border border-card-border text-muted"
+                          : "border border-red-400/40 text-red-400"
+                    }`}
+                  >
+                    {b.status === "accepted"
+                      ? "✓ قبول کرد"
+                      : b.status === "pending"
+                        ? "… در انتظار جواب"
+                        : b.status === "withdrawn"
+                          ? "پس گرفتی"
+                          : "✕ قبول نکرد"}
+                  </span>
+                </div>
+
+                <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted">
+                  {b.brief}
+                </p>
+
+                {b.status === "accepted" && (
+                  <div className="mt-4 border-t border-card-border pt-4 text-sm leading-7">
+                    <p>
+                      نرخ پیشنهادی:{" "}
+                      <span className="font-medium">
+                        {(b.rate ?? 0).toLocaleString("fa-IR")} تومان
+                      </span>{" "}
+                      برای هر ساعت — تخمین{" "}
+                      <span className="font-medium">
+                        {(b.hours ?? 0).toLocaleString("fa-IR")}
+                      </span>{" "}
+                      ساعت
+                    </p>
+                    {b.note && (
+                      <p className="mt-2 text-muted">{b.note}</p>
+                    )}
+                    <p className="mt-3 text-xs leading-6 text-muted">
+                      پرداخت آنلاین هنوز فعال نیست. برای شروع کار، یک تماس
+                      رایگان ۲۲ دقیقه‌ای رزرو کن و جزئیات را با هم نهایی کنید.
+                    </p>
+                  </div>
+                )}
+
+                {b.status === "declined" && b.note && (
+                  <p className="mt-4 border-t border-card-border pt-4 text-sm leading-7 text-muted">
+                    {b.note}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {rows.length === 0 && briefs.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-card-border bg-card p-10 text-center">
           <p className="text-muted">هنوز درخواستی نفرستادی.</p>
           <Link

@@ -24,18 +24,25 @@ export default function SubmitButton({
   variant = "primary",
   className = "",
   disabled = false,
+  name,
+  value,
 }: {
   children: React.ReactNode;
   pendingLabel?: string;
   variant?: keyof typeof VARIANTS;
   className?: string;
   disabled?: boolean;
+  /** For a form with more than one submit, so the action knows which. */
+  name?: string;
+  value?: string;
 }) {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
+      name={name}
+      value={value}
       disabled={pending || disabled}
       aria-busy={pending}
       className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 ${VARIANTS[variant]} ${className}`}

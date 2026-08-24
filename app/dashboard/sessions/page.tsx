@@ -6,6 +6,7 @@ import SubmitButton from "@/components/SubmitButton";
 import ConfirmedSessionLink from "./confirmed-session-link";
 import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
+import BriefReply from "@/components/BriefReply";
 
 export default async function MySessionsPage() {
   const supabase = await createClient();
@@ -55,6 +56,20 @@ export default async function MySessionsPage() {
     .eq("id", user.id)
     .maybeSingle();
   const googleConnected = Boolean(googleAccount);
+
+  const { data: briefRows } = await supabase
+    .from("project_briefs")
+    .select("id, brief, created_at, profiles!project_briefs_seeker_id_fkey(full_name)")
+    .eq("mentor_id", user.id)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  const briefs = (briefRows ?? []).map((b) => ({
+    id: b.id as string,
+    brief: b.brief as string,
+    createdAt: b.created_at as string,
+    seeker: (b.profiles as unknown as { full_name: string } | null)?.full_name ?? "متقاضی",
+  }));
 
   const rows = (data ?? []).map((b) => ({
     id: b.id,
@@ -222,6 +237,38 @@ export default async function MySessionsPage() {
                     </SubmitButton>
                   </form>
                 </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {briefs.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-bold">
+            درخواست‌های پروژه‌ای
+            <span className="mr-2 rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs text-background">
+              {briefs.length.toLocaleString("fa-IR")}
+            </span>
+          </h2>
+          <p className="mt-1.5 text-sm leading-7 text-muted">
+            کاری که کسی برایت نوشته. اگر قبول کنی، نرخ و تخمین ساعتت را همان‌جا
+            می‌نویسی و او همان را می‌بیند.
+          </p>
+          <ul className="mt-4 flex flex-col gap-4">
+            {briefs.map((b) => (
+              <li
+                key={b.id}
+                className="rounded-2xl border border-brand/40 bg-card p-6"
+              >
+                <p className="font-bold">{b.seeker}</p>
+                <p className="mt-1 text-xs text-muted">
+                  {dateFormats.full.format(new Date(b.createdAt))}
+                </p>
+                <p className="mt-4 whitespace-pre-line leading-7 text-muted">
+                  {b.brief}
+                </p>
+                <BriefReply briefId={b.id} />
               </li>
             ))}
           </ul>
