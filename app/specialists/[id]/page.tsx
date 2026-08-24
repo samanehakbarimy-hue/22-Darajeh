@@ -65,7 +65,7 @@ export default async function SpecialistPage({
   const { data: serviceRows } = await supabase
     .from("mentor_services")
     .select(
-      "id, kind, session_key, title, description, minutes, min_hours, price_toman, is_active",
+      "id, kind, session_key, title, description, minutes, min_hours, price_toman, is_active, is_negotiable",
     )
     .eq("mentor_id", id)
     .eq("is_active", true)

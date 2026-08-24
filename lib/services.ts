@@ -34,6 +34,8 @@ export type MentorService = {
   min_hours: number | null;
   price_toman: number | null;
   is_active: boolean;
+  /** Project work only: a rate deliberately left open. */
+  is_negotiable: boolean;
 };
 
 export const TABS: { tab: ServiceTab; label: string }[] = [
@@ -101,27 +103,6 @@ export function sessionType(key: string | null): SessionType | null {
 }
 
 /** Starting points for project work, which a specialist then rewrites. */
-export const PROJECT_TEMPLATES: {
-  title: string;
-  description: string;
-  minHours: number;
-}[] = [
-  {
-    title: "بررسی فنی مدارک و طراحی",
-    description: "مدارک یا طراحی پروژه‌ات را می‌خواند و ایرادها را می‌گوید.",
-    minHours: 3,
-  },
-  {
-    title: "حل یک مسئله مشخص",
-    description: "روی یک مسئله معین در پروژه‌ات با هم کار می‌کنید.",
-    minHours: 2,
-  },
-  {
-    title: "همراهی در طول اجرا",
-    description: "در جریان پروژه در دسترس است و هر جا لازم شد کمک می‌کند.",
-    minHours: 5,
-  },
-];
 
 /** For a session these come from the catalogue, not from the stored row. */
 export function serviceTitle(service: MentorService): string {

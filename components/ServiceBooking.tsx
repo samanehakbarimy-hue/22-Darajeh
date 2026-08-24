@@ -84,7 +84,10 @@ export default function ServiceBooking({
   }
 
   const sessions = services.filter((s) => s.kind === "consultation");
-  const projects = services.filter((s) => s.kind === "hourly_project");
+  // One rate per specialist, not a catalogue: the work is described by the
+  // person asking for it, not guessed at in advance.
+  const projectRate =
+    services.find((s) => s.kind === "hourly_project") ?? null;
 
   const inertCta = (label: string) => (
     // Inert until there is a way to take payment. A live button would collect
@@ -183,27 +186,26 @@ export default function ServiceBooking({
               </p>
             )}
           </>
-        ) : projects.length === 0 ? (
+        ) : !projectRate ? (
           <p className="py-6 text-sm leading-7 text-muted">
-            این متخصص هنوز همکاری پروژه‌ای اضافه نکرده. می‌تونی تماس رایگان ۲۲
+            این متخصص هنوز نرخ کار پروژه‌ای نگذاشته. می‌تونی تماس رایگان ۲۲
             دقیقه‌ای را رزرو کنی و نیازت را با او در میان بگذاری.
           </p>
         ) : (
-          <ul className="flex flex-col">
-            {projects.map((service) => (
-              <ServiceRow
-                key={service.id}
-                title={serviceTitle(service)}
-                description={serviceDescription(service)}
-                meta={formatDuration(service)}
-                price={formatServicePrice(service, usdRate)}
-                action={inertCta("درخواست همکاری")}
-              />
-            ))}
-          </ul>
+          <ServiceRow
+            title="کار پروژه‌ای"
+            description="کارَت را توضیح بده و فایل‌هایش را بفرست؛ متخصص می‌بیند و می‌گوید قبول می‌کند یا نه."
+            meta="نفرساعت"
+            price={
+              projectRate.is_negotiable
+                ? "قابل مذاکره"
+                : formatServicePrice(projectRate, usdRate)
+            }
+            action={inertCta("درخواست همکاری")}
+          />
         )}
 
-        {(active === "projects" ? projects : sessions).length > 0 && (
+        {(active === "projects" ? (projectRate ? 1 : 0) : sessions.length) > 0 && (
           <p className="mt-4 text-xs leading-6 text-muted">
             پرداخت آنلاین هنوز فعال نیست. فعلاً تماس رایگان را رزرو کن و درباره
             این خدمت با متخصص حرف بزن.

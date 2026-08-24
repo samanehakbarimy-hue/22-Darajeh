@@ -43,33 +43,30 @@ export async function saveService(
   // work is theirs to describe, so it is validated the old way.
   const sessionKey = String(formData.get("session_key") ?? "").trim();
 
-  let title = "";
-  let description = "";
-  let minHours: number | null = null;
+  const title = "";
+  const description = "";
+  const minHours: number | null = null;
 
   if (kind === "consultation") {
     if (!SESSION_TYPES.some((s) => s.key === sessionKey)) {
       return { error: "این جلسه شناخته نشد." };
     }
-  } else {
-    title = String(formData.get("title") ?? "").trim();
-    if (!title) return { error: "عنوان را بنویس." };
-    if (title.length > 80) return { error: "عنوان خیلی بلند است." };
-
-    description = String(formData.get("description") ?? "").trim();
-    if (description.length > 300) return { error: "توضیح خیلی بلند است." };
-
-    minHours = toNumber(String(formData.get("min_hours") ?? ""));
-    if (minHours === null || minHours < 1 || minHours > 200) {
-      return { error: "حداقل ساعت را بین ۱ تا ۲۰۰ بنویس." };
-    }
   }
+  // Project work carries no title or description any more: the specialist
+  // states a rate, and the work itself is described by whoever is asking.
 
   // Left blank on purpose means "not priced yet", which the profile shows as
   // به‌زودی. Zero would mean free, and free is the 22-minute call's job.
+  const negotiable =
+    kind === "hourly_project" && formData.get("is_negotiable") !== null;
+
   const priceRaw = String(formData.get("price_toman") ?? "").trim();
-  const price = priceRaw ? toNumber(priceRaw) : null;
-  if (priceRaw && (price === null || price < 0)) {
+  // Negotiable is a deliberate absence of a number, so any figure typed before
+  // the box was ticked is dropped rather than stored beside it — the database
+  // refuses to hold both, and the profile would have two answers to one
+  // question.
+  const price = negotiable ? null : priceRaw ? toNumber(priceRaw) : null;
+  if (!negotiable && priceRaw && (price === null || price < 0)) {
     return { error: "قیمت را با عدد بنویس." };
   }
   const row = {
@@ -82,6 +79,7 @@ export async function saveService(
     minutes: null,
     min_hours: minHours,
     price_toman: price,
+    is_negotiable: negotiable,
     is_active: formData.get("is_active") !== null,
   };
 
