@@ -201,7 +201,14 @@ export default function ServiceBooking({
                 ? "قابل مذاکره"
                 : formatServicePrice(projectRate, usdRate)
             }
-            action={inertCta("درخواست همکاری")}
+            action={
+              <Link
+                href={`/specialists/${specialistId}/project`}
+                className="shrink-0 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-background hover:bg-brand-hover"
+              >
+                نوشتن درخواست
+              </Link>
+            }
           />
         )}
 
