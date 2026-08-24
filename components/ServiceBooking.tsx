@@ -30,14 +30,17 @@ function ServiceRow({
 }) {
   return (
     <li className="border-b border-card-border py-4 last:border-0">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+        {/* The title takes at least half the row whatever the price says, and
+            the price drops to its own line before it can squeeze the title
+            into a column one word wide. */}
+        <div className="min-w-[55%] flex-1">
           <h4 className="font-bold">{title}</h4>
           {description && (
             <p className="mt-1 text-sm leading-6 text-muted">{description}</p>
           )}
         </div>
-        <div className="shrink-0 text-left">
+        <div className="text-left">
           <div className="text-xs text-muted">{meta}</div>
           <div className="mt-0.5 text-sm font-bold">{price}</div>
         </div>
@@ -59,14 +62,12 @@ export default function ServiceBooking({
   hasSlots,
   nearestSlotLabel,
   services,
-  usdRate,
 }: {
   specialistId: string;
   hasSlots: boolean;
   nearestSlotLabel: string | null;
   services: MentorService[];
   /** Toman per dollar, or null when the live rate was unavailable. */
-  usdRate: number | null;
 }) {
   const [active, setActive] = useState<ServiceTab>("sessions");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -172,7 +173,7 @@ export default function ServiceBooking({
                   title={serviceTitle(service)}
                   description={serviceDescription(service)}
                   meta={formatDuration(service)}
-                  price={formatServicePrice(service, usdRate)}
+                  price={formatServicePrice(service)}
                   action={inertCta("رزرو")}
                 />
               ))}
@@ -199,7 +200,7 @@ export default function ServiceBooking({
             price={
               projectRate.is_negotiable
                 ? "قابل مذاکره"
-                : formatServicePrice(projectRate, usdRate)
+                : formatServicePrice(projectRate)
             }
             action={
               <Link

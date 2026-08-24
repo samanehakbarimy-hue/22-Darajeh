@@ -126,11 +126,16 @@ export function formatPrice(price: number | null, rate: number | null): string {
 }
 
 /** Hourly work is priced per hour, and the label has to say so. */
-export function formatServicePrice(
-  service: MentorService,
-  rate: number | null,
-): string {
+/**
+ * The price a seeker sees. Toman only.
+ *
+ * The dollar figure exists to help a specialist judge what to charge against a
+ * currency that holds its value. A seeker is paying in Toman and has no use
+ * for it — and it doubled the length of every price, which is what crushed the
+ * project row until the title wrapped one word per line.
+ */
+export function formatServicePrice(service: MentorService): string {
   if (service.price_toman === null) return "به‌زودی";
-  const amount = formatPrice(service.price_toman, rate);
+  const amount = `${service.price_toman.toLocaleString("fa-IR")} تومان`;
   return service.kind === "hourly_project" ? `${amount} در ساعت` : amount;
 }

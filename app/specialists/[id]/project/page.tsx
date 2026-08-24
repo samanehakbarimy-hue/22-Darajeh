@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatServicePrice } from "@/lib/services";
-import { getUsdToToman } from "@/lib/exchange-rate";
 import BriefForm from "./brief-form";
 
 export const metadata = { title: "درخواست همکاری پروژه‌ای — ۲۲ درجه" };
@@ -82,7 +81,6 @@ export default async function ProjectBriefPage({
   const name =
     (mentor.profiles as unknown as { full_name: string } | null)?.full_name ??
     "متخصص";
-  const usdRate = await getUsdToToman();
 
   return (
     <div className="mx-auto w-full max-w-lg flex-1 px-6 py-12">
@@ -105,13 +103,10 @@ export default async function ProjectBriefPage({
         <span className="font-medium text-foreground">
           {rate.is_negotiable
             ? "قابل مذاکره"
-            : formatServicePrice(
-                {
-                  price_toman: rate.price_toman,
-                  kind: "hourly_project",
-                } as never,
-                usdRate,
-              )}
+            : formatServicePrice({
+                price_toman: rate.price_toman,
+                kind: "hourly_project",
+              } as never)}
         </span>{" "}
         — برای کار تو ممکن است فرق کند.
       </p>

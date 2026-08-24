@@ -6,7 +6,6 @@ import { dateFormats } from "@/lib/persian";
 import ServiceBooking from "@/components/ServiceBooking";
 import type { MentorService } from "@/lib/services";
 import { seniorityBadge } from "@/lib/seniority";
-import { getUsdToToman } from "@/lib/exchange-rate";
 
 export default async function SpecialistPage({
   params,
@@ -74,7 +73,6 @@ export default async function SpecialistPage({
 
   // Fetched here, not in the client component: it is a network call, and
   // Next caches it for six hours across every render.
-  const usdRate = await getUsdToToman();
 
   // The one claim on this page the specialist cannot write themselves.
   const { data: heldSessions } = await supabase.rpc("held_session_count", {
@@ -82,7 +80,6 @@ export default async function SpecialistPage({
   });
 
   const timeFormatter = dateFormats.full;
-  const monthFormatter = dateFormats.monthYear;
 
   return (
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
@@ -188,15 +185,7 @@ export default async function SpecialistPage({
             {specialist.bio}
           </p>
 
-          <div className="mt-8 grid grid-cols-2 gap-4 border-t border-card-border pt-6 text-sm">
-            {profile?.created_at && (
-              <div>
-                <div className="font-bold">
-                  {monthFormatter.format(new Date(profile.created_at))}
-                </div>
-                <div className="mt-0.5 text-xs text-muted">عضو ۲۲ درجه از</div>
-              </div>
-            )}
+          <div className="mt-8 grid grid-cols-2 gap-4 border-t border-card-border pt-6 text-sm empty:hidden empty:border-0 empty:pt-0">
             {held > 0 && (
               <div>
                 <div className="font-bold">
@@ -217,7 +206,6 @@ export default async function SpecialistPage({
             // Formatted here rather than in the client component: the server
             // pins Tehran, and a device in another zone would print its own.
             services={(serviceRows ?? []) as MentorService[]}
-            usdRate={usdRate}
             nearestSlotLabel={
               nextSlot ? timeFormatter.format(new Date(nextSlot)) : null
             }
