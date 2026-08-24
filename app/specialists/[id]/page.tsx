@@ -95,7 +95,7 @@ export default async function SpecialistPage({
           was empty by construction — and the one thing anyone came here to do
           sat below the fold. */}
       <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_340px]">
-        <div className="lg:col-start-1 lg:row-start-1">
+        <div className="flex flex-col gap-6">
 
       <div className="overflow-hidden rounded-2xl border border-card-border bg-card">
         {/* A banner gives the page a top edge to sit against; without one the
@@ -185,9 +185,6 @@ export default async function SpecialistPage({
         </div>
       </div>
 
-      </div>
-
-      <div className="flex flex-col gap-6 lg:col-start-1 lg:row-start-2">
       <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
           <h2 className="text-lg font-bold">درباره من</h2>
           <p className="mt-3 whitespace-pre-line leading-8 text-muted">
@@ -214,7 +211,7 @@ export default async function SpecialistPage({
             a wide screen, and between the name and the bio once the columns
             stack, so the one thing anyone can act on is not three cards down a
             phone. */}
-        <aside className="h-fit lg:sticky lg:top-6 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+        <aside className="h-fit lg:sticky lg:top-6">
           <ServiceBooking
             specialistId={specialist.id}
             hasSlots={Boolean(slots && slots.length > 0)}
