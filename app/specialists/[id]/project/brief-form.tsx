@@ -22,6 +22,10 @@ function humanSize(bytes: number): string {
 
 export default function BriefForm({ mentorId }: { mentorId: string }) {
   const [state, action, pending] = useActionState(sendBrief, undefined);
+  // React 19 clears uncontrolled fields once a form action returns, so an
+  // error would take the whole brief with it — and this is the longest thing
+  // anyone types on the site. Controlled, so a rejected send costs nothing.
+  const [brief, setBrief] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -87,6 +91,8 @@ export default function BriefForm({ mentorId }: { mentorId: string }) {
           name="brief"
           rows={9}
           required
+          value={brief}
+          onChange={(event) => setBrief(event.target.value)}
           minLength={20}
           maxLength={4000}
           placeholder="چه چیزی ساخته یا بررسی شود، در چه مرحله‌ای هستی، چه چیزی از قبل آماده است، و تا کِی لازمش داری."
