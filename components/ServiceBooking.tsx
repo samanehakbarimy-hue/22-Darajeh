@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import {
+  FREE_CALL,
   TABS,
   formatDuration,
   formatServicePrice,
@@ -11,6 +12,7 @@ import {
   type MentorService,
   type ServiceTab,
 } from "@/lib/services";
+import { fa } from "@/lib/persian";
 
 /** One offer: what it is on the right, what it costs on the left. */
 function ServiceRow({
@@ -57,9 +59,13 @@ function ServiceRow({
  */
 export default function ServiceBooking({
   specialistId,
+  hasSlots,
+  nearestSlotLabel,
   services,
 }: {
   specialistId: string;
+  hasSlots: boolean;
+  nearestSlotLabel: string | null;
   services: MentorService[];
   /** Toman per dollar, or null when the live rate was unavailable. */
 }) {
@@ -96,6 +102,48 @@ export default function ServiceBooking({
   );
 
   return (
+    <div className="flex flex-col gap-4">
+      {/* The free call is not one option among several — it is what the site
+          is for, and the only thing here anyone can book today. Sitting first
+          in a list of paid sessions made it read as the cheapest tier. */}
+      <div className="rounded-2xl border border-brand/40 bg-card p-5">
+        <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+          <div className="min-w-[55%] flex-1">
+            <h4 className="font-bold">{FREE_CALL.title}</h4>
+            <p className="mt-1 text-sm leading-6 text-muted">
+              {FREE_CALL.description}
+            </p>
+          </div>
+          <div className="text-left">
+            <div className="text-xs text-muted">
+              {fa(FREE_CALL.minutes)} دقیقه
+            </div>
+            <div className="mt-0.5 text-sm font-bold text-brand">رایگان</div>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          {hasSlots ? (
+            <Link
+              href={`/specialists/${specialistId}/book`}
+              className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-hover"
+            >
+              رزرو جلسه
+            </Link>
+          ) : (
+            <span className="inline-block rounded-full border border-card-border px-4 py-2 text-xs text-muted">
+              زمان آزاد نیست
+            </span>
+          )}
+        </div>
+
+        {nearestSlotLabel && (
+          <p className="mt-3 text-xs leading-6 text-muted">
+            نزدیک‌ترین زمان: {nearestSlotLabel} (به وقت تهران)
+          </p>
+        )}
+      </div>
+
     <div className="rounded-2xl border border-card-border bg-card p-5">
       <div
         role="tablist"
@@ -178,6 +226,7 @@ export default function ServiceBooking({
             />
           </ul>
         )}
+      </div>
       </div>
     </div>
   );
