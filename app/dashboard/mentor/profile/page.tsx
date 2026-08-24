@@ -38,7 +38,7 @@ export default async function MentorProfilePage({
   const { data: mentorProfile } = await supabase
     .from("mentor_profiles")
     .select(
-      "headline, country, bio, expertise_tags, linkedin_url, seniority, status, review_note",
+      "headline, company, country, bio, expertise_tags, linkedin_url, seniority, status, review_note",
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -152,6 +152,7 @@ export default async function MentorProfilePage({
       <MentorProfileForm
         initialPhotoUrl={profile?.photo_url ?? ""}
         initialHeadline={mentorProfile?.headline ?? ""}
+        initialCompany={mentorProfile?.company ?? ""}
         initialCountry={mentorProfile?.country ?? ""}
         initialBio={mentorProfile?.bio ?? ""}
         initialTags={(mentorProfile?.expertise_tags ?? []).join("، ")}

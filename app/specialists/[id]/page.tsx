@@ -18,7 +18,7 @@ export default async function SpecialistPage({
   const { data: specialist } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, country, bio, expertise_tags, linkedin_url, seniority, status, profiles(full_name, photo_url, created_at)",
+      "id, headline, company, country, bio, expertise_tags, linkedin_url, seniority, status, profiles(full_name, photo_url, created_at)",
     )
     .eq("id", id)
     .eq("status", "approved")
@@ -82,7 +82,10 @@ export default async function SpecialistPage({
   const timeFormatter = dateFormats.full;
 
   return (
-    <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
+    // Wider than the reading pages. This one is two columns of cards, not a
+    // column of prose, so 1024px left a third of a normal screen empty on each
+    // side — the reference profiles run nearly edge to edge.
+    <div className="mx-auto w-full max-w-7xl flex-1 px-6 py-10">
       <Link
         href="/specialists"
         className="inline-block py-1 text-sm text-muted hover:text-foreground"
@@ -94,7 +97,7 @@ export default async function SpecialistPage({
           full width with the name pinned to the start, so more than half of it
           was empty by construction — and the one thing anyone came here to do
           sat below the fold. */}
-      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_340px]">
+      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_380px]">
         <div className="flex flex-col gap-6">
 
       <div className="overflow-hidden rounded-2xl border border-card-border bg-card">
@@ -110,8 +113,19 @@ export default async function SpecialistPage({
               </div>
               <div className="pb-1">
                 <h1 className="text-2xl font-bold">{name}</h1>
-                {specialist.headline && (
-                  <p className="mt-0.5 text-muted">{specialist.headline}</p>
+                {/* Role and employer on one line, the way every profile in
+                    this category writes it. The half after "در" is usually
+                    what makes the line worth reading. */}
+                {(specialist.headline || specialist.company) && (
+                  <p className="mt-0.5 text-muted">
+                    {specialist.headline}
+                    {specialist.headline && specialist.company && " در "}
+                    {specialist.company && (
+                      <span className="text-foreground">
+                        {specialist.company}
+                      </span>
+                    )}
+                  </p>
                 )}
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   {seniorityBadge(specialist.seniority) && (

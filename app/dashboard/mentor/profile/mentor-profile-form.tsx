@@ -89,6 +89,7 @@ function Section({
 export default function MentorProfileForm({
   initialPhotoUrl,
   initialHeadline,
+  initialCompany,
   initialCountry,
   initialBio,
   initialTags,
@@ -100,6 +101,7 @@ export default function MentorProfileForm({
 }: {
   initialPhotoUrl: string;
   initialHeadline: string;
+  initialCompany: string;
   initialCountry: string;
   initialBio: string;
   initialTags: string;
@@ -117,6 +119,7 @@ export default function MentorProfileForm({
 
   // Controlled so nothing typed is lost when the form re-renders after saving.
   const [headline, setHeadline] = useState(initialHeadline);
+  const [company, setCompany] = useState(initialCompany);
   const [country, setCountry] = useState(initialCountry);
   const [bio, setBio] = useState(initialBio);
   const [linkedin, setLinkedin] = useState(initialLinkedin);
@@ -222,9 +225,29 @@ export default function MentorProfileForm({
             name="headline"
             value={headline}
             onChange={(e) => setHeadline(e.target.value)}
-            placeholder="مثلاً «مدیر ارشد پروژه در شرکت پتروپارس»"
+            placeholder="مثلاً «مدیر ارشد پروژه»"
             className={FIELD_CLASS}
           />
+        </div>
+
+        <div>
+          <label htmlFor="company" className="mb-1.5 block text-sm font-medium">
+            کجا کار می‌کنی؟{" "}
+            <span className="text-xs font-normal text-muted">(اختیاری)</span>
+          </label>
+          <input
+            id="company"
+            name="company"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            maxLength={80}
+            placeholder="مثلاً «پتروپارس»"
+            className={FIELD_CLASS}
+          />
+          <p className="mt-1.5 text-xs leading-6 text-muted">
+            کنار سمتت روی پروفایل نوشته می‌شود. برای خیلی‌ها همین جای کار است
+            که نشان می‌دهد با چه کسی طرف‌اند.
+          </p>
         </div>
 
         <div>

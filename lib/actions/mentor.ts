@@ -19,6 +19,9 @@ export async function saveMentorProfile(
   }
 
   const headline = String(formData.get("headline") ?? "").trim();
+  const company = String(formData.get("company") ?? "")
+    .trim()
+    .slice(0, 80);
   const country = String(formData.get("country") ?? "").trim();
   // Blank is a real answer: the column is nullable and its check
   // constraint would reject an empty string.
@@ -112,6 +115,7 @@ export async function saveMentorProfile(
   const { error } = await supabase.from("mentor_profiles").upsert({
     id: user.id,
     headline,
+    company: company || null,
     country,
     seniority,
     bio,
