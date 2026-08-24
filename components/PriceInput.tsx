@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { spellToman } from "@/lib/rates";
 
 const FA_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
 
@@ -49,15 +50,25 @@ export default function PriceInput({
     present(onlyDigits(defaultValue ?? "")),
   );
 
+  // Said out loud underneath, as it is typed. Grouping helps the eye; the
+  // words are what catch a zero too many, which at these magnitudes is the
+  // mistake people actually make.
+  const spoken = spellToman(Number(onlyDigits(value)));
+
   return (
-    <input
-      name={name}
-      inputMode="numeric"
-      autoComplete="off"
-      value={value}
-      onChange={(event) => setValue(present(onlyDigits(event.target.value)))}
-      placeholder={placeholder}
-      className={className}
-    />
+    <span className="flex flex-col gap-1">
+      <input
+        name={name}
+        inputMode="numeric"
+        autoComplete="off"
+        value={value}
+        onChange={(event) => setValue(present(onlyDigits(event.target.value)))}
+        placeholder={placeholder}
+        className={className}
+      />
+      {spoken && (
+        <span className="text-xs leading-6 text-muted">{spoken}</span>
+      )}
+    </span>
   );
 }

@@ -73,3 +73,52 @@ export function formatMoneyRange(
 
   return `${tomanPart} (حدود ${usdNumber(lowUsd)} تا ${usdNumber(highUsd)} دلار)`;
 }
+
+const SCALES: { value: number; word: string }[] = [
+  { value: 1_000_000_000, word: "میلیارد" },
+  { value: 1_000_000, word: "میلیون" },
+  { value: 1_000, word: "هزار" },
+];
+
+/**
+ * A Toman figure said out loud: ۲۲٬۰۲۰٬۰۰۰ becomes «۲۲ میلیون و ۲۰ هزار تومان».
+ *
+ * Prices here run to seven and eight digits, and a row of zeros is genuinely
+ * hard to read — ۱۰۰۰۰۰۰ and ۱۰۰۰۰۰۰۰ differ by one character and by ten times
+ * the money. Grouping helps the eye; saying the magnitude in words is what
+ * actually catches a mis-typed zero, which is why banks print both.
+ *
+ * Only the magnitude is spelled, not every digit: «۲۲ میلیون» reads faster
+ * than «بیست و دو میلیون» and is just as hard to get wrong.
+ */
+export function spellToman(amount: number): string {
+  if (!Number.isFinite(amount) || amount <= 0) return "";
+
+  let left = Math.round(amount);
+  const parts: string[] = [];
+
+  for (const { value, word } of SCALES) {
+    const count = Math.floor(left / value);
+    if (count > 0) {
+      parts.push(`${count.toLocaleString("fa-IR")} ${word}`);
+      left -= count * value;
+    }
+  }
+
+  if (left > 0) parts.push(left.toLocaleString("fa-IR"));
+  if (parts.length === 0) return "";
+
+  return `${parts.join(" و ")} تومان`;
+}
+
+/**
+ * Prices are rounded to the nearest thousand Toman on the way in.
+ *
+ * A price of ۲۲٬۰۲۰٬۲۱۳ is not a decision anybody made; it is a slip, and it
+ * looks like one on a public profile. Nothing in this market is priced to the
+ * Toman, so the last three digits carry no information and only cost trust.
+ */
+export function roundEnteredPrice(amount: number): number {
+  if (!Number.isFinite(amount) || amount <= 0) return 0;
+  return Math.round(amount / 1000) * 1000;
+}
