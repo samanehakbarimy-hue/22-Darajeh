@@ -122,3 +122,13 @@ export function roundEnteredPrice(amount: number): number {
   if (!Number.isFinite(amount) || amount <= 0) return 0;
   return Math.round(amount / 1000) * 1000;
 }
+
+/**
+ * Above this, a price is a typo rather than a decision.
+ *
+ * Not a judgement about what anyone may charge — the highest band tops out
+ * near ۲٬۴۰۰٬۰۰۰ for an hour, so this sits forty times above the most
+ * expensive thing the site suggests. It exists to stop ۹۰۰٬۰۰۰٬۰۰۰ reaching a
+ * public profile, which is what happens when a hand rests on a key.
+ */
+export const MAX_PRICE_TOMAN = 100_000_000;

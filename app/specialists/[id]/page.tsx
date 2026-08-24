@@ -76,6 +76,11 @@ export default async function SpecialistPage({
   // Next caches it for six hours across every render.
   const usdRate = await getUsdToToman();
 
+  // The one claim on this page the specialist cannot write themselves.
+  const { data: heldSessions } = await supabase.rpc("held_session_count", {
+    mentor: id,
+  });
+
   const timeFormatter = dateFormats.full;
   const monthFormatter = dateFormats.monthYear;
 
@@ -104,11 +109,21 @@ export default async function SpecialistPage({
                 {specialist.headline && (
                   <p className="mt-0.5 text-muted">{specialist.headline}</p>
                 )}
-                {seniorityBadge(specialist.seniority) && (
-                  <p className="mt-2 inline-block rounded-full border border-card-border px-3 py-1 text-xs text-muted">
-                    {seniorityBadge(specialist.seniority)}
-                  </p>
-                )}
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  {seniorityBadge(specialist.seniority) && (
+                    <span className="inline-block rounded-full border border-card-border px-3 py-1 text-xs text-muted">
+                      {seniorityBadge(specialist.seniority)}
+                    </span>
+                  )}
+                  {/* Hidden at zero. "۰ گفتگو" is worse than saying nothing:
+                      it draws attention to the one number a new specialist
+                      cannot do anything about yet. */}
+                  {typeof heldSessions === "number" && heldSessions > 0 && (
+                    <span className="inline-block rounded-full bg-success-light px-3 py-1 text-xs text-success">
+                      {heldSessions.toLocaleString("fa-IR")} گفتگوی انجام‌شده
+                    </span>
+                  )}
+                </div>
 
                 {specialist.country && (
                   <p className="mt-1 flex items-center gap-1 text-sm text-muted">

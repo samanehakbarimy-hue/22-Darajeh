@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { SESSION_TYPES } from "@/lib/services";
-import { roundEnteredPrice } from "@/lib/rates";
+import { MAX_PRICE_TOMAN, roundEnteredPrice } from "@/lib/rates";
 
 export type ServiceState = { error?: string; success?: boolean } | undefined;
 
@@ -74,6 +74,10 @@ export async function saveService(
   // Rounded to the nearest thousand. ۲۲٬۰۲۰٬۲۱۳ is not a decision anybody
   // made, it is a slip, and it reads like one on a public profile. Nothing in
   // this market is priced to the Toman, so the last digits carry no meaning.
+  if (parsed !== null && parsed > MAX_PRICE_TOMAN) {
+    return { error: "این عدد خیلی بزرگ است. مطمئنی تعداد صفرها درست است؟" };
+  }
+
   const price = parsed === null ? null : roundEnteredPrice(parsed);
   const row = {
     mentor_id: user.id,

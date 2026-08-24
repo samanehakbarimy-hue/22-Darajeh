@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import SubmitButton from "@/components/SubmitButton";
 import { deleteService, saveService } from "@/lib/actions/services";
 import { formatRange, suggestedRange } from "@/lib/seniority";
@@ -8,7 +8,7 @@ import {
   SESSION_TYPES,
   type MentorService,
 } from "@/lib/services";
-import PriceInput from "@/components/PriceInput";
+import PriceInput, { onlyDigits } from "@/components/PriceInput";
 
 
 const FIELD =
@@ -34,6 +34,10 @@ export default function ServicesEditor({
   usdRate: number | null;
 }) {
   const [saveState, saveAction] = useActionState(saveService, undefined);
+  // A price far outside the suggestion is usually a slip, occasionally a
+  // considered choice, and never the admin's business. So it asks once rather
+  // than refusing: nobody has to seek permission to be expensive.
+  const [needsConfirm, setNeedsConfirm] = useState<string | null>(null);
   const [deleteState, deleteAction] = useActionState(deleteService, undefined);
 
 
@@ -87,7 +91,31 @@ export default function ServicesEditor({
                 key={session.key}
                 className="rounded-2xl border border-card-border bg-card p-5"
               >
-                <form action={saveAction} className="flex flex-col gap-3">
+                <form
+                  action={saveAction}
+                  className="flex flex-col gap-3"
+                  onSubmit={(event) => {
+                    const typed = Number(
+                      onlyDigits(
+                        String(
+                          new FormData(event.currentTarget).get("price_toman") ??
+                            "",
+                        ),
+                      ),
+                    );
+                    const wild =
+                      typed > 0 &&
+                      suggestion !== null &&
+                      (typed > suggestion.high * 2 || typed < suggestion.low / 2);
+
+                    if (wild && needsConfirm !== session.key) {
+                      event.preventDefault();
+                      setNeedsConfirm(session.key);
+                    } else {
+                      setNeedsConfirm(null);
+                    }
+                  }}
+                >
                   <input type="hidden" name="kind" value="consultation" />
                   <input type="hidden" name="session_key" value={session.key} />
                   {existing && (
@@ -155,6 +183,13 @@ export default function ServicesEditor({
                       </button>
                     )}
                   </div>
+
+                  {needsConfirm === session.key && (
+                    <p className="rounded-xl border border-brand/40 bg-brand-light px-3 py-2 text-xs leading-6 text-brand">
+                      این قیمت خیلی از پیشنهاد فاصله دارد. اگر عمدی است، یک بار
+                      دیگر بزن تا ذخیره شود.
+                    </p>
+                  )}
 
                   {suggestion && (
                     <p className="text-xs leading-6 text-muted">
