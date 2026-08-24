@@ -49,7 +49,7 @@ export default async function BookSpecialistPage({
     <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
       <Link
         href={`/specialists/${id}`}
-        className="text-sm text-muted hover:text-foreground"
+        className="inline-block py-1 text-sm text-muted hover:text-foreground"
       >
         ← بازگشت به پروفایل {name}
       </Link>

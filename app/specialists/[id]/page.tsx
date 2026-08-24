@@ -83,7 +83,7 @@ export default async function SpecialistPage({
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
       <Link
         href="/specialists"
-        className="text-sm text-muted hover:text-foreground"
+        className="inline-block py-1 text-sm text-muted hover:text-foreground"
       >
         ← بازگشت به فهرست متخصص‌ها
       </Link>
