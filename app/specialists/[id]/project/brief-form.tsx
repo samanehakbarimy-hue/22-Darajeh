@@ -106,7 +106,7 @@ export default function BriefForm({ mentorId }: { mentorId: string }) {
         </p>
         <p className="mt-1 text-xs leading-6 text-muted">
           نقشه، مدرک، رزومه یا هر چیزی که کار را روشن‌تر می‌کند. فقط همین متخصص
-          می‌تواند بازش کند.
+          می‌تواند بازش کند. حداکثر ۲۰ مگابایت.
         </p>
 
         <label className="mt-3 inline-block cursor-pointer rounded-full border border-card-border px-4 py-2 text-sm hover:border-brand hover:text-brand">

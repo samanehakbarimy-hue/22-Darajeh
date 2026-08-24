@@ -102,6 +102,48 @@ export default function ServiceBooking({
   );
 
   return (
+    <div className="flex flex-col gap-4">
+      {/* The free call is not one option among several — it is what the site
+          is for, and the only thing here anyone can book today. Sitting first
+          in a list of paid sessions made it read as the cheapest tier. */}
+      <div className="rounded-2xl border border-brand/40 bg-card p-5">
+        <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+          <div className="min-w-[55%] flex-1">
+            <h4 className="font-bold">{FREE_CALL.title}</h4>
+            <p className="mt-1 text-sm leading-6 text-muted">
+              {FREE_CALL.description}
+            </p>
+          </div>
+          <div className="text-left">
+            <div className="text-xs text-muted">
+              {fa(FREE_CALL.minutes)} دقیقه
+            </div>
+            <div className="mt-0.5 text-sm font-bold text-brand">رایگان</div>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          {hasSlots ? (
+            <Link
+              href={`/specialists/${specialistId}/book`}
+              className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-hover"
+            >
+              رزرو جلسه
+            </Link>
+          ) : (
+            <span className="inline-block rounded-full border border-card-border px-4 py-2 text-xs text-muted">
+              زمان آزاد نیست
+            </span>
+          )}
+        </div>
+
+        {nearestSlotLabel && (
+          <p className="mt-3 text-xs leading-6 text-muted">
+            نزدیک‌ترین زمان: {nearestSlotLabel} (به وقت تهران)
+          </p>
+        )}
+      </div>
+
     <div className="rounded-2xl border border-card-border bg-card p-5">
       <div
         role="tablist"
@@ -144,29 +186,6 @@ export default function ServiceBooking({
         {active === "sessions" ? (
           <>
             <ul className="flex flex-col">
-              {/* The free call leads: it is how most people start, and it is
-                  the only thing on this card anyone can actually book. */}
-              <ServiceRow
-                title={FREE_CALL.title}
-                description={FREE_CALL.description}
-                meta={`${fa(FREE_CALL.minutes)} دقیقه`}
-                price="رایگان"
-                action={
-                  hasSlots ? (
-                    <Link
-                      href={`/specialists/${specialistId}/book`}
-                      className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-hover"
-                    >
-                      رزرو جلسه
-                    </Link>
-                  ) : (
-                    <span className="inline-block rounded-full border border-card-border px-4 py-2 text-xs text-muted">
-                      زمان آزاد نیست
-                    </span>
-                  )
-                }
-              />
-
               {sessions.map((service) => (
                 <ServiceRow
                   key={service.id}
@@ -179,13 +198,6 @@ export default function ServiceBooking({
               ))}
             </ul>
 
-            {nearestSlotLabel && (
-              <p className="mt-4 rounded-xl border border-card-border bg-background px-4 py-3 text-xs leading-6 text-muted">
-                نزدیک‌ترین زمان: {nearestSlotLabel}
-                <br />
-                (به وقت تهران)
-              </p>
-            )}
           </>
         ) : !projectRate ? (
           <p className="py-6 text-sm leading-7 text-muted">
@@ -193,32 +205,28 @@ export default function ServiceBooking({
             دقیقه‌ای را رزرو کنی و نیازت را با او در میان بگذاری.
           </p>
         ) : (
-          <ServiceRow
-            title="کار پروژه‌ای"
-            description="کارَت را توضیح بده و فایل‌هایش را بفرست؛ متخصص می‌بیند و می‌گوید قبول می‌کند یا نه."
-            meta="نفرساعت"
-            price={
-              projectRate.is_negotiable
-                ? "قابل مذاکره"
-                : formatServicePrice(projectRate)
-            }
-            action={
-              <Link
-                href={`/specialists/${specialistId}/project`}
-                className="shrink-0 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-background hover:bg-brand-hover"
-              >
-                نوشتن درخواست
-              </Link>
-            }
-          />
+          <ul className="flex flex-col">
+            <ServiceRow
+              title="کار پروژه‌ای"
+              description="کارَت را توضیح بده و فایل‌هایش را بفرست؛ متخصص می‌بیند و می‌گوید قبول می‌کند یا نه."
+              meta="نفرساعت"
+              price={
+                projectRate.is_negotiable
+                  ? "قابل مذاکره"
+                  : formatServicePrice(projectRate)
+              }
+              action={
+                <Link
+                  href={`/specialists/${specialistId}/project`}
+                  className="shrink-0 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-background hover:bg-brand-hover"
+                >
+                  نوشتن درخواست
+                </Link>
+              }
+            />
+          </ul>
         )}
-
-        {(active === "projects" ? (projectRate ? 1 : 0) : sessions.length) > 0 && (
-          <p className="mt-4 text-xs leading-6 text-muted">
-            پرداخت آنلاین هنوز فعال نیست. فعلاً تماس رایگان را رزرو کن و درباره
-            این خدمت با متخصص حرف بزن.
-          </p>
-        )}
+      </div>
       </div>
     </div>
   );
