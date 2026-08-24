@@ -19,7 +19,7 @@ export default function ResetPasswordForm() {
           name="password"
           required
           autoComplete="new-password"
-          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
+          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
         />
         <p className="mt-1.5 text-xs text-muted">حداقل ۶ کاراکتر.</p>
       </div>
@@ -33,7 +33,7 @@ export default function ResetPasswordForm() {
           name="confirm"
           required
           autoComplete="new-password"
-          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand"
+          className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
         />
       </div>
 

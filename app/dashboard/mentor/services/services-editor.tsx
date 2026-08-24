@@ -12,6 +12,7 @@ import {
   serviceTitle,
   type MentorService,
 } from "@/lib/services";
+import PriceInput, { onlyDigits, present } from "@/components/PriceInput";
 
 type ProjectDraft = {
   id?: string;
@@ -31,7 +32,7 @@ const BLANK_PROJECT: ProjectDraft = {
 };
 
 const FIELD =
-  "rounded-xl border border-card-border bg-background px-4 py-3 text-sm outline-none focus:border-brand";
+  "rounded-xl border border-card-border bg-background px-4 py-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20";
 
 /**
  * Two halves, because the two kinds of offer are shaped differently.
@@ -141,9 +142,8 @@ export default function ServicesEditor({
                   <div className="flex flex-wrap items-end gap-3">
                     <label className="flex flex-col gap-1.5">
                       <span className="text-xs text-muted">قیمت (تومان)</span>
-                      <input
+                      <PriceInput
                         name="price_toman"
-                        inputMode="numeric"
                         defaultValue={
                           existing?.price_toman == null
                             ? ""
@@ -357,9 +357,10 @@ export default function ServicesEditor({
               <input
                 name="price_toman"
                 inputMode="numeric"
+                autoComplete="off"
                 value={project.price}
-                onChange={(e) => set("price", e.target.value)}
-                placeholder="خالی بگذار تا «به‌زودی» نمایش داده شود"
+                onChange={(e) => set("price", present(onlyDigits(e.target.value)))}
+                placeholder="۹۰۰,۰۰۰"
                 className={`w-full max-w-xs ${FIELD}`}
               />
               {projectSuggestion && (
