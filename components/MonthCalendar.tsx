@@ -103,7 +103,7 @@ export default function MonthCalendar({
           type="button"
           onClick={() => shiftMonth(-1)}
           aria-label="ماه قبل"
-          className="rounded-full border border-card-border px-3 py-1 text-sm text-muted transition hover:border-brand hover:text-brand"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-card-border text-sm text-muted transition hover:border-brand hover:text-brand"
         >
           ‹
         </button>
@@ -112,7 +112,7 @@ export default function MonthCalendar({
           type="button"
           onClick={() => shiftMonth(1)}
           aria-label="ماه بعد"
-          className="rounded-full border border-card-border px-3 py-1 text-sm text-muted transition hover:border-brand hover:text-brand"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-card-border text-sm text-muted transition hover:border-brand hover:text-brand"
         >
           ›
         </button>

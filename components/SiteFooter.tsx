@@ -37,7 +37,10 @@ export default function SiteFooter() {
               <ul className="mt-3 flex flex-col gap-2 text-sm text-muted">
                 {group.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="hover:text-foreground">
+                    <Link
+                      href={link.href}
+                      className="inline-block py-1 hover:text-foreground"
+                    >
                       {link.label}
                     </Link>
                   </li>
