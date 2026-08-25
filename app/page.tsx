@@ -4,18 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import SpecialistCard from "@/components/SpecialistCard";
 import HeroHands from "@/components/HeroHands";
 
-// These match expertise tags specialists actually carry, so a chip leads to a
-// populated list rather than an empty one.
-const FIELDS = [
-  "نفت و گاز",
-  "توسعه نرم‌افزار",
-  "طراحی UX/UI",
-  "مدیریت محصول",
-  "مهاجرت کاری",
-  "رزومه و مصاحبه",
-  "بازاریابی دیجیتال",
-  "مدیریت پروژه",
-];
+// The most-carried expertise tags, most popular first. Eight was the most a
+// row held before it wrapped badly.
+const MAX_FIELDS = 8;
 
 const BENEFITS = [
   {
@@ -58,6 +49,26 @@ export default async function Home({
   }
 
   const supabase = await createClient();
+  // Chips come from the tags approved کارشناس‌ها actually carry, not a hand
+  // written list. The list said it matched reality and had stopped: it offered
+  // eight fields when one of them had anybody in it, so seven of eight chips
+  // led to an empty page. Deriving it means that cannot drift again.
+  const { data: tagRows } = await supabase
+    .from("mentor_profiles")
+    .select("expertise_tags")
+    .eq("status", "approved");
+
+  const tagCounts = new Map<string, number>();
+  for (const row of tagRows ?? []) {
+    for (const tag of row.expertise_tags ?? []) {
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    }
+  }
+  const fields = [...tagCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, MAX_FIELDS)
+    .map(([tag]) => tag);
+
   const { data: specialists } = await supabase
     .from("mentor_profiles")
     .select(
@@ -124,10 +135,12 @@ export default async function Home({
           </p>
         </section>
 
-        {/* CATEGORIES */}
+        {/* CATEGORIES. Hidden below two, because a single chip is not a choice
+            and the list of everyone is directly underneath it anyway. */}
+        {fields.length > 1 && (
         <section className="mt-12">
           <div className="flex flex-wrap justify-center gap-2.5">
-            {FIELDS.map((field) => (
+            {fields.map((field) => (
               <Link
                 key={field}
                 href={`/specialists?tag=${encodeURIComponent(field)}`}
@@ -138,6 +151,7 @@ export default async function Home({
             ))}
           </div>
         </section>
+        )}
 
         {/* SPECIALISTS */}
         {specialists && specialists.length > 0 && (
