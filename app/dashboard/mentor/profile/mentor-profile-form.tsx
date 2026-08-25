@@ -495,9 +495,11 @@ export default function MentorProfileForm({
             value={skillDraft}
             onChange={(e) => setSkillDraft(e.target.value)}
             onKeyDown={handleSkillKeyDown}
+            // Named from what is still on offer, not the whole list: it was
+            // suggesting a tool the specialist had already picked.
             placeholder={
               suggested.length
-                ? `مثلاً «${skillPool[0]}»`
+                ? `مثلاً «${skillMatches[0] ?? skillPool[0]}»`
                 : "اول سمت یا حوزه‌ات را بنویس تا پیشنهادها دقیق‌تر شوند"
             }
             className={FIELD_CLASS}
