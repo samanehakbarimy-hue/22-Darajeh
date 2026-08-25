@@ -9,8 +9,12 @@ import { canonicalTitle } from "@/lib/job-titles";
  * from the field alone would hand all three the same generic list.
  *
  * So the title leads and the field only fills in behind it. A مهندس تجهیزات
- * ثابت gets PV Elite and API 650 because of the title, not because of نفت و
- * گاز; someone who wrote their title freehand still gets the field's list.
+ * ثابت gets PV Elite and API 650 because of the title, not because of
+ * نفت و گاز; someone who wrote their title freehand still gets the field's
+ * list rather than nothing.
+ *
+ * Every key here is an English title from lib/job-titles.ts, and a test keeps
+ * the two in step.
  *
  * Anything missing can still be typed and is saved as written. That matters
  * more here than anywhere else on the form: this list can never be complete,
@@ -22,63 +26,128 @@ const BY_TITLE: Record<string, string[]> = {
   "Frontend Developer": ["React", "TypeScript", "JavaScript", "HTML/CSS", "Next.js", "Tailwind CSS"],
   "Backend Developer": ["Node.js", "Python", "PostgreSQL", "REST API", "Docker", "Redis"],
   "Full Stack Developer": ["React", "Node.js", "TypeScript", "PostgreSQL", "Next.js", "Docker"],
+  "Web Developer": ["JavaScript", "HTML/CSS", "React", "PHP", "WordPress", "REST API"],
   "Mobile Developer": ["Flutter", "React Native", "Swift", "Kotlin", "Firebase"],
   "Android Developer": ["Kotlin", "Java", "Jetpack Compose", "Android SDK", "Firebase"],
   "iOS Developer": ["Swift", "SwiftUI", "Xcode", "UIKit", "Core Data"],
   "Python Developer": ["Python", "Django", "FastAPI", "Flask", "PostgreSQL", "Celery"],
   "Java Developer": ["Java", "Spring Boot", "Hibernate", "Maven", "PostgreSQL"],
-  ".NET Developer": ["C#", "ASP.NET Core", "Entity Framework", "SQL Server"],
+  ".NET Developer": ["C#", "ASP.NET Core", "Entity Framework", "SQL Server", "Azure"],
   "Node.js Developer": ["Node.js", "Express", "TypeScript", "MongoDB", "PostgreSQL", "REST API"],
+  "React Developer": ["React", "TypeScript", "Next.js", "Redux", "Tailwind CSS"],
+  "PHP Developer": ["PHP", "Laravel", "MySQL", "REST API", "Composer"],
+  "Go Developer": ["Go", "gRPC", "PostgreSQL", "Docker", "Kubernetes"],
+  "WordPress Developer": ["WordPress", "PHP", "Elementor", "WooCommerce", "MySQL"],
+  "Blockchain Developer": ["Solidity", "Ethereum", "Web3.js", "Hardhat", "Smart Contract"],
+  "Game Developer": ["Unity", "Unreal Engine", "C#", "Blender", "Game Design"],
+  "Embedded Engineer": ["Embedded C", "ARM", "RTOS", "Altium Designer", "Arduino"],
+  "QA Engineer": ["Selenium", "Playwright", "Postman", "Cypress", "Jest"],
   "DevOps Engineer": ["Docker", "Kubernetes", "Terraform", "CI/CD", "Linux", "Ansible"],
   "Site Reliability Engineer": ["Kubernetes", "Prometheus", "Grafana", "Linux", "Terraform"],
   "Cloud Engineer": ["AWS", "Azure", "Terraform", "Kubernetes", "Linux"],
-  "QA Engineer": ["Selenium", "Playwright", "Postman", "Cypress", "Jest"],
+  "Platform Engineer": ["Kubernetes", "Terraform", "CI/CD", "Go", "Observability"],
   "Security Engineer": ["Burp Suite", "Wireshark", "Nmap", "Kali Linux", "OWASP"],
-  "Embedded Engineer": ["Embedded C", "ARM", "RTOS", "Altium Designer", "Arduino"],
-  "Game Developer": ["Unity", "Unreal Engine", "C#", "Blender"],
+  "Database Administrator": ["PostgreSQL", "SQL Server", "Oracle", "MySQL", "Backup و Recovery"],
   "Software Architect": ["System Design", "Microservices", "Kubernetes", "AWS", "PostgreSQL"],
-  "Tech Lead": ["System Design", "Code Review", "Git", "Agile", "Mentoring"],
-  "Engineering Manager": ["Agile", "Jira", "OKR", "Hiring", "Performance Review"],
-  CTO: ["System Design", "Cloud Architecture", "Hiring", "Product Strategy", "OKR"],
+  "Solutions Architect": ["AWS", "System Design", "Azure", "Microservices", "Pre-sales"],
 
   // داده و هوش مصنوعی
   "Data Scientist": ["Python", "Pandas", "scikit-learn", "SQL", "Jupyter", "Statistics"],
   "Data Analyst": ["SQL", "Power BI", "Tableau", "Excel", "Python"],
   "Data Engineer": ["SQL", "Spark", "Airflow", "dbt", "Kafka", "Python"],
+  "Analytics Engineer": ["dbt", "SQL", "Snowflake", "Looker", "Python"],
   "Machine Learning Engineer": ["Python", "PyTorch", "TensorFlow", "scikit-learn", "MLflow", "Docker"],
   "AI Engineer": ["Python", "PyTorch", "Hugging Face", "LangChain", "LLM", "Vector Database"],
   "MLOps Engineer": ["MLflow", "Kubernetes", "Docker", "Airflow", "AWS SageMaker"],
   "AI Research Scientist": ["PyTorch", "Python", "Mathematics", "Hugging Face", "Paper Writing"],
+  "Computer Vision Engineer": ["OpenCV", "PyTorch", "YOLO", "Python", "CUDA"],
+  "NLP Engineer": ["Hugging Face", "spaCy", "PyTorch", "Python", "LLM"],
+  "BI Developer": ["Power BI", "SQL", "Tableau", "DAX", "ETL"],
 
   // محصول و طراحی
   "Product Manager": ["Jira", "Figma", "Amplitude", "Scrum", "Roadmap", "A/B Testing"],
+  "Product Owner": ["Scrum", "Jira", "User Story", "Backlog", "Agile"],
+  "Technical Product Manager": ["Jira", "SQL", "REST API", "Roadmap", "System Design"],
   "Product Designer": ["Figma", "Prototyping", "Design System", "User Research"],
   "UX/UI Designer": ["Figma", "Adobe XD", "Sketch", "Prototyping", "Design System"],
   "UX Researcher": ["User Interview", "Usability Testing", "Maze", "Hotjar"],
+  "Graphic Designer": ["Adobe Illustrator", "Adobe Photoshop", "InDesign", "Figma"],
+  "Motion Designer": ["After Effects", "Cinema 4D", "Premiere Pro", "Lottie"],
+  "Brand Designer": ["Adobe Illustrator", "Figma", "Brand Guideline", "Typography"],
+  "Design Lead": ["Figma", "Design System", "Design Critique", "Mentoring"],
 
-  // کسب‌وکار
-  "Project Manager": ["Primavera P6", "MS Project", "Jira", "Scrum", "PMBOK", "Risk Management"],
-  "Business Analyst": ["SQL", "Excel", "BPMN", "Power BI", "Requirement Analysis"],
-  "Scrum Master": ["Scrum", "Jira", "Kanban", "Agile", "Retrospective"],
+  // بازاریابی و فروش
   "Marketing Manager": ["Google Analytics", "SEO", "Content Strategy", "Meta Ads"],
   "Digital Marketing Specialist": ["Google Ads", "Google Analytics", "SEO", "Meta Ads", "Mailchimp"],
-  "Sales Manager": ["CRM", "HubSpot", "Salesforce", "Negotiation"],
-  "Financial Manager": ["Excel", "SAP", "Power BI", "Financial Modeling"],
-  Accountant: ["Excel", "SAP", "همکاران سیستم", "سپیدار", "گزارشگری مالی"],
-  "HR Manager": ["ATS", "LinkedIn Recruiter", "Excel", "Performance Review"],
+  "SEO Specialist": ["Google Search Console", "Ahrefs", "Semrush", "Google Analytics", "Technical SEO"],
+  "Content Marketer": ["Content Strategy", "SEO", "Copywriting", "Google Analytics"],
+  "Social Media Manager": ["Instagram", "Meta Ads", "Content Calendar", "Canva"],
+  "Growth Marketer": ["Google Analytics", "A/B Testing", "SQL", "Funnel Analysis"],
+  "Performance Marketing Specialist": ["Google Ads", "Meta Ads", "Google Analytics", "Conversion Tracking"],
+  "Brand Manager": ["Brand Strategy", "Market Research", "Content Strategy"],
+  "Sales Manager": ["CRM", "HubSpot", "Salesforce", "Negotiation", "Forecasting"],
+  "Account Manager": ["CRM", "Negotiation", "Upselling", "Reporting"],
+  "Business Development Manager": ["CRM", "Negotiation", "Market Research", "Partnership"],
+  "Customer Success Manager": ["CRM", "Onboarding", "Churn Analysis", "HubSpot"],
 
-  // صنعت و مهندسی
+  // کسب‌وکار، مالی و عملیات
+  "Business Analyst": ["SQL", "Excel", "BPMN", "Power BI", "Requirement Analysis"],
+  "Financial Analyst": ["Excel", "Financial Modeling", "Power BI", "Valuation"],
+  "Financial Manager": ["Excel", "SAP", "Power BI", "Financial Modeling", "Budgeting"],
+  "Investment Analyst": ["Financial Modeling", "Valuation", "Excel", "Market Research"],
+  Accountant: ["Excel", "همکاران سیستم", "سپیدار", "گزارشگری مالی", "SAP"],
+  Auditor: ["Excel", "استانداردهای حسابرسی", "گزارشگری مالی", "Internal Control"],
+  "Operations Manager": ["Excel", "Process Improvement", "KPI", "ERP"],
+  "Supply Chain Manager": ["SAP", "Excel", "Inventory Planning", "Logistics"],
+  "Project Manager": ["Primavera P6", "MS Project", "Jira", "Scrum", "PMBOK", "Risk Management"],
+  "Program Manager": ["Jira", "MS Project", "Stakeholder Management", "OKR"],
+  "Scrum Master": ["Scrum", "Jira", "Kanban", "Agile", "Retrospective"],
+
+  // منابع انسانی
+  "HR Manager": ["ATS", "LinkedIn Recruiter", "Excel", "Performance Review"],
+  Recruiter: ["LinkedIn Recruiter", "ATS", "Interviewing", "Sourcing"],
+  "Talent Acquisition Specialist": ["LinkedIn Recruiter", "ATS", "Sourcing", "Employer Branding"],
+  "HR Business Partner": ["Performance Review", "OKR", "Employee Relations", "Excel"],
+
+  // رهبری
+  "Tech Lead": ["System Design", "Code Review", "Git", "Agile", "Mentoring"],
+  "Engineering Manager": ["Agile", "Jira", "OKR", "Hiring", "Performance Review"],
+  "VP of Engineering": ["OKR", "Hiring", "System Design", "Budgeting", "Org Design"],
+  CTO: ["System Design", "Cloud Architecture", "Hiring", "Product Strategy", "OKR"],
+  CPO: ["Product Strategy", "Roadmap", "OKR", "Analytics"],
+  COO: ["Process Improvement", "KPI", "Budgeting", "Org Design"],
+  CEO: ["Fundraising", "Product Strategy", "Hiring", "OKR"],
+  Founder: ["Fundraising", "Pitch Deck", "Product Strategy", "Hiring", "MVP"],
+
+  // محتوا
+  "Content Writer": ["Copywriting", "SEO", "Content Strategy", "Editing"],
+  "Technical Writer": ["Markdown", "Docs as Code", "API Documentation", "Git"],
+
+  // نفت، گاز و مهندسی سنگین
   "Mechanical Engineer": ["AutoCAD", "SolidWorks", "ANSYS", "CATIA", "Inventor"],
   "Electrical Engineer": ["ETAP", "MATLAB", "AutoCAD", "PLC", "SCADA"],
   "Civil Engineer": ["AutoCAD", "ETABS", "SAP2000", "SAFE", "Revit"],
+  "Structural Engineer": ["ETABS", "SAP2000", "STAAD.Pro", "Tekla", "AutoCAD"],
   "Chemical Engineer": ["Aspen HYSYS", "Aspen Plus", "HTRI", "MATLAB"],
-  "Process Engineer": ["Aspen HYSYS", "HTRI", "PFD و P&ID", "Aspen Plus"],
+  "Process Engineer": ["Aspen HYSYS", "HTRI", "PFD و P&ID", "Aspen Plus", "Flarenet"],
   "Static Equipment Engineer": ["PV Elite", "ASME VIII", "API 650", "API 653", "AutoCAD", "Caesar II"],
+  "Rotating Equipment Engineer": ["API 610", "API 617", "Vibration Analysis", "AutoCAD", "ANSYS"],
   "Piping Engineer": ["Caesar II", "AutoPIPE", "ASME B31.3", "SP3D", "AutoCAD"],
+  "Pipeline Engineer": ["ASME B31.4", "ASME B31.8", "Caesar II", "PIPESIM", "AutoCAD"],
+  "Instrumentation Engineer": ["PLC", "DCS", "SCADA", "SIL", "P&ID"],
   "Petroleum Engineer": ["Petrel", "Eclipse", "PIPESIM", "MATLAB"],
+  "Drilling Engineer": ["WellPlan", "Compass", "Drilling Fluids", "Well Control"],
+  "Reservoir Engineer": ["Eclipse", "Petrel", "CMG", "MBAL"],
+  "Production Engineer": ["PIPESIM", "Prosper", "Well Testing", "Artificial Lift"],
+  "Corrosion Engineer": ["NACE", "Cathodic Protection", "Coating", "Material Selection"],
+  "Welding Engineer": ["AWS D1.1", "ASME IX", "WPS و PQR", "NDT"],
+  "Inspection Engineer": ["API 510", "API 570", "API 653", "NDT", "ASNT"],
+  "Commissioning Engineer": ["Pre-commissioning", "Loop Test", "Punch List", "P&ID"],
+  "Planning Engineer": ["Primavera P6", "MS Project", "Earned Value", "Excel"],
+  "Materials Engineer": ["Material Selection", "Metallurgy", "ASTM", "Failure Analysis"],
+  "HSE Engineer": ["HAZOP", "ISO 45001", "Risk Assessment", "PHA", "JSA"],
   "Robotics Engineer": ["ROS", "Python", "C++", "MATLAB", "Simulink", "Computer Vision"],
   "Mechatronics Engineer": ["MATLAB", "Simulink", "PLC", "SolidWorks", "Arduino", "Control Systems"],
-  "HSE Engineer": ["HAZOP", "ISO 45001", "Risk Assessment", "PHA"],
   Architect: ["AutoCAD", "Revit", "SketchUp", "3ds Max", "Lumion"],
 };
 
@@ -120,6 +189,9 @@ const BY_FIELD: Record<string, string[]> = {
   "مدیریت مالی": ["Excel", "SAP", "Power BI"],
   "منابع انسانی": ["ATS", "LinkedIn Recruiter", "Excel"],
 };
+
+/** Titles that carry their own tools — exported so a test can check coverage. */
+export const TITLES_WITH_SKILLS = Object.keys(BY_TITLE);
 
 /**
  * Suggestions for one person: their title's tools first, then anything their
