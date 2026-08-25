@@ -27,6 +27,16 @@ a regression. Everything else must stay clean.
 or `--query "..."`. It connects as **superuser and bypasses RLS**, so any test
 of a policy must switch role inside a transaction first, or it proves nothing.
 
+**Access rules have their own suite**: `node scripts/db.js
+supabase/tests/access_rules.sql`. 65 checks that impersonate a seeker, a
+specialist, an admin and a signed-out visitor against the live database, all
+inside transactions that roll back. Every printed row must say `pass = true`.
+It exists because two ways to make yourself an admin shipped and sat there
+unnoticed: reading the policies was not enough, running them was.
+
+**`SECURITY DEFINER` does not change `auth.uid()`.** It changes which role
+executes, so a definer function is still subject to triggers that check who
+the caller is. Assuming otherwise is what broke the resubmit path in 0022.
 **There is no service-role key, deliberately.** Anything needing to read across
 users goes through a `SECURITY DEFINER` function, as `booking_parties()` and
 `held_session_count()` do.
