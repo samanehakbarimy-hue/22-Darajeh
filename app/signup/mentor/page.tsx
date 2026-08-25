@@ -8,15 +8,14 @@ import LinkedInButton from "@/components/LinkedInButton";
 import Spinner from "@/components/Spinner";
 
 /* Helping and earning, in that order — the two reasons somebody does this.
-   The money line says what is true today: the price is theirs to set, and the
-   online payment is not switched on yet. The site already says that on every
-   paid session, and a signup page promising otherwise would be the one place
-   that lies. */
+   The money line claims only what a specialist really controls, which is the
+   price; where the payment itself stands is the booking page's job to say,
+   and it does. */
 const WHY = [
   "به کسی کمک می‌کنی که همان راهی را می‌رود که خودت رفته‌ای.",
-  "قیمت جلسه‌های تخصصی و کار پروژه‌ای را خودت تعیین می‌کنی — پرداخت آنلاین به‌زودی فعال می‌شود.",
+  "قیمت جلسه‌های تخصصی و کار پروژه‌ای را خودت تعیین می‌کنی.",
   "زمان‌ها را خودت می‌گذاری؛ هر درخواستی را می‌توانی بپذیری یا رد کنی.",
-  "گفتگوی ۲۲ دقیقه‌ای رایگان است — همان‌جاست که آدم‌ها پیدایت می‌کنند.",
+  "گفتگوی ۲۲ دقیقه‌ای رایگان است — کوتاه و مشخص.",
 ];
 
 /* The three stages are the ones that already exist — signing up, filling the
