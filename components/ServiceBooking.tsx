@@ -95,7 +95,8 @@ export default function ServiceBooking({
     // money nobody can receive.
     <span
       className="inline-block cursor-not-allowed rounded-full border border-card-border px-4 py-2 text-xs text-muted"
-      aria-disabled
+      role="button"
+      aria-disabled="true"
     >
       {label}
     </span>
@@ -193,11 +194,18 @@ export default function ServiceBooking({
                   description={serviceDescription(service)}
                   meta={formatDuration(service)}
                   price={formatServicePrice(service)}
-                  action={inertCta("رزرو")}
+                  action={inertCta("به‌زودی")}
                 />
               ))}
             </ul>
 
+            {sessions.length > 0 && (
+              <p className="border-t border-card-border pt-4 text-sm leading-7 text-muted">
+                پرداخت آنلاین هنوز فعال نیست، برای همین این جلسه‌ها فعلاً رزرو
+                نمی‌شوند. گفتگوی رایگان ۲۲ دقیقه‌ای را رزرو کن و جزئیات را با
+                کارشناس نهایی کن.
+              </p>
+            )}
           </>
         ) : !projectRate ? (
           <p className="py-6 text-sm leading-7 text-muted">
