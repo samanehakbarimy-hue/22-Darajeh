@@ -162,13 +162,13 @@ export default async function MySessionsPage() {
             }`}
           >
             {stranded.length > 0
-              ? "لینک جلسه‌ات را اضافه کن"
+              ? "لینک جلسه را اضافه کن"
               : "لینک ثابت نداری"}
           </p>
           <p className="mt-1.5 text-sm leading-7 text-muted">
             {stranded.length > 0
               ? "یک جلسه قبول‌شده داری که هیچ لینکی ندارد و کسی نمی‌تواند به آن بیاید."
-              : "جلسه‌های فعلی‌ات لینک دارند. اگر یک لینک ثابت هم بگذاری، هر وقت ساختن لینک خودکار به مشکل خورد، همان استفاده می‌شود."}
+              : "جلسه‌های فعلی لینک دارند. اگر یک لینک ثابت هم بگذاری، هر وقت ساختن لینک خودکار به مشکل خورد، همان استفاده می‌شود."}
           </p>
           {/* Solid brand red is for the case where a session really has
               nowhere to go. When every session already has a link this is a

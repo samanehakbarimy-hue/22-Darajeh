@@ -96,7 +96,7 @@ export default async function Home({
             reach across, which is why the paragraph starts so far down. */}
         <section className="mx-auto max-w-3xl pt-8 text-center sm:pt-14">
           <h1 className="text-4xl font-bold leading-[1.25] tracking-tight sm:text-5xl">
-            سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه.
+            سؤال شغلی خودت را از کسی بپرس که همان کار را می‌کنه.
           </h1>
 
           <p className="mx-auto mt-[clamp(11rem,16.5vw,26rem)] max-w-xl text-lg leading-8 text-muted">

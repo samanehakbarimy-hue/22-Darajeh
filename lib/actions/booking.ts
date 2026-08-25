@@ -34,7 +34,7 @@ export async function createBooking(
     return { error: "پیامت خیلی بلنده. کوتاه‌ترش کن." };
   }
   if (message.split(/\s+/).filter(Boolean).length > 120) {
-    return { error: "معرفی‌ات باید حداکثر ۱۲۰ کلمه باشه." };
+    return { error: "متن معرفی باید حداکثر ۱۲۰ کلمه باشه." };
   }
 
   // Whose slot it is comes from the slot, never from the form. The database

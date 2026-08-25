@@ -74,13 +74,13 @@ export const SESSION_TYPES: SessionType[] = [
   {
     key: "resume-review",
     title: "بررسی رزومه",
-    description: "بازخورد دقیق برای ارتقای رزومه‌ات.",
+    description: "بازخورد دقیق برای ارتقای رزومه.",
     minutes: 30,
   },
   {
     key: "career-path",
     title: "مسیر شغلی",
-    description: "برنامه‌ریزی مسیر رشد شغلی‌ات.",
+    description: "برنامه‌ریزی برای مسیر رشد شغلی.",
     minutes: 45,
   },
   {

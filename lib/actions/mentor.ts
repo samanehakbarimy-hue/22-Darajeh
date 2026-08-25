@@ -39,7 +39,7 @@ export async function saveMentorProfile(
 
   // An admin checks this claim before approving, so it cannot be optional.
   if (!seniority) {
-    return { error: "میزان تجربه‌ات را انتخاب کن." };
+    return { error: "میزان تجربه را انتخاب کن." };
   }
 
   // An accepted booking must lead somewhere, but there are two ways to get

@@ -133,7 +133,7 @@ export async function notifyCancelled(
 
   await sendEmail({
     to,
-    subject: "جلسه‌ات لغو شد",
+    subject: "جلسه لغو شد",
     html: emailLayout({
       heading: `${who} این جلسه را لغو کرد`,
       body: `

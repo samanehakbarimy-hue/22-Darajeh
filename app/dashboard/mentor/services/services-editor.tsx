@@ -193,7 +193,7 @@ export default function ServicesEditor({
 
                   {suggestion && (
                     <p className="text-xs leading-6 text-muted">
-                      پیشنهاد ۲۲ درجه برای این مدت و تجربه‌ات:{" "}
+                      پیشنهاد ۲۲ درجه برای این مدت و این سابقه:{" "}
                       <span className="font-medium text-foreground">
                         {formatRange(suggestion, usdRate)}
                       </span>
@@ -216,7 +216,7 @@ export default function ServicesEditor({
       <section>
         <h2 className="text-lg font-bold">کار پروژه‌ای (نفرساعت)</h2>
         <p className="mt-1 text-sm leading-7 text-muted">
-          اینجا فهرستی برای انتخاب نیست. تو فقط نرخ ساعتی‌ات را می‌گویی؛ خود کار
+          اینجا فهرستی برای انتخاب نیست. تو فقط نرخ ساعتی خودت را می‌گویی؛ خود کار
           را کسی که سفارش می‌دهد توضیح می‌دهد و تو تصمیم می‌گیری قبولش کنی یا
           نه.
         </p>
@@ -256,7 +256,7 @@ export default function ServicesEditor({
 
           {projectSuggestion && (
             <p className="text-xs leading-6 text-muted">
-              پیشنهاد ۲۲ درجه برای یک ساعت کار با تجربه‌ات:{" "}
+              پیشنهاد ۲۲ درجه برای یک ساعت کار با این سابقه:{" "}
               <span className="font-medium text-foreground">
                 {formatRange(projectSuggestion, usdRate)}
               </span>
