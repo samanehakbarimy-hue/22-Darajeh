@@ -64,6 +64,14 @@ export async function createBooking(
     if (error.code === "23505") {
       return { error: "این زمان همین الان توسط شخص دیگه‌ای رزرو شد." };
     }
+    // Raised by the trigger in 0039. The cap lives in the database, so this
+    // branch is the message rather than the rule.
+    if (error.message.includes("pending_request_cap")) {
+      return {
+        error:
+          "سه درخواست بی‌پاسخ داری. تا وقتی یکی از آن‌ها جواب بگیرد یا زمانش بگذرد، درخواست تازه نمی‌شود فرستاد.",
+      };
+    }
     return { error: error.message };
   }
 
