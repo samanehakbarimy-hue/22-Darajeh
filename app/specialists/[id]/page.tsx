@@ -18,7 +18,7 @@ export default async function SpecialistPage({
   const { data: specialist } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, company, country, bio, expertise_tags, linkedin_url, seniority, status, profiles(full_name, photo_url, created_at)",
+      "id, headline, company, country, bio, expertise_tags, skills, linkedin_url, seniority, status, profiles(full_name, photo_url, created_at)",
     )
     .eq("id", id)
     .eq("status", "approved")
@@ -57,6 +57,7 @@ export default async function SpecialistPage({
   } | null;
   const name = profile?.full_name ?? "";
   const tags = specialist.expertise_tags ?? [];
+  const skills = specialist.skills ?? [];
   const held = heldCount ?? 0;
 
   // Only the active ones, and an unapplied migration must not take the
@@ -195,6 +196,25 @@ export default async function SpecialistPage({
           )}
         </div>
       </div>
+
+      {skills.length > 0 && (
+        <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
+          <h2 className="text-lg font-bold">مهارت‌ها و ابزارها</h2>
+          {/* The specific thing someone is looking for. "نفت و گاز" says
+              almost nothing on its own; PV Elite and ASME VIII say whether
+              this is the person who can answer the question. */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {skills.map((skill: string) => (
+              <span
+                key={skill}
+                className="rounded-full border border-card-border px-3 py-1.5 text-sm text-muted"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
           <h2 className="text-lg font-bold">درباره من</h2>

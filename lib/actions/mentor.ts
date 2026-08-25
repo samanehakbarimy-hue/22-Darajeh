@@ -29,6 +29,7 @@ export async function saveMentorProfile(
   const seniority = seniorityRaw === "" ? null : seniorityRaw;
   const bio = String(formData.get("bio") ?? "").trim();
   const tagsRaw = String(formData.get("expertise_tags") ?? "").trim();
+  const skillsRaw = String(formData.get("skills") ?? "").trim();
   const linkedinUrl = String(formData.get("linkedin_url") ?? "").trim();
   const meetingLink = String(formData.get("meeting_link") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
@@ -120,6 +121,12 @@ export async function saveMentorProfile(
     seniority,
     bio,
     expertise_tags: expertiseTags,
+    // Optional: a field is required, the tools are not. Someone whose work has
+    // no named tools should not be blocked from having a profile.
+    skills: skillsRaw
+      .split(/[,،]/)
+      .map((skill) => skill.trim())
+      .filter(Boolean),
     linkedin_url: linkedinUrl || null,
   });
 

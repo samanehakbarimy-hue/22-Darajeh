@@ -4,10 +4,15 @@ import { useActionState, useState } from "react";
 import { saveMentorProfile } from "@/lib/actions/mentor";
 import Spinner from "@/components/Spinner";
 import { SENIORITY_LEVELS } from "@/lib/seniority";
+import { skillsForFields, ALL_SKILLS } from "@/lib/skills";
 
 // Only fields this site is actually for — no medicine, insurance or tourism,
 // because nobody here works in them and offering them tells a visitor the site
 // is something it is not.
+//
+// Fields only. Tools live in lib/skills.ts and have their own input — Python
+// is not the same kind of answer as نفت و گاز, and putting them in one list
+// forced a specialist to choose which of the two questions to answer.
 //
 // Deep on software, data and AI on purpose. That is where the sites this one
 // is compared to live, and where the questions are; a marketplace that cannot
@@ -57,20 +62,6 @@ const SUGGESTED_TAGS = [
   "مهندسی عمران",
   "مهندسی شیمی",
   "انرژی و تجدیدپذیر",
-  // زبان‌ها و ابزارها. In Latin script deliberately: this is how they are
-  // written and searched in Persian technical writing.
-  "Python",
-  "JavaScript",
-  "TypeScript",
-  "React",
-  "Node.js",
-  "Java",
-  "C++",
-  "Go",
-  "SQL",
-  "Docker و Kubernetes",
-  "AWS",
-  "Git",
   // مسیر شغلی
   "رزومه و مصاحبه",
   "مسیر شغلی",
@@ -183,6 +174,7 @@ export default function MentorProfileForm({
   initialCountry,
   initialBio,
   initialTags,
+  initialSkills,
   initialLinkedin,
   initialMeetingLink,
   initialPhone,
@@ -195,6 +187,7 @@ export default function MentorProfileForm({
   initialCountry: string;
   initialBio: string;
   initialTags: string;
+  initialSkills: string;
   initialLinkedin: string;
   initialMeetingLink: string;
   initialPhone: string;
@@ -219,6 +212,42 @@ export default function MentorProfileForm({
 
   const [tags, setTags] = useState<string[]>(parseTags(initialTags));
   const [draft, setDraft] = useState("");
+
+  const [skills, setSkills] = useState<string[]>(parseTags(initialSkills));
+  const [skillDraft, setSkillDraft] = useState("");
+
+  // Suggestions follow the fields already chosen, so a static equipment
+  // engineer is offered PV Elite and never React. Before any field is picked
+  // there is nothing to narrow by, so everything is searchable.
+  const skillPool = tags.length ? skillsForFields(tags) : ALL_SKILLS;
+  const skillQuery = skillDraft.trim().toLowerCase();
+  const skillMatches = (
+    skillQuery
+      ? skillPool.filter((skill) => skill.toLowerCase().includes(skillQuery))
+      : skillPool
+  )
+    .filter((skill) => !skills.includes(skill))
+    .slice(0, 10);
+
+  function addSkill(value: string) {
+    const clean = value.trim();
+    if (!clean || skills.includes(clean)) return;
+    setSkills([...skills, clean]);
+    setSkillDraft("");
+  }
+
+  function removeSkill(value: string) {
+    setSkills(skills.filter((s) => s !== value));
+  }
+
+  function handleSkillKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" || e.key === "," || e.key === "،") {
+      e.preventDefault();
+      addSkill(skillDraft);
+    } else if (e.key === "Backspace" && skillDraft === "" && skills.length > 0) {
+      removeSkill(skills[skills.length - 1]);
+    }
+  }
 
   const query = draft.trim().toLowerCase();
   // Only while they are typing. Showing the whole list by default put a wall
@@ -490,6 +519,74 @@ export default function MentorProfileForm({
               className="mt-3 text-xs text-brand-deep hover:underline"
             >
               افزودن «{draft.trim()}» به‌عنوان تخصص جدید
+            </button>
+          )}
+        </div>
+      </Section>
+
+      <Section
+        title="مهارت‌ها و ابزارها"
+        description="چیزهایی که باهاشان کار می‌کنی. متقاضی‌ها معمولاً دنبال همین‌اند، نه فقط عنوان حوزه."
+      >
+        <div>
+          {skills.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="inline-flex items-center gap-1 rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep"
+                >
+                  {skill}
+                  <button
+                    type="button"
+                    onClick={() => removeSkill(skill)}
+                    aria-label={`حذف ${skill}`}
+                    className="text-sm leading-none"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <input
+            id="skill_draft"
+            value={skillDraft}
+            onChange={(e) => setSkillDraft(e.target.value)}
+            onKeyDown={handleSkillKeyDown}
+            placeholder={
+              tags.length
+                ? `مثلاً «${skillPool[0] ?? "AutoCAD"}»`
+                : "اول حوزه‌ات را انتخاب کن تا پیشنهادها دقیق‌تر شوند"
+            }
+            className={FIELD_CLASS}
+            autoComplete="off"
+          />
+          <input type="hidden" name="skills" value={skills.join("، ")} />
+
+          {skillMatches.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {skillMatches.map((skill) => (
+                <button
+                  key={skill}
+                  type="button"
+                  onClick={() => addSkill(skill)}
+                  className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand-deep"
+                >
+                  + {skill}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {skillDraft.trim() && !skillPool.includes(skillDraft.trim()) && (
+            <button
+              type="button"
+              onClick={() => addSkill(skillDraft)}
+              className="mt-3 text-xs text-brand-deep hover:underline"
+            >
+              افزودن «{skillDraft.trim()}»
             </button>
           )}
         </div>
