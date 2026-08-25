@@ -48,7 +48,7 @@ export default function BookingForm({
 
       <div>
         <label htmlFor="message" className="mb-2 block text-sm font-medium">
-          خودت رو معرفی کن و بگو چرا می‌خوای این تماس رو داشته باشی
+          خودت رو معرفی کن و بگو چرا می‌خوای این گفتگو رو داشته باشی
         </label>
         {/* Controlled, so a rejected submission doesn't erase what was
             written — React resets uncontrolled fields after a form action. */}

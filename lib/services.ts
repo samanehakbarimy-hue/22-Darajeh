@@ -50,8 +50,8 @@ export const KIND_LABEL: Record<ServiceKind, string> = {
 
 /** The introductory call: first row of the sessions tab, and the only free one. */
 export const FREE_CALL = {
-  title: "تماس راهنمایی",
-  description: "بگو دنبال چه هستی و ببین این کارشناس به کارت می‌آید.",
+  title: "گفتگوی راهنمایی",
+  description: "بگو دنبال چه هستی و ببین این کارشناس می‌تواند کمکت کند.",
   minutes: 22,
 } as const;
 

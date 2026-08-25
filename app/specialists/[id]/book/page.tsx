@@ -64,7 +64,7 @@ export default async function BookSpecialistPage({
             </p>
           )}
           <p className="mt-1 text-xs text-brand-deep">
-            تماس راهنمایی ۲۲ دقیقه‌ای — رایگان
+            گفتگوی راهنمایی ۲۲ دقیقه‌ای — رایگان
           </p>
         </div>
       </div>

@@ -93,7 +93,7 @@ async function attachMeetLink(bookingId: string): Promise<LinkResult> {
     // The question they asked, so the specialist opens the calendar entry and
     // already knows what the call is about.
     description: [
-      `تماس ۲۲ دقیقه‌ای از طریق ۲۲ درجه.`,
+      `گفتگوی ۲۲ دقیقه‌ای از طریق ۲۲ درجه.`,
       booking?.message ? `\nسؤال: ${booking.message}` : "",
       `\nزمان: ${dateFormats.full.format(new Date(slot.start_time))} (به وقت تهران)`,
     ].join(""),

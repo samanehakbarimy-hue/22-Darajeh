@@ -102,8 +102,10 @@ export default async function SpecialistPage({
 
       <div className="overflow-hidden rounded-2xl border border-card-border bg-card">
         {/* A banner gives the page a top edge to sit against; without one the
-            name floated in empty space. */}
-        <div className="h-16 bg-gradient-to-l from-brand/25 via-brand/10 to-transparent sm:h-20" />
+            name floated in empty space. Faint on purpose: at full strength
+            the tint ran under the role line and made the one thing worth
+            reading on this card the hardest thing to read. */}
+        <div className="h-16 bg-gradient-to-l from-brand/12 via-brand/5 to-transparent sm:h-20" />
 
         <div className="px-6 pb-6 sm:px-8">
           <div className="-mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -117,7 +119,7 @@ export default async function SpecialistPage({
                     this category writes it. The half after "در" is usually
                     what makes the line worth reading. */}
                 {(specialist.headline || specialist.company) && (
-                  <p className="mt-0.5 text-muted">
+                  <p className="mt-0.5 text-foreground/75">
                     {specialist.headline}
                     {specialist.headline && specialist.company && " در "}
                     {specialist.company && (

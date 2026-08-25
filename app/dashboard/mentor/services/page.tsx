@@ -47,7 +47,7 @@ export default async function MentorServicesPage() {
     <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
       <h1 className="text-2xl font-bold">خدمات و قیمت‌ها</h1>
       <p className="mt-2 leading-8 text-muted">
-        غیر از تماس رایگان ۲۲ دقیقه‌ای، می‌تونی جلسه مشاوره یا همکاری پروژه‌ای
+        غیر از گفتگوی رایگان ۲۲ دقیقه‌ای، می‌تونی جلسه مشاوره یا همکاری پروژه‌ای
         هم پیشنهاد بدی. قیمت‌ها را خودت تعیین می‌کنی و هر وقت خواستی عوضشان
         می‌کنی.
       </p>

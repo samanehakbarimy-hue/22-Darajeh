@@ -174,7 +174,7 @@ export default async function MyRequestsPage() {
                       <p className="mt-2 text-muted">{b.note}</p>
                     )}
                     <p className="mt-3 text-xs leading-6 text-muted">
-                      پرداخت آنلاین هنوز فعال نیست. برای شروع کار، یک تماس
+                      پرداخت آنلاین هنوز فعال نیست. برای شروع کار، یک گفتگوی
                       رایگان ۲۲ دقیقه‌ای رزرو کن و جزئیات را با هم نهایی کنید.
                     </p>
                   </div>
