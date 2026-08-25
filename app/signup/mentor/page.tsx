@@ -7,6 +7,14 @@ import PasswordInput from "@/components/PasswordInput";
 import LinkedInButton from "@/components/LinkedInButton";
 import Spinner from "@/components/Spinner";
 
+
+const WHY = [
+  "زمان‌ها را خودت می‌گذاری؛ هر درخواستی را می‌توانی بپذیری یا رد کنی.",
+  "هر گفتگو ۲۲ دقیقه است — کوتاه و مشخص.",
+  "جلسه روی لینک خودت برگزار می‌شود و شماره تماس هیچ‌وقت نمایش داده نمی‌شود.",
+  "ثبت‌نام یکی‌دو دقیقه بیشتر نیست.",
+];
+
 export default function MentorSignupPage() {
   const [state, action, pending] = useActionState(signUpMentor, undefined);
 
@@ -17,6 +25,35 @@ export default function MentorSignupPage() {
         پروفایلت رو بساز؛ بعد از تأیید ادمین، در فهرست کارشناس‌ها نمایش داده
         می‌شی.
       </p>
+
+      {/* Someone arriving from a link has not been told why they would want
+          this. MentorCruise and ADPList answer that on a whole page of their
+          own, before the form; with our traffic an extra click costs more
+          than the pitch gains, so it sits above the form instead. Their wall
+          of mentor faces is left alone deliberately — with one specialist it
+          would say the opposite of what it says for them. */}
+      <div className="mt-6 rounded-xl border border-card-border bg-card px-5 py-4">
+        <h2 className="text-sm font-bold">چرا کارشناس ۲۲ درجه بشوی؟</h2>
+        <ul className="mt-3 flex flex-col gap-2.5">
+          {WHY.map((line) => (
+            <li key={line} className="flex items-start gap-2.5">
+              <svg
+                aria-hidden
+                viewBox="0 0 24 24"
+                className="mt-1 h-4 w-4 shrink-0 text-brand-deep"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              <span className="text-sm leading-6 text-muted">{line}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="mt-8">
         <LinkedInButton role="mentor" label="ثبت‌نام با لینکدین" />
