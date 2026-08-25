@@ -101,102 +101,97 @@ export default async function SpecialistPage({
         <div className="flex flex-col gap-6">
 
       <div className="overflow-hidden rounded-2xl border border-card-border bg-card">
-        {/* A banner gives the page a top edge to sit against; without one the
-            name floated in empty space. Faint on purpose: at full strength
-            the tint ran under the role line and made the one thing worth
-            reading on this card the hardest thing to read. */}
-        <div className="h-16 bg-gradient-to-l from-brand/12 via-brand/5 to-transparent sm:h-20" />
-
-        <div className="px-6 pb-6 sm:px-8">
-          <div className="-mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex items-end gap-4">
-              <div className="shrink-0 rounded-full ring-4 ring-card">
-                <Avatar photoUrl={profile?.photo_url} name={name} size={104} />
-              </div>
-              <div className="pb-1">
-                <h1 className="text-2xl font-bold">{name}</h1>
-                {/* Role and employer on one line, the way every profile in
-                    this category writes it. The half after "در" is usually
-                    what makes the line worth reading. */}
-                {(specialist.headline || specialist.company) && (
-                  <p className="mt-0.5 text-foreground/75">
-                    {specialist.headline}
-                    {specialist.headline && specialist.company && " در "}
-                    {specialist.company && (
-                      <span className="text-foreground">
-                        {specialist.company}
-                      </span>
-                    )}
-                  </p>
-                )}
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  {seniorityBadge(specialist.seniority) && (
-                    <span className="inline-block rounded-full border border-card-border px-3 py-1 text-xs text-muted">
-                      {seniorityBadge(specialist.seniority)}
-                    </span>
+        {/* The tinted band carries the whole identity and nothing else:
+            portrait, name, role. It used to be a bare strip with the content
+            hauled up into it by a negative margin, which left its lower edge
+            running straight through the role line. */}
+        <div className="bg-gradient-to-l from-brand/12 via-brand/5 to-transparent px-6 py-6 sm:px-8">
+          <div className="flex items-center gap-4">
+            <Avatar photoUrl={profile?.photo_url} name={name} size={104} />
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold">{name}</h1>
+              {/* Role and employer on one line, the way every profile in this
+                  category writes it. The half after "در" is usually what makes
+                  the line worth reading. */}
+              {(specialist.headline || specialist.company) && (
+                <p className="mt-1 text-foreground/75">
+                  {specialist.headline}
+                  {specialist.headline && specialist.company && " در "}
+                  {specialist.company && (
+                    <span className="text-foreground">{specialist.company}</span>
                   )}
-                  {/* Hidden at zero. "۰ گفتگو" is worse than saying nothing:
-                      it draws attention to the one number a new specialist
-                      cannot do anything about yet. */}
-                  {typeof heldSessions === "number" && heldSessions > 0 && (
-                    <span className="inline-block rounded-full bg-success-light px-3 py-1 text-xs text-success">
-                      {heldSessions.toLocaleString("fa-IR")} گفتگوی انجام‌شده
-                    </span>
-                  )}
-                </div>
-
-                {specialist.country && (
-                  <p className="mt-1 flex items-center gap-1 text-sm text-muted">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-4 w-4"
-                    >
-                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                      <circle cx="12" cy="10" r="3" />
-                    </svg>
-                    {specialist.country}
-                  </p>
-                )}
-              </div>
+                </p>
+              )}
             </div>
+          </div>
+        </div>
 
-            {specialist.linkedin_url && (
-              <a
-                href={specialist.linkedin_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex w-fit items-center gap-2 rounded-full border border-card-border px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand-deep"
-              >
+        {/* Everything describing the work rather than the person sits below
+            the band, as one row of equally sized chips so it reads as a set
+            instead of three loose scraps at three different heights. */}
+        <div className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <div className="flex flex-wrap items-center gap-2">
+            {seniorityBadge(specialist.seniority) && (
+              <span className="rounded-full border border-card-border px-3 py-1 text-xs text-muted">
+                {seniorityBadge(specialist.seniority)}
+              </span>
+            )}
+
+            {specialist.country && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-card-border px-3 py-1 text-xs text-muted">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-3.5 w-3.5"
                 >
-                  <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95C21.6 8.75 22 11 22 14v7h-4v-6.2c0-1.5-.03-3.4-2.1-3.4-2.1 0-2.4 1.6-2.4 3.3V21h-4V9Z" />
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
                 </svg>
-                لینکدین
-              </a>
+                {specialist.country}
+              </span>
             )}
+
+            {/* Hidden at zero. "۰ گفتگو" is worse than saying nothing: it draws
+                attention to the one number a new کارشناس cannot do anything
+                about yet. */}
+            {typeof heldSessions === "number" && heldSessions > 0 && (
+              <span className="rounded-full bg-success-light px-3 py-1 text-xs text-success">
+                {heldSessions.toLocaleString("fa-IR")} گفتگوی انجام‌شده
+              </span>
+            )}
+
+            {tags.map((tag: string) => (
+              <span
+                key={tag}
+                className="rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
 
-          {tags.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2">
-              {tags.map((tag: string) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+          {specialist.linkedin_url && (
+            <a
+              href={specialist.linkedin_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-card-border px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand-deep"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-4 w-4"
+              >
+                <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95C21.6 8.75 22 11 22 14v7h-4v-6.2c0-1.5-.03-3.4-2.1-3.4-2.1 0-2.4 1.6-2.4 3.3V21h-4V9Z" />
+              </svg>
+              لینکدین
+            </a>
           )}
         </div>
       </div>

@@ -40,7 +40,7 @@ export type MentorService = {
 
 export const TABS: { tab: ServiceTab; label: string }[] = [
   { tab: "sessions", label: "جلسات" },
-  { tab: "projects", label: "پروژه‌ها (نفرساعت)" },
+  { tab: "projects", label: "پروژه‌ها" },
 ];
 
 export const KIND_LABEL: Record<ServiceKind, string> = {

@@ -24,7 +24,7 @@ function ServiceRow({
 }: {
   title: string;
   description: string;
-  meta: string;
+  meta?: string;
   price: string;
   action: React.ReactNode;
 }) {
@@ -41,7 +41,7 @@ function ServiceRow({
           )}
         </div>
         <div className="text-left">
-          <div className="text-xs text-muted">{meta}</div>
+          {meta && <div className="text-xs text-muted">{meta}</div>}
           <div className="mt-0.5 text-sm font-bold">{price}</div>
         </div>
       </div>
@@ -209,7 +209,6 @@ export default function ServiceBooking({
             <ServiceRow
               title="کار پروژه‌ای"
               description="کارَت را توضیح بده و فایل‌هایش را بفرست؛ کارشناس می‌بیند و می‌گوید قبول می‌کند یا نه."
-              meta="نفرساعت"
               price={
                 projectRate.is_negotiable
                   ? "قابل مذاکره"
