@@ -120,10 +120,7 @@ export default async function Home({
           </form>
 
           <p className="mt-4 text-sm text-muted">
-            ۲۲ دقیقه گفتگوی رایگان —{" "}
-            <Link href="/specialists" className="text-brand-deep hover:underline">
-              یا همه کارشناس‌ها را ببین
-            </Link>
+            ۲۲ دقیقه گفتگوی رایگان
           </p>
         </section>
 
