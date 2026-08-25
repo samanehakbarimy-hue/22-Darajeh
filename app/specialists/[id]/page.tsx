@@ -127,10 +127,13 @@ export default async function SpecialistPage({
           </div>
         </div>
 
-        {/* Everything describing the work rather than the person sits below
-            the band, as one row of equally sized chips so it reads as a set
-            instead of three loose scraps at three different heights. */}
-        <div className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+        {/* Two rows, not one. These are two kinds of fact — who the person is,
+            and what they work in — and running them together meant the line
+            broke wherever it happened to run out of room, stranding a single
+            tag on a line of its own. Split, each row is short enough to hold,
+            and where one does wrap it wraps among its own kind. */}
+        <div className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-start sm:justify-between sm:px-8">
+          <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
             {seniorityBadge(specialist.seniority) && (
               <span className="rounded-full border border-card-border px-3 py-1 text-xs text-muted">
@@ -166,14 +169,20 @@ export default async function SpecialistPage({
               </span>
             )}
 
-            {tags.map((tag: string) => (
-              <span
-                key={tag}
-                className="rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep"
-              >
-                {tag}
-              </span>
-            ))}
+          </div>
+
+          {tags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              {tags.map((tag: string) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
           </div>
 
           {specialist.linkedin_url && (
