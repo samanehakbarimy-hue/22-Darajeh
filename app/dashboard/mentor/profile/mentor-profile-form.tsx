@@ -402,6 +402,74 @@ export default function MentorProfileForm({
         </div>
 
         <div>
+          <label
+            htmlFor="tag_draft"
+            className="mb-1.5 block text-sm font-medium"
+          >
+            حوزه‌های تخصص
+          </label>
+        {tags.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-sm text-brand-deep"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  aria-label={`حذف ${tag}`}
+                  className="text-brand-deep/60 transition hover:text-brand-deep"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+
+        <input
+          id="tag_draft"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={handleTagKeyDown}
+          placeholder="مثلاً «نفت و گاز»"
+          className={FIELD_CLASS}
+        />
+        {/* The real value the server reads. */}
+        <input type="hidden" name="expertise_tags" value={tags.join("، ")} />
+
+        {matches.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {matches.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => addTag(tag)}
+                className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand-deep"
+              >
+                + {tag}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {draft.trim() && !SUGGESTED_TAGS.includes(draft.trim()) && (
+          <button
+            type="button"
+            onClick={() => addTag(draft)}
+            className="mt-3 text-xs text-brand-deep hover:underline"
+          >
+            افزودن «{draft.trim()}» به‌عنوان تخصص جدید
+          </button>
+        )}
+          <p className="mt-1.5 text-xs leading-6 text-muted">
+            متقاضی‌ها با همین حوزه‌ها تو رو پیدا می‌کنن.
+          </p>
+        </div>
+
+        <div>
           <label htmlFor="country" className="mb-1.5 block text-sm font-medium">
             کشور محل زندگی
           </label>
@@ -457,70 +525,6 @@ export default function MentorProfileForm({
             placeholder="در چند خط بنویس چه تجربه‌ای داری و توی این ۲۲ دقیقه می‌تونی به چه کسی کمک کنی."
             className={FIELD_CLASS}
           />
-        </div>
-      </Section>
-
-      <Section
-        title="حوزه‌های تخصص"
-        description="متقاضی‌ها با همین حوزه‌ها تو رو پیدا می‌کنن."
-      >
-        <div>
-          {tags.length > 0 && (
-            <div className="mb-3 flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-sm text-brand-deep"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    aria-label={`حذف ${tag}`}
-                    className="text-brand-deep/60 transition hover:text-brand-deep"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-
-          <input
-            id="tag_draft"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={handleTagKeyDown}
-            placeholder="مثلاً «نفت و گاز»"
-            className={FIELD_CLASS}
-          />
-          {/* The real value the server reads. */}
-          <input type="hidden" name="expertise_tags" value={tags.join("، ")} />
-
-          {matches.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {matches.map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => addTag(tag)}
-                  className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand-deep"
-                >
-                  + {tag}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {draft.trim() && !SUGGESTED_TAGS.includes(draft.trim()) && (
-            <button
-              type="button"
-              onClick={() => addTag(draft)}
-              className="mt-3 text-xs text-brand-deep hover:underline"
-            >
-              افزودن «{draft.trim()}» به‌عنوان تخصص جدید
-            </button>
-          )}
         </div>
       </Section>
 
