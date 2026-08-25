@@ -6,6 +6,7 @@ import Spinner from "@/components/Spinner";
 import { SENIORITY_LEVELS } from "@/lib/seniority";
 import { skillsFor, ALL_SKILLS } from "@/lib/skills";
 import { JOB_TITLES } from "@/lib/job-titles";
+import { COUNTRIES } from "@/lib/countries";
 
 // Only fields this site is actually for — no medicine, insurance or tourism,
 // because nobody here works in them and offering them tells a visitor the site
@@ -137,7 +138,10 @@ export default function MentorProfileForm({
   // Controlled so nothing typed is lost when the form re-renders after saving.
   const [headline, setHeadline] = useState(initialHeadline);
   const [company, setCompany] = useState(initialCompany);
-  const [country, setCountry] = useState(initialCountry);
+  // Defaults to the head of the list rather than to nothing. A select with a
+  // value matching no option renders blank and submits whatever the browser
+  // decides, and almost everyone here is in Iran anyway.
+  const [country, setCountry] = useState(initialCountry || COUNTRIES[0]);
   const [bio, setBio] = useState(initialBio);
   const [linkedin, setLinkedin] = useState(initialLinkedin);
   const [meetingLink, setMeetingLink] = useState(initialMeetingLink);
@@ -409,14 +413,30 @@ export default function MentorProfileForm({
           <label htmlFor="country" className="mb-1.5 block text-sm font-medium">
             کشور محل زندگی
           </label>
-          <input
+          {/* A list rather than a text box. Typed freehand this produced
+              "Iran" on a Persian page and would have produced "ایران",
+              "IRAN" and "Islamic Republic of Iran" as soon as anyone else
+              joined — four spellings of one country, none of which match
+              each other in a filter.
+
+              A native select because it already behaves the way a picker
+              should: on a phone the browser renders it as the same scrolling
+              wheel used for choosing a time, and on a desktop it is a
+              keyboard-navigable menu. Nothing to build, nothing to get
+              wrong. */}
+          <select
             id="country"
             name="country"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            placeholder="مثلاً «ایران» یا «آلمان»"
             className={FIELD_CLASS}
-          />
+          >
+            {COUNTRIES.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
