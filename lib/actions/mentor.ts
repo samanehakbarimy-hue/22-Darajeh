@@ -159,11 +159,18 @@ export async function saveMentorProfile(
     return { error: linkError.message };
   }
 
-  // A corrected profile goes back in the queue. The specialist cannot set
-  // their own status — the guard trigger stops that, and should — so a narrow
-  // definer function makes exactly this one move, and only out of
-  // changes_requested. It is a no-op in every other state.
-  await supabase.rpc("resubmit_profile_for_review");
+  // A corrected profile goes back in the queue: out of changes_requested
+  // and into pending, the one status move a specialist is allowed to make.
+  // It is a no-op in every other state — but never again a silent one:
+  // swallowing this error left someone waiting in a queue they had dropped
+  // out of, reading a screen that said the profile was saved.
+  const { error: resubmitError } = await supabase.rpc(
+    "resubmit_profile_for_review",
+  );
+
+  if (resubmitError) {
+    return { error: resubmitError.message };
+  }
 
   return { success: true };
 }
