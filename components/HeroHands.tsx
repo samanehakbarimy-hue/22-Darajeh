@@ -31,7 +31,20 @@ export default function HeroHands() {
       aria-hidden
       className={`hero-hands${entering ? " hero-hands--entering" : ""}`}
     >
-      <span className="hero-hands__glow" />
+      {/* The halo, lifted straight out of the photograph rather than
+          approximated in CSS -- every attempt at drawing it came out a blob.
+          The hands are painted out of it so they cannot appear twice, and the
+          page is the same white the photograph was shot on, so the crop has
+          no edge to hide. */}
+      <Image
+        src="/hero-halo.webp"
+        alt=""
+        width={660}
+        height={660}
+        loading="eager"
+        unoptimized
+        className="hero-hands__glow"
+      />
 
       {/* Two halves of one photograph, keyed off its white background and put
           back in their original places in the frame.

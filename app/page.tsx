@@ -78,19 +78,17 @@ export default async function Home({
         )}
 
         {/* HERO. Centred, with search as the primary action — the thing
-            someone actually came to do. An illustration sat here before and
-            was decoration standing in for function. */}
-        <section className="mx-auto max-w-3xl pt-8 text-center sm:pt-14">
-          <span className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-            فرصت‌ها از زاویه‌ای تازه
-          </span>
+            someone actually came to do.
 
-          <h1 className="mt-6 text-4xl font-bold leading-[1.25] tracking-tight sm:text-5xl">
+            The headline sits above the hands and is the first thing on the
+            page. The gap under it is not spare room: it is the band the hands
+            reach across, which is why the paragraph starts so far down. */}
+        <section className="mx-auto max-w-3xl pt-8 text-center sm:pt-14">
+          <h1 className="text-4xl font-bold leading-[1.25] tracking-tight sm:text-5xl">
             سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه.
           </h1>
 
-          <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-muted">
+          <p className="mx-auto mt-44 max-w-xl text-lg leading-8 text-muted sm:mt-52">
             می‌خوای وارد یک حوزه بشی، مسیرت را عوض کنی، برای مهاجرت کاری آماده
             بشی یا بدونی یک شغل واقعاً چه شکلیه؟ با کارشناسی حرف بزن که همین حالا
             سرِ همان کاره.

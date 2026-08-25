@@ -168,7 +168,7 @@ button:disabled {
      touch. Anchoring the meeting point rather than the top edge keeps the
      hands landing in the same place while the box itself grows with the
      viewport. */
-  --hero-hands-meet: 150px;
+  --hero-hands-meet: 296px;
 
   /* How far the reader scrolls to pull the hands fully apart. */
   --hero-hands-travel: 420px;
@@ -179,7 +179,7 @@ button:disabled {
   top: var(--hero-hands-meet);
   translate: 0 -50%;
   margin-inline: auto;
-  max-width: 1500px;
+  max-width: 1280px;
   aspect-ratio: 1672 / 941;
   /* The hands begin outside this box; clipping here is what makes them arrive
      from off-screen without ever widening the page. */
@@ -257,31 +257,15 @@ button:disabled {
   opacity: 0.62;
 }
 
-/* The halo the photograph came with was keyed away along with the background,
-   and is rebuilt here so it can carry the brand coral.
-
-   On a white page a glow cannot be brighter than the ground, so it is not
-   painted as light: it multiplies a warm coral into the paper, clear at the
-   centre and strongest a little way out. That is the shape the halo had in
-   the photograph anyway -- a ring, not a blob. */
+/* The halo, positioned by its real coordinates in the 1672x941 frame so it
+   lands exactly where it sat in the photograph -- concentric with the point
+   the fingertips meet. */
 .hero-hands__glow {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 34%;
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgb(255 255 255 / 0) 0%,
-    rgb(255 214 198 / 0.34) 26%,
-    rgb(255 163 138 / 0.46) 44%,
-    rgb(255 140 116 / 0.18) 60%,
-    transparent 76%
-  );
-  mix-blend-mode: multiply;
-  filter: blur(10px);
+  left: 30.38%;
+  top: 14.67%;
+  width: 39.47%;
+  height: auto;
 }
 
 /* Both branches below drive the same three keyframes. The only difference is
@@ -309,14 +293,19 @@ button:disabled {
   }
 }
 
+/* The halo leaves well before the hands do. The hands were painted out of
+   it, and those gaps only read as ghosts while there is still glow around
+   them to read against -- so there is none by the time the hands have gone
+   far enough to expose anything. */
 @keyframes hero-glow-part {
-  from {
+  0% {
     opacity: 1;
     scale: 1;
   }
-  to {
+  45%,
+  100% {
     opacity: 0;
-    scale: 1.5;
+    scale: 1.12;
   }
 }
 
