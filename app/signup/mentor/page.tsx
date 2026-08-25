@@ -1,54 +1,59 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import Link from "next/link";
 import { signUpMentor } from "@/lib/actions/auth";
 import PasswordInput from "@/components/PasswordInput";
+import LinkedInButton from "@/components/LinkedInButton";
 import Spinner from "@/components/Spinner";
-import { JOB_TITLES } from "@/lib/job-titles";
-import { COUNTRIES } from "@/lib/countries";
 
-const MAX_PHOTO_MB = 3;
+const WHY = [
+  "زمان‌ها را خودت می‌گذاری؛ هر درخواستی را می‌توانی بپذیری یا رد کنی.",
+  "هر گفتگو ۲۲ دقیقه است — کوتاه و مشخص.",
+  "جلسه روی لینک خودت برگزار می‌شود و شماره تماس هیچ‌وقت نمایش داده نمی‌شود.",
+  "ثبت‌نام یکی‌دو دقیقه بیشتر نیست.",
+];
 
-/* Signing up, filling the profile in, and the admin's look at it. The form is
-   step one of the three, which is why the bar sits above it. */
+/* The three stages are the ones that already exist — signing up, filling the
+   profile in, waiting for the admin. The form itself is not split across
+   them: it asks for three things, and breaking three fields into three
+   screens would add clicks without removing any work. What the bar is for is
+   telling someone on the first screen that there are two more, and that the
+   last one is not theirs to do. */
 const STAGES = ["ثبت‌نام", "کامل کردن پروفایل", "بررسی و انتشار"];
 const CURRENT_STAGE = 0;
-
-const FIELD =
-  "w-full rounded-lg border border-card-border bg-background px-4 py-2 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20";
-const LABEL = "mb-1.5 block text-sm font-medium";
 
 function StageBar() {
   return (
     <ol className="mt-8 flex items-start">
       {STAGES.map((label, i) => {
+        const done = i < CURRENT_STAGE;
         const here = i === CURRENT_STAGE;
         return (
           <li
             key={label}
             className={`flex items-center ${i < STAGES.length - 1 ? "flex-1" : ""}`}
           >
-            <div className="flex w-24 shrink-0 flex-col items-center gap-2">
+            <div className="flex shrink-0 flex-col items-center gap-2">
               <span
-                className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
-                  here ? "border-brand-deep" : "border-card-border"
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
+                  here || done
+                    ? "bg-brand text-brand-on"
+                    : "border border-card-border bg-card text-muted"
                 }`}
               >
-                {here && (
-                  <span className="h-2.5 w-2.5 rounded-full bg-brand-deep" />
-                )}
+                {(i + 1).toLocaleString("fa-IR")}
               </span>
               <span
                 className={`text-center text-xs leading-5 ${
-                  here ? "font-medium text-brand-deep" : "text-muted"
+                  here ? "font-medium text-foreground" : "text-muted"
                 }`}
               >
                 {label}
               </span>
             </div>
             {i < STAGES.length - 1 && (
-              <div className="-mt-6 h-px flex-1 bg-card-border" />
+              <div className="mx-3 h-px flex-1 bg-card-border" />
             )}
           </li>
         );
@@ -59,199 +64,126 @@ function StageBar() {
 
 export default function MentorSignupPage() {
   const [state, action, pending] = useActionState(signUpMentor, undefined);
-  const [preview, setPreview] = useState("");
-  const [photoName, setPhotoName] = useState("");
-  const [photoError, setPhotoError] = useState("");
-
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > MAX_PHOTO_MB * 1024 * 1024) {
-      setPhotoError(`حجم عکس باید کمتر از ${MAX_PHOTO_MB} مگابایت باشد.`);
-      setPreview("");
-      setPhotoName("");
-      return;
-    }
-    setPhotoError("");
-    setPhotoName(file.name);
-    setPreview(URL.createObjectURL(file));
-  }
 
   return (
-    <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
-      <h1 className="text-3xl font-bold">ثبت‌نام به‌عنوان کارشناس</h1>
+    <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
+      <h1 className="text-2xl font-bold">ثبت‌نام به‌عنوان کارشناس</h1>
+      <p className="mt-2 text-sm text-muted">
+        پروفایلت رو بساز؛ بعد از تأیید ادمین، در فهرست کارشناس‌ها نمایش داده
+        می‌شی.
+      </p>
 
       <StageBar />
 
-      {/* The equivalent of their "Lovely to see you!" box: what this costs in
-          time, what tone to write in, and what is being agreed to. */}
-      <div className="mt-8 rounded-xl border border-brand/40 bg-brand-light px-5 py-4 text-sm leading-7 text-brand-deep">
-        <p className="font-bold">خوشحالیم که اینجایی!</p>
-        <p className="mt-1">
-          پر کردن این فرم یکی‌دو دقیقه بیشتر طول نمی‌کشد. دوست داریم بدانیم چه
-          کار می‌کنی و چرا می‌خواهی کارشناس باشی. ساده و خودمانی بنویس؛ اینجا
-          به متن رسمی و پرطمطراق احتیاجی نیست.
-        </p>
-        <p className="mt-2">
-          با فرستادن این فرم،{" "}
-          <Link href="/terms" className="underline">
-            قوانین استفاده
-          </Link>{" "}
-          و{" "}
-          <Link href="/privacy" className="underline">
-            حریم خصوصی
-          </Link>{" "}
-          را می‌پذیری، پس یک نگاهی به آنها بینداز.
-        </p>
-      </div>
+      {/* Two columns rather than one narrow one: the form is the work, and the
+          reasons to do it sit beside it instead of pushing it down the page.
+          They stack on a phone, form first — someone who already decided
+          should not have to scroll past the pitch to sign up. */}
+      <div className="mt-10 grid gap-8 md:grid-cols-5 md:gap-10">
+        <div className="md:col-span-3">
+          <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
+            <LinkedInButton role="mentor" label="ثبت‌نام با لینکدین" />
 
-      <form
-        action={action}
-        onSubmit={(e) => {
-          if (!preview) {
-            e.preventDefault();
-            setPhotoError("این فیلد الزامی است.");
-          }
-        }}
-        className="mt-8 flex flex-col gap-5"
-      >
-        <div>
-          <span className={LABEL}>عکس</span>
-          <div className="flex items-center gap-4">
-            {preview ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={preview}
-                alt=""
-                className="h-20 w-20 shrink-0 rounded-full border border-card-border object-cover"
-              />
-            ) : (
-              <div className="h-20 w-20 shrink-0 rounded-full border border-dashed border-card-border" />
-            )}
-            <div className="min-w-0">
-              <input
-                id="photo"
-                name="photo"
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="sr-only"
-              />
-              <label
-                htmlFor="photo"
-                className="inline-block cursor-pointer rounded-lg border border-card-border bg-card px-5 py-2 text-sm font-medium transition hover:border-brand hover:text-brand-deep"
-              >
-                آپلود عکس
-              </label>
-              {photoName && (
-                <p className="mt-2 truncate text-xs text-muted">{photoName}</p>
-              )}
+            <div className="my-6 flex items-center gap-3 text-xs text-muted">
+              <div className="h-px flex-1 bg-card-border" />
+              یا با ایمیل
+              <div className="h-px flex-1 bg-card-border" />
             </div>
+
+            <form action={action} className="flex flex-col gap-4">
+              <div>
+                <label
+                  htmlFor="full_name"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  نام و نام خانوادگی
+                </label>
+                <input
+                  id="full_name"
+                  name="full_name"
+                  required
+                  className="w-full rounded-lg border border-card-border bg-background px-4 py-2 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  ایمیل
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  className="w-full rounded-lg border border-card-border bg-background px-4 py-2 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="password"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  رمز عبور
+                </label>
+                <PasswordInput
+                  id="password"
+                  name="password"
+                  required
+                  minLength={6}
+                  className="w-full rounded-lg border border-card-border bg-background px-4 py-2 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
+                />
+              </div>
+
+              {state?.error && (
+                <p className="text-sm text-danger">{state.error}</p>
+              )}
+
+              <button
+                disabled={pending}
+                type="submit"
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-brand-on hover:bg-brand-hover disabled:opacity-60"
+              >
+                {pending && <Spinner />}
+                {pending ? "در حال ثبت‌نام..." : "ثبت‌نام"}
+              </button>
+            </form>
           </div>
-          {photoError && (
-            <p className="mt-2 text-sm text-danger">{photoError}</p>
-          )}
+
+          <p className="mt-6 text-center text-sm text-muted">
+            حساب داری؟{" "}
+            <Link href="/login" className="font-medium text-brand-deep">
+              وارد شو
+            </Link>
+          </p>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="first_name" className={LABEL}>
-              نام
-            </label>
-            <input id="first_name" name="first_name" required className={FIELD} />
-          </div>
-          <div>
-            <label htmlFor="last_name" className={LABEL}>
-              نام خانوادگی
-            </label>
-            <input id="last_name" name="last_name" required className={FIELD} />
-          </div>
-
-          <div>
-            <label htmlFor="email" className={LABEL}>
-              ایمیل
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className={FIELD}
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className={LABEL}>
-              انتخاب رمز عبور
-            </label>
-            <PasswordInput
-              id="password"
-              name="password"
-              required
-              minLength={6}
-              className={FIELD}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="headline" className={LABEL}>
-              سمت فعلی
-            </label>
-            <input
-              id="headline"
-              name="headline"
-              required
-              list="job-titles"
-              autoComplete="off"
-              placeholder="مثلاً «مهندس مکانیک»"
-              className={FIELD}
-            />
-            <datalist id="job-titles">
-              {JOB_TITLES.map((title) => (
-                <option key={title.label} value={title.label} />
+        <aside className="md:col-span-2">
+          <div className="rounded-2xl border border-card-border bg-card px-5 py-5">
+            <h2 className="text-sm font-bold">چرا کارشناس ۲۲ درجه بشوی؟</h2>
+            <ul className="mt-4 flex flex-col gap-3">
+              {WHY.map((line) => (
+                <li key={line} className="flex items-start gap-2.5">
+                  <svg
+                    aria-hidden
+                    viewBox="0 0 24 24"
+                    className="mt-1 h-4 w-4 shrink-0 text-brand-deep"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  <span className="text-sm leading-6 text-muted">{line}</span>
+                </li>
               ))}
-            </datalist>
+            </ul>
           </div>
-          <div>
-            <label htmlFor="company" className={LABEL}>
-              محل کار{" "}
-              <span className="text-xs font-normal text-muted">(اختیاری)</span>
-            </label>
-            <input
-              id="company"
-              name="company"
-              maxLength={80}
-              placeholder="مثلاً «پتروپارس»"
-              className={FIELD}
-            />
-          </div>
-        </div>
-
-        <div className="sm:w-1/2 sm:pe-2.5">
-          <label htmlFor="country" className={LABEL}>
-            کشور
-          </label>
-          <select id="country" name="country" required className={FIELD}>
-            {COUNTRIES.map((country) => (
-              <option key={country} value={country}>
-                {country}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {state?.error && <p className="text-sm text-danger">{state.error}</p>}
-
-        <div className="mt-2 flex justify-end">
-          <button
-            disabled={pending}
-            type="submit"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-3 font-semibold text-brand-on hover:bg-brand-hover disabled:opacity-60"
-          >
-            {pending && <Spinner />}
-            {pending ? "در حال ثبت‌نام..." : "مرحله بعد"}
-          </button>
-        </div>
-      </form>
+        </aside>
+      </div>
     </div>
   );
 }

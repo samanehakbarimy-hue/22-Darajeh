@@ -29,34 +29,6 @@ export async function GET(request: NextRequest) {
           .eq("id", data.user.id);
       }
 
-      // A specialist answered the "about you" questions on the signup form,
-      // where there was no session yet to write them with. They travelled here
-      // in the account's metadata; turn them into the profile row now. Only
-      // when there isn't one already, so confirming a link twice — or signing
-      // in again later — never overwrites what they have since edited.
-      const meta = data.user.user_metadata ?? {};
-      const metaHeadline = typeof meta.headline === "string" ? meta.headline : "";
-      const metaCountry = typeof meta.country === "string" ? meta.country : "";
-
-      if (meta.role === "mentor" && metaHeadline && metaCountry) {
-        const { data: existingMentor } = await supabase
-          .from("mentor_profiles")
-          .select("id")
-          .eq("id", data.user.id)
-          .maybeSingle();
-
-        if (!existingMentor) {
-          await supabase.from("mentor_profiles").insert({
-            id: data.user.id,
-            headline: metaHeadline,
-            company: typeof meta.company === "string" && meta.company
-              ? meta.company
-              : null,
-            country: metaCountry,
-          });
-        }
-      }
-
       // When an existing email/password account signs in with LinkedIn for
       // the first time, Supabase links the identity to that same account
       // instead of creating a new one — which means the profile-creation

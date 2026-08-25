@@ -9,7 +9,6 @@ export type AuthFormState = { error?: string } | undefined;
 async function signUp(
   formData: FormData,
   role: "mentor" | "seeker",
-  extra: Record<string, string> = {},
 ): Promise<AuthFormState> {
   const fullName = String(formData.get("full_name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
@@ -28,7 +27,7 @@ async function signUp(
     email,
     password,
     options: {
-      data: { full_name: fullName, role, ...extra },
+      data: { full_name: fullName, role },
       // Without this the confirmation link lands on the site root carrying
       // ?code=..., which nothing exchanges for a session, so the person
       // arrives still logged out.
@@ -51,31 +50,7 @@ export async function signUpMentor(
   _prevState: AuthFormState,
   formData: FormData,
 ) {
-  const first = String(formData.get("first_name") ?? "").trim();
-  const last = String(formData.get("last_name") ?? "").trim();
-  const headline = String(formData.get("headline") ?? "").trim();
-  const company = String(formData.get("company") ?? "").trim();
-  const country = String(formData.get("country") ?? "").trim();
-
-  if (!first || !last) {
-    return { error: "نام و نام خانوادگی الزامی است." };
-  }
-  if (!headline) {
-    return { error: "سمت فعلی الزامی است." };
-  }
-  if (!country) {
-    return { error: "کشور را انتخاب کن." };
-  }
-
-  // The form asks for the name in two halves, the way the rest of the world's
-  // signup forms do; everything downstream stores one name.
-  formData.set("full_name", `${first} ${last}`);
-
-  // There is no session yet — email has to be confirmed first — so nothing can
-  // be written to mentor_profiles here. The answers ride along in the account's
-  // metadata and are turned into a profile row on the first sign-in, in
-  // app/auth/callback.
-  return signUp(formData, "mentor", { headline, company, country });
+  return signUp(formData, "mentor");
 }
 
 export async function signUpSeeker(
