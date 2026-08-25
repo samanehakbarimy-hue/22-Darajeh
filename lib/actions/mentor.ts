@@ -80,7 +80,24 @@ export async function saveMentorProfile(
     .filter(Boolean);
 
   const photo = formData.get("photo");
-  if (photo instanceof File && photo.size > 0) {
+  const hasNewPhoto = photo instanceof File && photo.size > 0;
+
+  // Required, but "required" here means the profile ends up with a face — not
+  // that a file is re-uploaded every time somebody edits their bio. Checked on
+  // the server too, because the button is not the rule.
+  if (!hasNewPhoto) {
+    const { data: existing } = await supabase
+      .from("profiles")
+      .select("photo_url")
+      .eq("id", user.id)
+      .single();
+
+    if (!existing?.photo_url) {
+      return { error: "عکس لازم است. بدون عکس، پروفایل منتشر نمی‌شود." };
+    }
+  }
+
+  if (hasNewPhoto) {
     if (photo.size > 3 * 1024 * 1024) {
       return { error: "حجم عکس باید کمتر از ۳ مگابایت باشد." };
     }

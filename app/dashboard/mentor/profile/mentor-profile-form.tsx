@@ -247,7 +247,19 @@ export default function MentorProfileForm({
   }
 
   return (
-    <form action={action} className="mt-8 flex flex-col gap-5">
+    <form
+      action={action}
+      onSubmit={(e) => {
+        // A profile with no face does not get published, so the missing photo
+        // is caught before the round trip and said under the photo itself,
+        // where the gap is — not at the bottom with the rest of the errors.
+        if (!preview) {
+          e.preventDefault();
+          setPhotoError("عکس لازم است.");
+        }
+      }}
+      className="mt-8 flex flex-col gap-5"
+    >
       <Section
         title="معرفی"
         description="این بخش روی پروفایل عمومی تو نمایش داده می‌شه."
