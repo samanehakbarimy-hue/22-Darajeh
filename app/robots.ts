@@ -13,12 +13,15 @@ import type { MetadataRoute } from "next";
  * in or not, and a crawler is just another visitor without a session.
  */
 export default function robots(): MetadataRoute.Robots {
-  const isPrivate = process.env.SITE_PRIVATE === "true";
+  // Crawling is always allowed, for the reason above. What changes is whether
+  // there is a sitemap inviting them to index -- that follows ALLOW_INDEXING,
+  // the same switch the noindex tag reads, so the two can never disagree.
+  const allowIndexing = process.env.ALLOW_INDEXING === "true";
 
-  return isPrivate
-    ? { rules: { userAgent: "*", allow: "/" } }
-    : {
+  return allowIndexing
+    ? {
         rules: { userAgent: "*", allow: "/" },
         sitemap: "https://22darajeh.com/sitemap.xml",
-      };
+      }
+    : { rules: { userAgent: "*", allow: "/" } };
 }

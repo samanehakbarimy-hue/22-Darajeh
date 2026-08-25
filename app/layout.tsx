@@ -11,6 +11,12 @@ const vazirmatn = Vazirmatn({
 
 const IS_PRIVATE = process.env.SITE_PRIVATE === "true";
 
+// Being reachable and being in Google are separate decisions, so they are
+// separate switches. The doors can stand open to anyone holding the link while
+// search results stay empty. Unset means not indexed: the safe way round, so
+// forgetting a variable cannot put the site in front of strangers.
+const ALLOW_INDEXING = process.env.ALLOW_INDEXING === "true";
+
 export const metadata: Metadata = {
   // The public title is the pitch, and login, privacy and terms have to stay
   // open for people to sign in and for Google to verify the OAuth app. Leaving
@@ -22,13 +28,13 @@ export const metadata: Metadata = {
   description: IS_PRIVATE
     ? undefined
     : "برای انتخاب مسیر شغلی، تغییر حوزه، مهاجرت کاری یا آمادگی مصاحبه، ۲۲ دقیقه رایگان با کارشناسی حرف بزن که همین حالا سرِ همان کاره.",
-  // Belt as well as braces: robots.txt asks crawlers not to look, this asks
-  // them not to keep what they already saw. Both go away when SITE_PRIVATE
-  // does, and both are only requests — the proxy is what actually holds the
-  // door.
-  ...(IS_PRIVATE
-    ? { robots: { index: false, follow: false, nocache: true } }
-    : {}),
+  // This is what actually keeps the site out of search results. robots.txt
+  // deliberately lets crawlers in so they can read this tag; turning them away
+  // there would mean they never see it. Only a request either way -- the proxy
+  // is what holds the door.
+  ...(ALLOW_INDEXING
+    ? {}
+    : { robots: { index: false, follow: false, nocache: true } }),
 };
 
 export const viewport: Viewport = {
