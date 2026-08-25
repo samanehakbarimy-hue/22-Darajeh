@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node scripts/db.js:*)"
+      "Bash(node scripts/db.js:*)",
+      "PowerShell(vercel --prod:*)",
+      "PowerShell(vercel ls:*)",
+      "PowerShell(vercel inspect:*)"
     ]
   }
 }
