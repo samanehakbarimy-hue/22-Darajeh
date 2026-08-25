@@ -17,7 +17,11 @@ export default function SpecialistCard({
   maxTags?: number;
 }) {
   const { id, headline, country, name, photoUrl } = specialist;
-  const tags = (specialist.expertise_tags ?? []).slice(0, maxTags);
+  const allTags = specialist.expertise_tags ?? [];
+  const tags = allTags.slice(0, maxTags);
+  // Dropping the rest silently made a specialist look narrower than they are:
+  // four fields went in and three came out with nothing to say so.
+  const hiddenTags = allTags.length - tags.length;
 
   return (
     <Link
@@ -63,6 +67,11 @@ export default function SpecialistCard({
                 {tag}
               </span>
             ))}
+            {hiddenTags > 0 && (
+              <span className="rounded-full px-2.5 py-1 text-xs text-muted">
+                +{hiddenTags.toLocaleString("fa-IR")}
+              </span>
+            )}
           </div>
         )}
       </div>
