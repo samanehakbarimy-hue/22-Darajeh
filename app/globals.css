@@ -162,6 +162,10 @@ button:disabled {
    position in the original 1672x941 frame -- change one and the hands stop
    meeting. Physical `left` on purpose: the geometry is the photograph's, not
    the document's, so it must not flip with RTL.
+
+   The box is deliberately never narrower than the viewport. The arms are cut
+   off square at their outer ends, and that cut has to land on the edge of the
+   screen; anywhere else and the arm visibly begins in mid-air.
 --------------------------------------------------------------------------- */
 .hero-hands {
   /* Distance from the top of <main> down to the point where the fingertips
@@ -178,8 +182,6 @@ button:disabled {
   right: 0;
   top: var(--hero-hands-meet);
   translate: 0 -50%;
-  margin-inline: auto;
-  max-width: 1280px;
   aspect-ratio: 1672 / 941;
   /* The hands begin outside this box; clipping here is what makes them arrive
      from off-screen without ever widening the page. */
@@ -224,16 +226,16 @@ button:disabled {
 }
 
 .hero-hands--entering .hero-hands__place--seeker {
-  animation: 1.5s 0.2s cubic-bezier(0.22, 0.61, 0.36, 1) both hero-hand-arrive-left;
+  animation: 2.6s 0.3s cubic-bezier(0.24, 0.5, 0.28, 1) both hero-hand-arrive-left;
 }
 
 .hero-hands--entering .hero-hands__place--specialist {
-  animation: 1.5s 0.2s cubic-bezier(0.22, 0.61, 0.36, 1) both hero-hand-arrive-right;
+  animation: 2.6s 0.3s cubic-bezier(0.24, 0.5, 0.28, 1) both hero-hand-arrive-right;
 }
 
 @keyframes hero-hand-arrive-left {
   from {
-    transform: translateX(-58%);
+    transform: translateX(-20%);
   }
   to {
     transform: translateX(0);
@@ -242,7 +244,7 @@ button:disabled {
 
 @keyframes hero-hand-arrive-right {
   from {
-    transform: translateX(58%);
+    transform: translateX(20%);
   }
   to {
     transform: translateX(0);
