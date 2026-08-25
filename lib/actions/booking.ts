@@ -66,7 +66,16 @@ export async function createBooking(
     }
     // Raised by the trigger in 0039. The cap lives in the database, so this
     // branch is the message rather than the rule.
-    if (error.message.includes("pending_request_cap")) {
+    //
+    // Matched on the SQLSTATE as well as the text. PostgREST puts a RAISE
+    // message in `message`, but the only insert this action makes sets no
+    // status, so 23514 on it can come from nothing else — and if the wording
+    // ever moves, the code still catches it. Getting this wrong would show a
+    // Persian speaker the raw string "pending_request_cap".
+    if (
+      error.code === "23514" ||
+      error.message.includes("pending_request_cap")
+    ) {
       return {
         error:
           "سه درخواست بی‌پاسخ داری. تا وقتی یکی از آن‌ها جواب بگیرد یا زمانش بگذرد، درخواست تازه نمی‌شود فرستاد.",
