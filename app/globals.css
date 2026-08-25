@@ -110,3 +110,145 @@ button:disabled {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Landing hero intro. Plays once, behind the hero, and settles at opacity 0
+   so nothing is left sitting over the page afterwards.
+
+   The two images are halves of one photograph whose white background has been
+   keyed out, so their left/top/width percentages are the crop's real position
+   in the original 1672x941 frame -- change one and the hands stop meeting.
+   Physical `left` on purpose: the geometry is the photograph's, not the
+   document's, so it must not flip with RTL.
+--------------------------------------------------------------------------- */
+.hero-hands {
+  /* Distance from the top of <main> down to the point where the fingertips
+     touch. Anchoring the meeting point rather than the top edge keeps the
+     hands landing in the same place while the box itself grows with the
+     viewport. Kept above the headline so the glow never sits under text. */
+  --hero-hands-meet: 150px;
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--hero-hands-meet);
+  translate: 0 -50%;
+  margin-inline: auto;
+  max-width: 1500px;
+  aspect-ratio: 1672 / 941;
+  /* The hands begin outside this box; clipping here is what makes them arrive
+     from off-screen without ever widening the page. */
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-hands img {
+  position: absolute;
+  height: auto;
+  opacity: 0;
+  /* Longhands rather than the animation shorthand: the shorthand resets
+     animation-name to none, and it does so at a higher specificity than the
+     per-hand rules below, which left the hands sitting still at opacity 0. */
+  animation-duration: 4.6s;
+  animation-delay: 0.25s;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  animation-fill-mode: both;
+}
+
+.hero-hands__seeker {
+  left: 0;
+  top: 35.07%;
+  width: 51.44%;
+  animation-name: hero-hand-from-left;
+}
+
+.hero-hands__specialist {
+  left: 49.04%;
+  top: 19.13%;
+  width: 50.96%;
+  animation-name: hero-hand-from-right;
+}
+
+@keyframes hero-hand-from-left {
+  0% {
+    transform: translateX(-58%);
+    opacity: 0;
+  }
+  32%,
+  58% {
+    transform: translateX(0);
+    opacity: 0.62;
+    animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
+  }
+  100% {
+    transform: translateX(-58%);
+    opacity: 0;
+  }
+}
+
+@keyframes hero-hand-from-right {
+  0% {
+    transform: translateX(58%);
+    opacity: 0;
+  }
+  32%,
+  58% {
+    transform: translateX(0);
+    opacity: 0.62;
+    animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
+  }
+  100% {
+    transform: translateX(58%);
+    opacity: 0;
+  }
+}
+
+/* The halo the photograph came with was keyed away with the background -- a
+   glow is added light, not opaque pixels, so it is rebuilt here where it can
+   blend properly and carry the brand coral. */
+.hero-hands__glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgb(255 232 214 / 0.78) 0%,
+    rgb(255 150 122 / 0.42) 30%,
+    rgb(255 102 87 / 0.14) 54%,
+    transparent 72%
+  );
+  mix-blend-mode: screen;
+  filter: blur(8px);
+  animation: 4.6s 0.25s ease both hero-hand-glow;
+}
+
+@keyframes hero-hand-glow {
+  0%,
+  26% {
+    opacity: 0;
+    scale: 0.45;
+  }
+  42% {
+    opacity: 0.95;
+    scale: 1;
+  }
+  58% {
+    opacity: 0.8;
+    scale: 1.03;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-hands {
+    display: none;
+  }
+}

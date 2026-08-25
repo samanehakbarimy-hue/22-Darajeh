@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SpecialistCard from "@/components/SpecialistCard";
+import HeroHands from "@/components/HeroHands";
 
 // These match expertise tags specialists actually carry, so a chip leads to a
 // populated list rather than an empty one.
@@ -67,8 +68,9 @@ export default async function Home({
     .limit(4);
 
   return (
-    <main className="flex flex-1 flex-col px-6 pb-24 pt-10 sm:px-10">
-      <div className="mx-auto w-full max-w-6xl">
+    <main className="relative flex flex-1 flex-col px-6 pb-24 pt-10 sm:px-10">
+      <HeroHands />
+      <div className="relative z-10 mx-auto w-full max-w-6xl">
         {deleted === "1" && (
           <div className="mb-8 rounded-xl border border-card-border bg-card px-4 py-3 text-sm text-muted">
             حسابت با موفقیت حذف شد.
