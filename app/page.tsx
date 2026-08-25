@@ -88,7 +88,7 @@ export default async function Home({
             سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه.
           </h1>
 
-          <p className="mx-auto mt-44 max-w-xl text-lg leading-8 text-muted sm:mt-52">
+          <p className="mx-auto mt-[clamp(11rem,16.5vw,26rem)] max-w-xl text-lg leading-8 text-muted">
             می‌خوای وارد یک حوزه بشی، مسیرت را عوض کنی، برای مهاجرت کاری آماده
             بشی یا بدونی یک شغل واقعاً چه شکلیه؟ با کارشناسی حرف بزن که همین حالا
             سرِ همان کاره.
@@ -144,7 +144,7 @@ export default async function Home({
 
         {/* SPECIALISTS */}
         {specialists && specialists.length > 0 && (
-          <section className="mt-20">
+          <section className="mt-28 sm:mt-32">
             <div className="mb-7 flex items-end justify-between gap-6">
               <div>
                 <h2 className="text-2xl font-bold">کارشناس‌های ۲۲ درجه</h2>
@@ -172,7 +172,7 @@ export default async function Home({
                 return (
                   <div
                     key={specialist.id}
-                    className="w-[calc(50%-10px)] lg:w-[calc(25%-15px)]"
+                    className="w-[calc(50%-10px)] max-w-[300px] sm:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)]"
                   >
                     <SpecialistCard
                       maxTags={2}
