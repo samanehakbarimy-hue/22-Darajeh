@@ -5,22 +5,42 @@ import { saveMentorProfile } from "@/lib/actions/mentor";
 import Spinner from "@/components/Spinner";
 import { SENIORITY_LEVELS } from "@/lib/seniority";
 
-// Only fields this site is actually for. It carried سلامت و علوم and
-// خدمات و سایر before — thirty-odd options covering medicine, insurance and
-// tourism, none of which anyone here works in. Offering them said the site was
-// something it is not, which is the same thing the old category chips on the
-// home page were doing.
+// Only fields this site is actually for — no medicine, insurance or tourism,
+// because nobody here works in them and offering them tells a visitor the site
+// is something it is not.
 //
-// Nothing is lost by the trim: a field that is missing can still be typed, and
-// gets added as written.
+// Deep on software, data and AI on purpose. That is where the sites this one
+// is compared to live, and where the questions are; a marketplace that cannot
+// name یادگیری ماشین or مهندسی داده is not serving the people most likely to
+// ask. Depth is free now that suggestions only appear while someone is typing.
+//
+// A field that is missing can still be typed, and is saved as written.
 const SUGGESTED_TAGS = [
-  // فناوری
+  // نرم‌افزار
+  "برنامه‌نویسی",
   "توسعه نرم‌افزار",
-  "طراحی UX/UI",
-  "مدیریت محصول",
-  "داده و تحلیل",
-  "هوش مصنوعی",
+  "توسعه وب",
+  "توسعه موبایل",
+  "معماری نرم‌افزار",
+  "دواپس و زیرساخت",
+  "رایانش ابری",
+  "تست و تضمین کیفیت",
   "امنیت سایبری",
+  "بازی‌سازی",
+  "اینترنت اشیا",
+  "بلاک‌چین",
+  // داده و هوش مصنوعی
+  "هوش مصنوعی",
+  "یادگیری ماشین",
+  "علم داده",
+  "مهندسی داده",
+  "داده و تحلیل",
+  "پردازش زبان طبیعی",
+  "بینایی ماشین",
+  // محصول و طراحی
+  "مدیریت محصول",
+  "طراحی UX/UI",
+  "تحقیق کاربر",
   // کسب‌وکار
   "مدیریت پروژه",
   "بازاریابی دیجیتال",
@@ -35,7 +55,22 @@ const SUGGESTED_TAGS = [
   "مهندسی مکانیک",
   "مهندسی برق",
   "مهندسی عمران",
+  "مهندسی شیمی",
   "انرژی و تجدیدپذیر",
+  // زبان‌ها و ابزارها. In Latin script deliberately: this is how they are
+  // written and searched in Persian technical writing.
+  "Python",
+  "JavaScript",
+  "TypeScript",
+  "React",
+  "Node.js",
+  "Java",
+  "C++",
+  "Go",
+  "SQL",
+  "Docker و Kubernetes",
+  "AWS",
+  "Git",
   // مسیر شغلی
   "رزومه و مصاحبه",
   "مسیر شغلی",
@@ -48,29 +83,61 @@ const SUGGESTED_TAGS = [
 // on a Persian page. Each is searchable by the other, so "mech" and «مکانیک»
 // reach the same job, and whichever is clicked is the one that shows.
 const JOB_TITLE_PAIRS: [string, string][] = [
+  // نرم‌افزار
   ["مهندس نرم‌افزار", "Software Engineer"],
   ["توسعه‌دهنده فرانت‌اند", "Frontend Developer"],
   ["توسعه‌دهنده بک‌اند", "Backend Developer"],
+  ["توسعه‌دهنده فول‌استک", "Full Stack Developer"],
+  ["توسعه‌دهنده موبایل", "Mobile Developer"],
+  ["توسعه‌دهنده پایتون", "Python Developer"],
+  ["توسعه‌دهنده جاوا", "Java Developer"],
+  ["توسعه‌دهنده دات‌نت", ".NET Developer"],
+  ["توسعه‌دهنده اندروید", "Android Developer"],
+  ["توسعه‌دهنده iOS", "iOS Developer"],
   ["مهندس دواپس", "DevOps Engineer"],
-  ["مدیر محصول", "Product Manager"],
-  ["طراح UX/UI", "UX/UI Designer"],
-  ["تحلیلگر داده", "Data Analyst"],
+  ["مهندس قابلیت اطمینان", "Site Reliability Engineer"],
+  ["مهندس رایانش ابری", "Cloud Engineer"],
+  ["مهندس تست", "QA Engineer"],
+  ["مهندس امنیت", "Security Engineer"],
+  ["مهندس سیستم‌های نهفته", "Embedded Engineer"],
+  ["بازی‌ساز", "Game Developer"],
+  ["معمار نرم‌افزار", "Software Architect"],
+  ["راهبر فنی", "Tech Lead"],
+  ["مدیر مهندسی", "Engineering Manager"],
+  ["مدیر ارشد فناوری", "CTO"],
+  // داده و هوش مصنوعی
   ["دانشمند داده", "Data Scientist"],
+  ["تحلیلگر داده", "Data Analyst"],
+  ["مهندس داده", "Data Engineer"],
+  ["مهندس یادگیری ماشین", "Machine Learning Engineer"],
+  ["مهندس هوش مصنوعی", "AI Engineer"],
+  ["مهندس MLOps", "MLOps Engineer"],
+  ["پژوهشگر هوش مصنوعی", "AI Research Scientist"],
+  // محصول و طراحی
+  ["مدیر محصول", "Product Manager"],
+  ["طراح محصول", "Product Designer"],
+  ["طراح UX/UI", "UX/UI Designer"],
+  ["پژوهشگر تجربه کاربری", "UX Researcher"],
+  // کسب‌وکار
   ["مدیر پروژه", "Project Manager"],
   ["تحلیلگر کسب‌وکار", "Business Analyst"],
+  ["اسکرام مستر", "Scrum Master"],
   ["مدیر بازاریابی", "Marketing Manager"],
   ["کارشناس بازاریابی دیجیتال", "Digital Marketing Specialist"],
   ["مدیر فروش", "Sales Manager"],
   ["مدیر مالی", "Financial Manager"],
   ["حسابدار", "Accountant"],
   ["مدیر منابع انسانی", "HR Manager"],
+  // صنعت و مهندسی
   ["مهندس مکانیک", "Mechanical Engineer"],
   ["مهندس برق", "Electrical Engineer"],
   ["مهندس عمران", "Civil Engineer"],
   ["مهندس شیمی", "Chemical Engineer"],
   ["مهندس فرآیند", "Process Engineer"],
   ["مهندس تجهیزات ثابت", "Static Equipment Engineer"],
+  ["مهندس پایپینگ", "Piping Engineer"],
   ["مهندس نفت", "Petroleum Engineer"],
+  ["مهندس HSE", "HSE Engineer"],
   ["معمار", "Architect"],
 ];
 
