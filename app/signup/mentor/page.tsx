@@ -68,10 +68,6 @@ export default function MentorSignupPage() {
   return (
     <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">ثبت‌نام به‌عنوان کارشناس</h1>
-      <p className="mt-2 text-sm text-muted">
-        پروفایلت رو بساز؛ بعد از تأیید ادمین، در فهرست کارشناس‌ها نمایش داده
-        می‌شی.
-      </p>
 
       <StageBar />
 
