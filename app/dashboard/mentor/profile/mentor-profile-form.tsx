@@ -4,7 +4,8 @@ import { useActionState, useState } from "react";
 import { saveMentorProfile } from "@/lib/actions/mentor";
 import Spinner from "@/components/Spinner";
 import { SENIORITY_LEVELS } from "@/lib/seniority";
-import { skillsForFields, ALL_SKILLS } from "@/lib/skills";
+import { skillsFor, ALL_SKILLS } from "@/lib/skills";
+import { JOB_TITLES } from "@/lib/job-titles";
 
 // Only fields this site is actually for — no medicine, insurance or tourism,
 // because nobody here works in them and offering them tells a visitor the site
@@ -69,73 +70,6 @@ const SUGGESTED_TAGS = [
   "مهاجرت تحصیلی",
 ];
 
-// Both languages are offered, because an Iranian engineer routinely writes the
-// English title professionally — this profile said "Senior Mechanical Engineer"
-// on a Persian page. Each is searchable by the other, so "mech" and «مکانیک»
-// reach the same job, and whichever is clicked is the one that shows.
-const JOB_TITLE_PAIRS: [string, string][] = [
-  // نرم‌افزار
-  ["مهندس نرم‌افزار", "Software Engineer"],
-  ["توسعه‌دهنده فرانت‌اند", "Frontend Developer"],
-  ["توسعه‌دهنده بک‌اند", "Backend Developer"],
-  ["توسعه‌دهنده فول‌استک", "Full Stack Developer"],
-  ["توسعه‌دهنده موبایل", "Mobile Developer"],
-  ["توسعه‌دهنده پایتون", "Python Developer"],
-  ["توسعه‌دهنده جاوا", "Java Developer"],
-  ["توسعه‌دهنده دات‌نت", ".NET Developer"],
-  ["توسعه‌دهنده اندروید", "Android Developer"],
-  ["توسعه‌دهنده iOS", "iOS Developer"],
-  ["مهندس دواپس", "DevOps Engineer"],
-  ["مهندس قابلیت اطمینان", "Site Reliability Engineer"],
-  ["مهندس رایانش ابری", "Cloud Engineer"],
-  ["مهندس تست", "QA Engineer"],
-  ["مهندس امنیت", "Security Engineer"],
-  ["مهندس سیستم‌های نهفته", "Embedded Engineer"],
-  ["بازی‌ساز", "Game Developer"],
-  ["معمار نرم‌افزار", "Software Architect"],
-  ["راهبر فنی", "Tech Lead"],
-  ["مدیر مهندسی", "Engineering Manager"],
-  ["مدیر ارشد فناوری", "CTO"],
-  // داده و هوش مصنوعی
-  ["دانشمند داده", "Data Scientist"],
-  ["تحلیلگر داده", "Data Analyst"],
-  ["مهندس داده", "Data Engineer"],
-  ["مهندس یادگیری ماشین", "Machine Learning Engineer"],
-  ["مهندس هوش مصنوعی", "AI Engineer"],
-  ["مهندس MLOps", "MLOps Engineer"],
-  ["پژوهشگر هوش مصنوعی", "AI Research Scientist"],
-  // محصول و طراحی
-  ["مدیر محصول", "Product Manager"],
-  ["طراح محصول", "Product Designer"],
-  ["طراح UX/UI", "UX/UI Designer"],
-  ["پژوهشگر تجربه کاربری", "UX Researcher"],
-  // کسب‌وکار
-  ["مدیر پروژه", "Project Manager"],
-  ["تحلیلگر کسب‌وکار", "Business Analyst"],
-  ["اسکرام مستر", "Scrum Master"],
-  ["مدیر بازاریابی", "Marketing Manager"],
-  ["کارشناس بازاریابی دیجیتال", "Digital Marketing Specialist"],
-  ["مدیر فروش", "Sales Manager"],
-  ["مدیر مالی", "Financial Manager"],
-  ["حسابدار", "Accountant"],
-  ["مدیر منابع انسانی", "HR Manager"],
-  // صنعت و مهندسی
-  ["مهندس مکانیک", "Mechanical Engineer"],
-  ["مهندس برق", "Electrical Engineer"],
-  ["مهندس عمران", "Civil Engineer"],
-  ["مهندس شیمی", "Chemical Engineer"],
-  ["مهندس فرآیند", "Process Engineer"],
-  ["مهندس تجهیزات ثابت", "Static Equipment Engineer"],
-  ["مهندس پایپینگ", "Piping Engineer"],
-  ["مهندس نفت", "Petroleum Engineer"],
-  ["مهندس HSE", "HSE Engineer"],
-  ["معمار", "Architect"],
-];
-
-const JOB_TITLES = JOB_TITLE_PAIRS.flatMap(([fa, en]) => [
-  { label: fa, alt: en },
-  { label: en, alt: fa },
-]);
 
 const MAX_PHOTO_MB = 3;
 
@@ -216,10 +150,12 @@ export default function MentorProfileForm({
   const [skills, setSkills] = useState<string[]>(parseTags(initialSkills));
   const [skillDraft, setSkillDraft] = useState("");
 
-  // Suggestions follow the fields already chosen, so a static equipment
-  // engineer is offered PV Elite and never React. Before any field is picked
-  // there is nothing to narrow by, so everything is searchable.
-  const skillPool = tags.length ? skillsForFields(tags) : ALL_SKILLS;
+  // Driven by the job title first, then the field. Two backend developers and
+  // an AI engineer all sit in توسعه نرم‌افزار and share almost nothing, so the
+  // field alone would hand all three the same generic list. With neither
+  // filled in yet there is nothing to narrow by, so everything is searchable.
+  const suggested = skillsFor(headline, tags);
+  const skillPool = suggested.length ? suggested : ALL_SKILLS;
   const skillQuery = skillDraft.trim().toLowerCase();
   const skillMatches = (
     skillQuery
@@ -560,9 +496,9 @@ export default function MentorProfileForm({
             onChange={(e) => setSkillDraft(e.target.value)}
             onKeyDown={handleSkillKeyDown}
             placeholder={
-              tags.length
-                ? `مثلاً «${skillPool[0] ?? "AutoCAD"}»`
-                : "اول حوزه‌ات را انتخاب کن تا پیشنهادها دقیق‌تر شوند"
+              suggested.length
+                ? `مثلاً «${skillPool[0]}»`
+                : "اول سمت یا حوزه‌ات را بنویس تا پیشنهادها دقیق‌تر شوند"
             }
             className={FIELD_CLASS}
             autoComplete="off"
