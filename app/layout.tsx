@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     : "۲۲ درجه — سؤال شغلی‌ات را از کسی بپرس که همان کار را می‌کنه",
   description: IS_PRIVATE
     ? undefined
-    : "برای انتخاب مسیر شغلی، تغییر حوزه، مهاجرت کاری یا آمادگی مصاحبه، ۲۲ دقیقه رایگان با متخصصی حرف بزن که همین حالا سرِ همان کاره.",
+    : "برای انتخاب مسیر شغلی، تغییر حوزه، مهاجرت کاری یا آمادگی مصاحبه، ۲۲ دقیقه رایگان با کارشناسی حرف بزن که همین حالا سرِ همان کاره.",
   // Belt as well as braces: robots.txt asks crawlers not to look, this asks
   // them not to keep what they already saw. Both go away when SITE_PRIVATE
   // does, and both are only requests — the proxy is what actually holds the

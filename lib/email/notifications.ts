@@ -72,7 +72,7 @@ export async function notifyAccepted(bookingId: string): Promise<void> {
     to: p.seeker_email,
     subject: "درخواستت قبول شد",
     html: emailLayout({
-      heading: `${esc(p.mentor_name ?? "متخصص")} درخواستت را قبول کرد`,
+      heading: `${esc(p.mentor_name ?? "کارشناس")} درخواستت را قبول کرد`,
       body: `
         <div>زمان جلسه: <strong>${whenLine(p.starts_at)}</strong> (به وقت تهران)</div>
         <div style="margin-top:12px">${
@@ -103,10 +103,10 @@ export async function notifyDeclined(bookingId: string): Promise<void> {
     to: p.seeker_email,
     subject: "درخواستت این بار جور نشد",
     html: emailLayout({
-      heading: `${esc(p.mentor_name ?? "متخصص")} نتوانست این وقت را قبول کند`,
+      heading: `${esc(p.mentor_name ?? "کارشناس")} نتوانست این وقت را قبول کند`,
       body: `
         <div>زمان درخواستی: ${whenLine(p.starts_at)}</div>
-        <div style="margin-top:12px">این یعنی همان ساعت جور نبوده، نه اینکه سؤالت اشکالی داشته. وقت دیگری از همین متخصص یا یک متخصص دیگر انتخاب کن.</div>`,
+        <div style="margin-top:12px">این یعنی همان ساعت جور نبوده، نه اینکه سؤالت اشکالی داشته. وقت دیگری از همین کارشناس یا یک کارشناس دیگر انتخاب کن.</div>`,
       action: { label: "پیدا کردن وقت دیگر", href: `${SITE}/specialists` },
     }),
   });
@@ -128,7 +128,7 @@ export async function notifyCancelled(
   const mentorCancelled = cancelledBy === mentorId;
   const to = mentorCancelled ? p.seeker_email : p.mentor_email;
   const who = mentorCancelled
-    ? esc(p.mentor_name ?? "متخصص")
+    ? esc(p.mentor_name ?? "کارشناس")
     : esc(p.seeker_name ?? "متقاضی");
 
   await sendEmail({

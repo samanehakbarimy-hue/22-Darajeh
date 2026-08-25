@@ -90,7 +90,7 @@ export default async function SpecialistPage({
         href="/specialists"
         className="inline-block py-1 text-sm text-muted hover:text-foreground"
       >
-        ← بازگشت به فهرست متخصص‌ها
+        ← بازگشت به فهرست کارشناس‌ها
       </Link>
 
       {/* Two columns from the top, not from below the header. The header was

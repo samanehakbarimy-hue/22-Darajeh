@@ -122,7 +122,7 @@ export default function LoginForm({
         </Link>{" "}
         یا{" "}
         <Link href="/signup/mentor" className="font-medium text-brand-deep">
-          متخصص شو
+          کارشناس شو
         </Link>
       </p>
     </>

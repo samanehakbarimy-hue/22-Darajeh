@@ -67,7 +67,7 @@ export default function ServicesEditor({
       <section>
         <h2 className="text-lg font-bold">جلسات</h2>
         <p className="mt-1 text-sm leading-7 text-muted">
-          مدت هر جلسه ثابت است تا قیمت‌ها بین متخصص‌ها قابل مقایسه باشد. تو فقط
+          مدت هر جلسه ثابت است تا قیمت‌ها بین کارشناس‌ها قابل مقایسه باشد. تو فقط
           تصمیم می‌گیری کدام را ارائه بدهی و چقدر بگیری.
         </p>
         <p className="mt-2 text-sm leading-7 text-muted">

@@ -98,7 +98,7 @@ export default async function SpecialistsPage({
 
   return (
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
-      <h1 className="text-2xl font-bold">پیدا کردن متخصص</h1>
+      <h1 className="text-2xl font-bold">پیدا کردن کارشناس</h1>
       <p className="mt-2 text-muted">
         حوزه‌ای که سؤالت درباره‌شه رو انتخاب کن و ۲۲ دقیقه رایگان با کسی حرف بزن
         که همین حالا توی همان حوزه کار می‌کنه.
@@ -109,7 +109,7 @@ export default async function SpecialistsPage({
         className="mt-8 flex max-w-xl items-center gap-2 rounded-full border border-card-border bg-card p-2 focus-within:border-brand"
       >
         <label htmlFor="q" className="sr-only">
-          جستجوی متخصص
+          جستجوی کارشناس
         </label>
         <input
           id="q"
@@ -163,7 +163,7 @@ export default async function SpecialistsPage({
           there are — rather than a dead end. */}
       {foundNothing && isFiltered && (
         <div className="mt-10 rounded-2xl border border-card-border bg-card p-8">
-          <h2 className="text-xl font-bold">متخصصی با این جستجو پیدا نشد</h2>
+          <h2 className="text-xl font-bold">کارشناسی با این جستجو پیدا نشد</h2>
           <p className="mt-3 text-sm text-muted">یکی از این‌ها را بردار:</p>
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -208,7 +208,7 @@ export default async function SpecialistsPage({
 
       {foundNothing && !isFiltered && (
         <p className="mt-10 text-muted">
-          هنوز متخصصی تأیید نشده. به‌زودی اینجا پر می‌شه!
+          هنوز کارشناسی تأیید نشده. به‌زودی اینجا پر می‌شه!
         </p>
       )}
 
@@ -218,7 +218,7 @@ export default async function SpecialistsPage({
           who is actually here instead. */}
       {foundNothing && approved.length > 0 && (
         <section className="mt-12">
-          <h2 className="text-lg font-bold">متخصص‌های ۲۲ درجه</h2>
+          <h2 className="text-lg font-bold">کارشناس‌های ۲۲ درجه</h2>
           <p className="mt-1 text-sm text-muted">
             شاید یکی از این‌ها به سؤالت نزدیک باشه.
           </p>

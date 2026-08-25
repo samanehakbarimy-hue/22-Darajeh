@@ -71,7 +71,7 @@ export default async function MentorProfilePage({
 
   return (
     <div className="mx-auto w-full max-w-xl flex-1 px-6 py-16">
-      <h1 className="text-2xl font-bold">پروفایل متخصص</h1>
+      <h1 className="text-2xl font-bold">پروفایل کارشناس</h1>
       <p className="mt-2 text-sm text-muted">
         این اطلاعات بعد از تأیید ادمین، به‌صورت عمومی نمایش داده می‌شه.
       </p>

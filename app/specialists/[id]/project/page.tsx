@@ -41,7 +41,7 @@ export default async function ProjectBriefPage({
   if (!rate?.is_active) {
     return (
       <div className="mx-auto w-full max-w-lg flex-1 px-6 py-16">
-        <h1 className="text-2xl font-bold">این متخصص کار پروژه‌ای نمی‌گیرد</h1>
+        <h1 className="text-2xl font-bold">این کارشناس کار پروژه‌ای نمی‌گیرد</h1>
         <p className="mt-2 leading-7 text-muted">
           می‌تونی تماس رایگان ۲۲ دقیقه‌ای را رزرو کنی و نیازت را با او در میان
           بگذاری.
@@ -79,7 +79,7 @@ export default async function ProjectBriefPage({
 
   const name =
     (mentor.profiles as unknown as { full_name: string } | null)?.full_name ??
-    "متخصص";
+    "کارشناس";
 
   return (
     <div className="mx-auto w-full max-w-lg flex-1 px-6 py-12">

@@ -26,12 +26,12 @@ const BENEFITS = [
   },
   {
     title: "۲۲ دقیقه رایگان",
-    body: "این وقت را متخصص‌ها خودشان می‌گذارند.",
+    body: "این وقت را کارشناس‌ها خودشان می‌گذارند.",
     // Clock.
     icon: "M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z",
   },
   {
-    title: "متخصص‌های تأییدشده",
+    title: "کارشناس‌های تأییدشده",
     body: "هر پروفایل پیش از انتشار بررسی می‌شود.",
     // Shield with a check.
     icon: "M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6zM9 12l2 2 4-4",
@@ -92,7 +92,7 @@ export default async function Home({
 
           <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-muted">
             می‌خوای وارد یک حوزه بشی، مسیرت را عوض کنی، برای مهاجرت کاری آماده
-            بشی یا بدونی یک شغل واقعاً چه شکلیه؟ با متخصصی حرف بزن که همین حالا
+            بشی یا بدونی یک شغل واقعاً چه شکلیه؟ با کارشناسی حرف بزن که همین حالا
             سرِ همان کاره.
           </p>
 
@@ -102,7 +102,7 @@ export default async function Home({
             className="mx-auto mt-9 flex max-w-xl items-center gap-2 rounded-full border border-card-border bg-card p-2 focus-within:border-brand"
           >
             <label htmlFor="q" className="sr-only">
-              جستجوی متخصص
+              جستجوی کارشناس
             </label>
             <input
               id="q"
@@ -124,7 +124,7 @@ export default async function Home({
           <p className="mt-4 text-sm text-muted">
             ۲۲ دقیقه گفتگوی رایگان —{" "}
             <Link href="/specialists" className="text-brand-deep hover:underline">
-              یا همه متخصص‌ها را ببین
+              یا همه کارشناس‌ها را ببین
             </Link>
           </p>
         </section>
@@ -149,7 +149,7 @@ export default async function Home({
           <section className="mt-20">
             <div className="mb-7 flex items-end justify-between gap-6">
               <div>
-                <h2 className="text-2xl font-bold">متخصص‌های ۲۲ درجه</h2>
+                <h2 className="text-2xl font-bold">کارشناس‌های ۲۲ درجه</h2>
                 <p className="mt-2 text-sm text-muted">
                   کسی را انتخاب کن که توی حوزه سؤال تو کار می‌کنه.
                 </p>

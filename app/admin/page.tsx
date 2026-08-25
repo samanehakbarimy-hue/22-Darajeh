@@ -25,7 +25,7 @@ type Member = {
 };
 
 const ROLE_LABEL: Record<Member["role"], string> = {
-  mentor: "متخصص",
+  mentor: "کارشناس",
   seeker: "متقاضی",
   admin: "ادمین",
 };
@@ -94,7 +94,7 @@ export default async function AdminPage() {
       <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="کل اعضا" value={members.length} />
         <Stat
-          label="متخصص تأیید‌شده"
+          label="کارشناس تأیید‌شده"
           value={mentors.filter((m) => m.status === "approved").length}
         />
         <Stat label="در انتظار تأیید" value={pendingMentors?.length ?? 0} />

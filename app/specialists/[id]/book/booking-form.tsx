@@ -78,7 +78,7 @@ export default function BookingForm({
 
         {slots.length === 0 ? (
           <p className="text-sm text-muted">
-            این متخصص فعلاً زمان خالی ثبت نکرده.
+            این کارشناس فعلاً زمان خالی ثبت نکرده.
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-6 rounded-2xl border border-card-border bg-card p-5 md:grid-cols-2">

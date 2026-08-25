@@ -80,7 +80,7 @@ export default async function MyRequestsPage() {
         b.mentor_profiles as unknown as {
           profiles: { full_name: string } | null;
         } | null
-      )?.profiles?.full_name ?? "متخصص",
+      )?.profiles?.full_name ?? "کارشناس",
       fileName: (b.attachment_name as string | null) ?? null,
       fileUrl: await signAttachment(
         supabase,
@@ -198,7 +198,7 @@ export default async function MyRequestsPage() {
             href="/specialists"
             className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
           >
-            پیدا کردن متخصص
+            پیدا کردن کارشناس
           </Link>
         </div>
       ) : (
@@ -279,7 +279,7 @@ export default async function MyRequestsPage() {
                   <p className="mt-4 border-t border-card-border pt-4 text-sm leading-7 text-muted">
                     {b.cancelled_by === user.id
                       ? "خودت لغوش کردی."
-                      : "متخصص لغوش کرد."}
+                      : "کارشناس لغوش کرد."}
                     {b.cancel_reason ? ` دلیل: ${b.cancel_reason}` : ""}
                   </p>
                 )}
@@ -312,7 +312,7 @@ export default async function MyRequestsPage() {
                       </a>
                     ) : (
                       <p className="text-sm leading-7 text-muted">
-                        متخصص درخواستت را قبول کرده، ولی هنوز لینک جلسه ثبت
+                        کارشناس درخواستت را قبول کرده، ولی هنوز لینک جلسه ثبت
                         نکرده. به‌محض اینکه اضافه کند همین‌جا می‌بینی‌اش.
                       </p>
                     )}

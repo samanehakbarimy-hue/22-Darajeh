@@ -105,7 +105,7 @@ export default function BriefForm({ mentorId }: { mentorId: string }) {
           فایل <span className="text-muted">(اختیاری)</span>
         </p>
         <p className="mt-1 text-xs leading-6 text-muted">
-          نقشه، مدرک، رزومه یا هر چیزی که کار را روشن‌تر می‌کند. فقط همین متخصص
+          نقشه، مدرک، رزومه یا هر چیزی که کار را روشن‌تر می‌کند. فقط همین کارشناس
           می‌تواند بازش کند. حداکثر ۲۰ مگابایت.
         </p>
 

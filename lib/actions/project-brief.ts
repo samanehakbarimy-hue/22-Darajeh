@@ -34,7 +34,7 @@ export async function sendBrief(
   const mentorId = String(formData.get("mentor_id") ?? "");
   const brief = String(formData.get("brief") ?? "").trim();
 
-  if (!mentorId) return { error: "این متخصص پیدا نشد." };
+  if (!mentorId) return { error: "این کارشناس پیدا نشد." };
   if (brief.length < 20) {
     return { error: "کمی بیشتر توضیح بده — دست‌کم بیست حرف." };
   }
@@ -72,7 +72,7 @@ export async function sendBrief(
   if (error) {
     // The partial unique index is the only one a person can hit by accident.
     if (error.code === "23505") {
-      return { error: "یک درخواست باز برای همین متخصص داری. اول جوابش را بگیر." };
+      return { error: "یک درخواست باز برای همین کارشناس داری. اول جوابش را بگیر." };
     }
     return { error: "فرستادن درخواست انجام نشد. یک بار دیگر امتحان کن." };
   }

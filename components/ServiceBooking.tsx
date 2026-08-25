@@ -147,7 +147,7 @@ export default function ServiceBooking({
     <div className="rounded-2xl border border-card-border bg-card p-5">
       <div
         role="tablist"
-        aria-label="راه‌های کار با این متخصص"
+        aria-label="راه‌های کار با این کارشناس"
         className="flex border-b border-card-border"
       >
         {TABS.map((tab, index) => {
@@ -201,14 +201,14 @@ export default function ServiceBooking({
           </>
         ) : !projectRate ? (
           <p className="py-6 text-sm leading-7 text-muted">
-            این متخصص هنوز نرخ کار پروژه‌ای نگذاشته. می‌تونی تماس رایگان ۲۲
+            این کارشناس هنوز نرخ کار پروژه‌ای نگذاشته. می‌تونی تماس رایگان ۲۲
             دقیقه‌ای را رزرو کنی و نیازت را با او در میان بگذاری.
           </p>
         ) : (
           <ul className="flex flex-col">
             <ServiceRow
               title="کار پروژه‌ای"
-              description="کارَت را توضیح بده و فایل‌هایش را بفرست؛ متخصص می‌بیند و می‌گوید قبول می‌کند یا نه."
+              description="کارَت را توضیح بده و فایل‌هایش را بفرست؛ کارشناس می‌بیند و می‌گوید قبول می‌کند یا نه."
               meta="نفرساعت"
               price={
                 projectRate.is_negotiable

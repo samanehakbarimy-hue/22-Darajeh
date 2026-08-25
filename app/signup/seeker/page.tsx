@@ -14,7 +14,7 @@ export default function SeekerSignupPage() {
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
       <h1 className="text-2xl font-bold">ثبت‌نام</h1>
       <p className="mt-2 text-sm text-muted">
-        یک حساب رایگان بساز و شروع کن به پیدا کردن متخصص مناسب خودت.
+        یک حساب رایگان بساز و شروع کن به پیدا کردن کارشناس مناسب خودت.
       </p>
 
       <div className="mt-8">

@@ -13,7 +13,7 @@ export default function NotFound() {
           href="/specialists"
           className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-on hover:bg-brand-hover"
         >
-          پیدا کردن متخصص
+          پیدا کردن کارشناس
         </Link>
         <Link
           href="/"

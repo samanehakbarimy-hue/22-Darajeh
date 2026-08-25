@@ -28,7 +28,7 @@ export default async function DashboardPage({
 
   const roleLabel =
     profile?.role === "mentor"
-      ? "متخصص"
+      ? "کارشناس"
       : profile?.role === "admin"
         ? "ادمین"
         : "متقاضی";
@@ -212,7 +212,7 @@ export default async function DashboardPage({
           ? "نیاز به اصلاح — توضیحش در پروفایل"
           : mentorStatus === "pending"
             ? "در انتظار تأیید ادمین"
-            : "هنوز پروفایل متخصص‌ت رو تکمیل نکردی";
+            : "هنوز پروفایل کارشناس‌ت رو تکمیل نکردی";
 
   // Both counts are of things still to come. Counting sessions that already
   // happened made the number climb forever and told the specialist nothing
@@ -231,7 +231,7 @@ export default async function DashboardPage({
     <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
       {booked === "1" && (
         <div className="mb-6 rounded-xl border border-brand bg-brand-light px-4 py-3 text-sm text-brand-deep">
-          درخواستت فرستاده شد. منتظر تأیید متخصص باش.
+          درخواستت فرستاده شد. منتظر تأیید کارشناس باش.
         </div>
       )}
 
@@ -408,7 +408,7 @@ export default async function DashboardPage({
                 href="/specialists"
                 className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
               >
-                پیدا کردن متخصص
+                پیدا کردن کارشناس
               </Link>
             </div>
           ) : (
@@ -464,7 +464,7 @@ export default async function DashboardPage({
                       <p>
                         {b.cancelledByMe
                           ? "این جلسه را خودت لغو کردی."
-                          : "متخصص این جلسه را لغو کرد."}
+                          : "کارشناس این جلسه را لغو کرد."}
                       </p>
                       {b.cancelReason && (
                         <p className="mt-1 text-muted/80">
@@ -483,7 +483,7 @@ export default async function DashboardPage({
                   ) : b.status === "pending" && b.expired ? (
                     <div className="mt-4 border-t border-card-border pt-4 text-sm leading-7 text-muted">
                       <p>
-                        زمان این درخواست گذشت و متخصص جوابی نداد. جلسه‌ای برگزار
+                        زمان این درخواست گذشت و کارشناس جوابی نداد. جلسه‌ای برگزار
                         نشد.
                       </p>
                       <Link
@@ -498,7 +498,7 @@ export default async function DashboardPage({
                     <>
                       <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
                         {b.seenAt
-                          ? "متخصص درخواستت رو دیده. منتظر جوابش باش."
+                          ? "کارشناس درخواستت رو دیده. منتظر جوابش باش."
                           : "هنوز دیده نشده. تا وقتی باز نشده می‌تونی پیامت رو عوض کنی."}
                       </p>
                       <CancelBooking bookingId={b.id} kind="request" />
@@ -518,7 +518,7 @@ export default async function DashboardPage({
                   ) : (
                     <div className="mt-4 border-t border-card-border pt-4">
                       <p className="text-sm text-muted">
-                        این متخصص هنوز لینک جلسه ثبت نکرده. به‌زودی اینجا نمایش
+                        این کارشناس هنوز لینک جلسه ثبت نکرده. به‌زودی اینجا نمایش
                         داده می‌شه.
                       </p>
                       <CancelBooking bookingId={b.id} kind="session" />

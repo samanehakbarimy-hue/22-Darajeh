@@ -20,13 +20,13 @@ const GROUPS = (signedIn: boolean) => [
   {
     title: "۲۲ درجه",
     links: [
-      { href: "/specialists", label: "پیدا کردن متخصص" },
+      { href: "/specialists", label: "پیدا کردن کارشناس" },
       // Inviting someone who is already a member to sign up, and someone
       // already signed in to sign in, is the sort of thing people notice.
       ...(signedIn
         ? [{ href: "/dashboard", label: "حساب من" }]
         : [
-            { href: "/signup/mentor", label: "به متخصص‌ها بپیوند" },
+            { href: "/signup/mentor", label: "به کارشناس‌ها بپیوند" },
             { href: "/login", label: "ورود" },
           ]),
     ],

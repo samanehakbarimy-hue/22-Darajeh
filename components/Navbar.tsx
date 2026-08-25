@@ -38,15 +38,15 @@ export default async function Navbar() {
       : role === "admin"
         ? [
             { href: "/admin", label: "مدیریت" },
-            { href: "/specialists", label: "متخصص‌ها" },
+            { href: "/specialists", label: "کارشناس‌ها" },
             { href: "/dashboard/requests", label: "درخواست‌های من" },
           ]
         : user
           ? [
-              { href: "/specialists", label: "پیدا کردن متخصص" },
+              { href: "/specialists", label: "پیدا کردن کارشناس" },
               { href: "/dashboard/requests", label: "درخواست‌های من" },
             ]
-          : [{ href: "/specialists", label: "پیدا کردن متخصص" }];
+          : [{ href: "/specialists", label: "پیدا کردن کارشناس" }];
 
   return (
     <header className="flex items-center justify-between border-b border-header-border bg-header px-6 py-4 text-header-foreground sm:px-12">
@@ -89,7 +89,7 @@ export default async function Navbar() {
               href="/signup/mentor"
               className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-on hover:bg-brand-hover"
             >
-              به متخصص‌ها بپیوند
+              به کارشناس‌ها بپیوند
             </Link>
           </>
         )}
