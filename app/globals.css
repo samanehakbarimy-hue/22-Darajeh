@@ -257,18 +257,7 @@ button:disabled {
   opacity: 0.62;
 }
 
-/* The halo, positioned by its real coordinates in the 1672x941 frame so it
-   lands exactly where it sat in the photograph -- concentric with the point
-   the fingertips meet. */
-.hero-hands__glow {
-  position: absolute;
-  left: 30.38%;
-  top: 14.67%;
-  width: 39.47%;
-  height: auto;
-}
-
-/* Both branches below drive the same three keyframes. The only difference is
+/* Both branches below drive the same two keyframes. The only difference is
    what advances them: the reader's scroll where the browser supports it, and
    a timer where it does not. */
 @keyframes hero-hand-part-left {
@@ -293,25 +282,8 @@ button:disabled {
   }
 }
 
-/* The halo leaves well before the hands do. The hands were painted out of
-   it, and those gaps only read as ghosts while there is still glow around
-   them to read against -- so there is none by the time the hands have gone
-   far enough to expose anything. */
-@keyframes hero-glow-part {
-  0% {
-    opacity: 1;
-    scale: 1;
-  }
-  45%,
-  100% {
-    opacity: 0;
-    scale: 1.12;
-  }
-}
-
 @supports (animation-timeline: scroll()) {
-  .hero-hands__hand,
-  .hero-hands__glow {
+  .hero-hands__hand {
     animation-timeline: scroll(root block);
     animation-range: 0 var(--hero-hands-travel);
     /* Scrubbing follows the finger, so it has to be linear. Any easing here
@@ -327,18 +299,13 @@ button:disabled {
   .hero-hands__hand--specialist {
     animation-name: hero-hand-part-right;
   }
-
-  .hero-hands__glow {
-    animation-name: hero-glow-part;
-  }
 }
 
 /* Browsers without scroll-driven animation get the same withdrawal on a timer,
    after a pause long enough to see the hands meet. Without this they would sit
    over the headline for as long as the page is open. */
 @supports not (animation-timeline: scroll()) {
-  .hero-hands__hand,
-  .hero-hands__glow {
+  .hero-hands__hand {
     animation-duration: 1.6s;
     animation-delay: 2.9s;
     animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
@@ -351,10 +318,6 @@ button:disabled {
 
   .hero-hands__hand--specialist {
     animation-name: hero-hand-part-right;
-  }
-
-  .hero-hands__glow {
-    animation-name: hero-glow-part;
   }
 }
 
