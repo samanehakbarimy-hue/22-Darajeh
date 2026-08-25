@@ -7,3 +7,29 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# 22 Darajeh — things that will bite you
+
+**The middleware is `proxy.ts`, not `middleware.ts`.** This Next.js version
+renamed it. Creating `middleware.ts` alongside it fails the build. `proxy.ts`
+holds the session refresh and the `SITE_PRIVATE` gate that rewrites signed-out
+visitors to `/soon`.
+
+**Run `npm test`.** Twelve tests in `lib/__tests__/` cover money formatting,
+session timing, and that every job title carries its own tool suggestions.
+They run under Node's own test runner with a `@/` alias hook — no framework.
+
+**`npm run lint` reports 3 pre-existing errors in `scripts/db.js`**
+(`require()` style imports in a plain Node script). They are not yours and not
+a regression. Everything else must stay clean.
+
+**Database work goes through `scripts/db.js`** — `node scripts/db.js file.sql`
+or `--query "..."`. It connects as **superuser and bypasses RLS**, so any test
+of a policy must switch role inside a transaction first, or it proves nothing.
+
+**There is no service-role key, deliberately.** Anything needing to read across
+users goes through a `SECURITY DEFINER` function, as `booking_parties()` and
+`held_session_count()` do.
+
+**Money lives in one place**: `lib/rates.ts`. The USD rate comes from tgju.org
+and is shown to admins only.
