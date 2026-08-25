@@ -118,7 +118,7 @@ export default function ServiceBooking({
             <div className="text-xs text-muted">
               {fa(FREE_CALL.minutes)} دقیقه
             </div>
-            <div className="mt-0.5 text-sm font-bold text-brand">رایگان</div>
+            <div className="mt-0.5 text-sm font-bold text-brand-deep">رایگان</div>
           </div>
         </div>
 
@@ -126,7 +126,7 @@ export default function ServiceBooking({
           {hasSlots ? (
             <Link
               href={`/specialists/${specialistId}/book`}
-              className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-hover"
+              className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-brand-on transition hover:bg-brand-hover"
             >
               رزرو جلسه
             </Link>
@@ -218,7 +218,7 @@ export default function ServiceBooking({
               action={
                 <Link
                   href={`/specialists/${specialistId}/project`}
-                  className="shrink-0 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-background hover:bg-brand-hover"
+                  className="shrink-0 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-brand-on hover:bg-brand-hover"
                 >
                   نوشتن درخواست
                 </Link>

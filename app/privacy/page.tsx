@@ -105,7 +105,7 @@ export default function PrivacyPage() {
             target="_blank"
             rel="noopener noreferrer"
             dir="ltr"
-            className="text-brand hover:underline"
+            className="text-brand-deep hover:underline"
           >
             myaccount.google.com/permissions
           </a>
@@ -125,7 +125,7 @@ export default function PrivacyPage() {
       <Section title="تماس با ما">
         <p>
           اگر سؤالی درباره اطلاعاتت داری یا می‌خواهی چیزی حذف شود، از صفحه{" "}
-          <a href="/contact" className="text-brand hover:underline">
+          <a href="/contact" className="text-brand-deep hover:underline">
             تماس با ما
           </a>{" "}
           بهمون بگو.

@@ -115,7 +115,7 @@ export default async function Home({
             />
             <button
               type="submit"
-              className="shrink-0 rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+              className="shrink-0 rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
             >
               پیدا کردن
             </button>
@@ -123,7 +123,7 @@ export default async function Home({
 
           <p className="mt-4 text-sm text-muted">
             ۲۲ دقیقه گفتگوی رایگان —{" "}
-            <Link href="/specialists" className="text-brand hover:underline">
+            <Link href="/specialists" className="text-brand-deep hover:underline">
               یا همه متخصص‌ها را ببین
             </Link>
           </p>
@@ -136,7 +136,7 @@ export default async function Home({
               <Link
                 key={field}
                 href={`/specialists?tag=${encodeURIComponent(field)}`}
-                className="rounded-full border border-card-border bg-card px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand"
+                className="rounded-full border border-card-border bg-card px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand-deep"
               >
                 {field}
               </Link>
@@ -156,7 +156,7 @@ export default async function Home({
               </div>
               <Link
                 href="/specialists"
-                className="shrink-0 text-sm text-brand hover:underline"
+                className="shrink-0 text-sm text-brand-deep hover:underline"
               >
                 دیدن همه ←
               </Link>
@@ -202,7 +202,7 @@ export default async function Home({
                 <svg
                   aria-hidden
                   viewBox="0 0 24 24"
-                  className="mt-0.5 h-6 w-6 shrink-0 text-brand"
+                  className="mt-0.5 h-6 w-6 shrink-0 text-brand-deep"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.6"

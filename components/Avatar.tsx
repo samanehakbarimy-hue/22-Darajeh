@@ -26,7 +26,7 @@ export default function Avatar({
   return (
     <div
       style={{ ...dimension, fontSize: size * 0.4 }}
-      className="flex items-center justify-center rounded-full bg-brand-light font-bold text-brand"
+      className="flex items-center justify-center rounded-full bg-brand-light font-bold text-brand-deep"
     >
       {name.slice(0, 1)}
     </div>

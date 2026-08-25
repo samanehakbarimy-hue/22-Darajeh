@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-6 py-24 text-center">
-      <span className="text-5xl font-bold text-brand">۴۰۴</span>
+      <span className="text-5xl font-bold text-brand-deep">۴۰۴</span>
       <h1 className="mt-4 text-2xl font-bold">این صفحه پیدا نشد</h1>
       <p className="mt-3 leading-7 text-muted">
         شاید لینک اشتباه باشه یا این صفحه دیگه وجود نداشته باشه.
@@ -11,7 +11,7 @@ export default function NotFound() {
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link
           href="/specialists"
-          className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-background hover:bg-brand-hover"
+          className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-on hover:bg-brand-hover"
         >
           پیدا کردن متخصص
         </Link>

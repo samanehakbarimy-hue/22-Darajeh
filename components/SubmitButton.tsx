@@ -5,11 +5,11 @@ import Spinner from "@/components/Spinner";
 
 const VARIANTS = {
   primary:
-    "bg-brand text-background hover:bg-brand-hover disabled:hover:bg-brand",
+    "bg-brand text-brand-on hover:bg-brand-hover disabled:hover:bg-brand",
   outline:
-    "border border-card-border text-muted hover:border-brand hover:text-brand disabled:hover:border-card-border disabled:hover:text-muted",
+    "border border-card-border text-muted hover:border-brand hover:text-brand-deep disabled:hover:border-card-border disabled:hover:text-muted",
   danger:
-    "border border-card-border text-red-400 hover:border-red-400 disabled:hover:border-card-border",
+    "border border-card-border text-danger hover:border-danger disabled:hover:border-card-border",
   quiet: "text-muted hover:text-foreground",
 } as const;
 

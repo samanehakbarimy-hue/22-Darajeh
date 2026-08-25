@@ -83,7 +83,7 @@ export default function BriefReply({ briefId }: { briefId: string }) {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+            className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
           >
             قبول می‌کنم
           </button>
@@ -99,7 +99,7 @@ export default function BriefReply({ briefId }: { briefId: string }) {
         </div>
       )}
 
-      {state?.error && <p className="mt-2 text-sm text-red-400">{state.error}</p>}
+      {state?.error && <p className="mt-2 text-sm text-danger">{state.error}</p>}
     </form>
   );
 }

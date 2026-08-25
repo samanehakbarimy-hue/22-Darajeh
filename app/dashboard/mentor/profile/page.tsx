@@ -81,7 +81,7 @@ export default async function MentorProfilePage({
           makes someone give up instead of fixing it. */}
       {mentorProfile?.status === "changes_requested" && (
         <div className="mt-6 rounded-2xl border border-brand/40 bg-brand-light p-5">
-          <p className="font-bold text-brand">پروفایلت نیاز به اصلاح دارد</p>
+          <p className="font-bold text-brand-deep">پروفایلت نیاز به اصلاح دارد</p>
           {mentorProfile.review_note && (
             <p className="mt-2 whitespace-pre-line text-sm leading-7 text-foreground">
               {mentorProfile.review_note}
@@ -101,7 +101,7 @@ export default async function MentorProfilePage({
           }`}
         >
           {google !== "connected" && (
-            <span className="mb-1 block font-bold text-brand">
+            <span className="mb-1 block font-bold text-brand-deep">
               اتصال کامل نشد
             </span>
           )}
@@ -126,7 +126,7 @@ export default async function MentorProfilePage({
               </p>
               <a
                 href="/api/google/connect"
-                className="mt-4 inline-block rounded-full border border-card-border px-5 py-2.5 text-sm hover:border-brand hover:text-brand"
+                className="mt-4 inline-block rounded-full border border-card-border px-5 py-2.5 text-sm hover:border-brand hover:text-brand-deep"
               >
                 وصل کردن حساب دیگر
               </a>
@@ -140,7 +140,7 @@ export default async function MentorProfilePage({
 
               <a
                 href="/api/google/connect"
-                className="mt-4 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+                className="mt-4 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
               >
                 وصل کردن حساب گوگل
               </a>

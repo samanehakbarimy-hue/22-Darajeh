@@ -35,12 +35,12 @@ export default async function AccountPage({
       </p>
 
       {error === "delete_failed" && (
-        <p className="mt-4 text-sm text-red-400">
+        <p className="mt-4 text-sm text-danger">
           حذف حساب با خطا مواجه شد. دوباره امتحان کن یا با پشتیبانی تماس بگیر.
         </p>
       )}
       {error === "link_failed" && (
-        <p className="mt-4 text-sm text-red-400">
+        <p className="mt-4 text-sm text-danger">
           اتصال به لینکدین با خطا مواجه شد. دوباره امتحان کن.
         </p>
       )}
@@ -48,7 +48,7 @@ export default async function AccountPage({
       <div className="mt-8 rounded-2xl border border-card-border bg-card p-5">
         {linkedinConnected ? (
           <p className="flex items-center gap-2 text-sm">
-            <span className="text-brand">✅</span>
+            <span className="text-brand-deep">✅</span>
             حساب لینکدینت وصل شده.
           </p>
         ) : (

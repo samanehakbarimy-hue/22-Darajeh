@@ -63,7 +63,7 @@ export default async function BookSpecialistPage({
               {specialist.headline}
             </p>
           )}
-          <p className="mt-1 text-xs text-brand">
+          <p className="mt-1 text-xs text-brand-deep">
             تماس راهنمایی ۲۲ دقیقه‌ای — رایگان
           </p>
         </div>

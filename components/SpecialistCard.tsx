@@ -35,7 +35,7 @@ export default function SpecialistCard({
             className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-5xl font-bold text-brand">
+          <div className="flex h-full w-full items-center justify-center text-5xl font-bold text-brand-deep">
             {name.slice(0, 1)}
           </div>
         )}
@@ -58,7 +58,7 @@ export default function SpecialistCard({
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-brand-light px-2.5 py-1 text-xs text-brand"
+                className="rounded-full bg-brand-light px-2.5 py-1 text-xs text-brand-deep"
               >
                 {tag}
               </span>

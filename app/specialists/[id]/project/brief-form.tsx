@@ -109,7 +109,7 @@ export default function BriefForm({ mentorId }: { mentorId: string }) {
           می‌تواند بازش کند. حداکثر ۲۰ مگابایت.
         </p>
 
-        <label className="mt-3 inline-block cursor-pointer rounded-full border border-card-border px-4 py-2 text-sm hover:border-brand hover:text-brand">
+        <label className="mt-3 inline-block cursor-pointer rounded-full border border-card-border px-4 py-2 text-sm hover:border-brand hover:text-brand-deep">
           {file ? "فایل دیگری انتخاب کن" : "انتخاب فایل"}
           <input
             type="file"
@@ -135,16 +135,16 @@ export default function BriefForm({ mentorId }: { mentorId: string }) {
         )}
 
         {uploadError && (
-          <p className="mt-2 text-xs text-red-400">{uploadError}</p>
+          <p className="mt-2 text-xs text-danger">{uploadError}</p>
         )}
       </div>
 
-      {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
+      {state?.error && <p className="text-sm text-danger">{state.error}</p>}
 
       <button
         disabled={pending || uploading}
         type="submit"
-        className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover disabled:opacity-60"
+        className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-brand-on hover:bg-brand-hover disabled:opacity-60"
       >
         {pending && <Spinner />}
         {pending ? "در حال فرستادن..." : "فرستادن درخواست"}

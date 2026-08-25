@@ -158,7 +158,7 @@ export default async function MySessionsPage() {
         >
           <p
             className={`font-bold ${
-              stranded.length > 0 ? "text-brand" : "text-foreground"
+              stranded.length > 0 ? "text-brand-deep" : "text-foreground"
             }`}
           >
             {stranded.length > 0
@@ -178,8 +178,8 @@ export default async function MySessionsPage() {
             href="/dashboard/mentor/profile"
             className={`mt-4 inline-block rounded-full px-5 py-2.5 text-sm ${
               stranded.length > 0
-                ? "bg-brand font-semibold text-background hover:bg-brand-hover"
-                : "border border-card-border font-medium text-muted hover:border-brand hover:text-brand"
+                ? "bg-brand font-semibold text-brand-on hover:bg-brand-hover"
+                : "border border-card-border font-medium text-muted hover:border-brand hover:text-brand-deep"
             }`}
           >
             افزودن لینک جلسه
@@ -192,7 +192,7 @@ export default async function MySessionsPage() {
           <p className="text-muted">هنوز کسی ازت درخواست جلسه نکرده.</p>
           <Link
             href="/dashboard/mentor/availability"
-            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
           >
             زمان‌های آزادت را بیشتر کن
           </Link>
@@ -203,7 +203,7 @@ export default async function MySessionsPage() {
         <section className="mt-8">
           <h2 className="text-lg font-bold">
             در انتظار جواب تو
-            <span className="mr-2 rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs text-background">
+            <span className="mr-2 rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs text-brand-on">
               {pending.length.toLocaleString("fa-IR")}
             </span>
           </h2>
@@ -215,7 +215,7 @@ export default async function MySessionsPage() {
               >
                 <p className="font-bold">{b.seeker?.full_name}</p>
                 {b.slot && (
-                  <p className="mt-1 text-sm text-brand">
+                  <p className="mt-1 text-sm text-brand-deep">
                     {timeFormatter.format(new Date(b.slot.start_time))}
                   </p>
                 )}
@@ -258,7 +258,7 @@ export default async function MySessionsPage() {
         <section className="mt-10">
           <h2 className="text-lg font-bold">
             درخواست‌های پروژه‌ای
-            <span className="mr-2 rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs text-background">
+            <span className="mr-2 rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs text-brand-on">
               {briefs.length.toLocaleString("fa-IR")}
             </span>
           </h2>
@@ -284,7 +284,7 @@ export default async function MySessionsPage() {
                     href={b.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-block rounded-full border border-card-border px-4 py-2 text-sm hover:border-brand hover:text-brand"
+                    className="mt-4 inline-block rounded-full border border-card-border px-4 py-2 text-sm hover:border-brand hover:text-brand-deep"
                   >
                     📎 {b.fileName}
                   </a>

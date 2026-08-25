@@ -59,7 +59,7 @@ export default function AccountForm({
                 }
                 setPreview(URL.createObjectURL(file));
               }}
-              className="text-sm text-muted file:mr-3 file:rounded-full file:border-0 file:bg-brand-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand"
+              className="text-sm text-muted file:mr-3 file:rounded-full file:border-0 file:bg-brand-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-deep"
             />
           </div>
         </div>
@@ -77,23 +77,23 @@ export default function AccountForm({
           />
         </div>
 
-        {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
+        {state?.error && <p className="text-sm text-danger">{state.error}</p>}
         {state?.success && (
-          <p className="text-sm text-brand">تغییرات ذخیره شد.</p>
+          <p className="text-sm text-brand-deep">تغییرات ذخیره شد.</p>
         )}
 
         <button
           disabled={pending}
           type="submit"
-          className="inline-flex items-center justify-center gap-2 mt-2 self-start rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 mt-2 self-start rounded-full bg-brand px-6 py-3 font-semibold text-brand-on hover:bg-brand-hover disabled:opacity-60"
         >
           {pending && <Spinner />}
         {pending ? "در حال ذخیره..." : "ذخیره تغییرات"}
         </button>
       </form>
 
-      <div className="rounded-2xl border border-red-900/40 bg-red-950/10 p-5">
-        <h2 className="font-bold text-red-400">حذف حساب</h2>
+      <div className="rounded-2xl border border-danger/25 bg-danger/5 p-5">
+        <h2 className="font-bold text-danger">حذف حساب</h2>
         <p className="mt-2 text-sm text-muted">
           با حذف حساب، تمام اطلاعات تو (پروفایل، زمان‌های آزاد، رزروها) برای
           همیشه پاک می‌شه. این کار غیرقابل بازگشته.
@@ -120,7 +120,7 @@ export default function AccountForm({
           <button
             type="submit"
             disabled={!confirmDelete}
-            className="mt-4 rounded-full border border-red-500 px-6 py-3 font-semibold text-red-400 hover:bg-red-950/30 disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-4 rounded-full border border-danger px-6 py-3 font-semibold text-danger hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-40"
           >
             حذف کامل حساب
           </button>

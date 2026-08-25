@@ -66,7 +66,7 @@ export default function BookingForm({
         {/* Only the ceiling is a rule, so only mention it when it is close. */}
         {wordCount > MAX_WORDS - 20 && (
           <p
-            className={`mt-1.5 text-xs ${tooLong ? "text-amber-400" : "text-muted"}`}
+            className={`mt-1.5 text-xs ${tooLong ? "text-warning" : "text-muted"}`}
           >
             {fa(wordCount)} کلمه از {fa(MAX_WORDS)}
           </p>
@@ -109,8 +109,8 @@ export default function BookingForm({
                         aria-pressed={on}
                         className={`rounded-lg border px-3 py-2.5 text-sm transition ${
                           on
-                            ? "border-brand bg-brand-light font-bold text-brand"
-                            : "border-card-border text-muted hover:border-brand hover:text-brand"
+                            ? "border-brand bg-brand-light font-bold text-brand-deep"
+                            : "border-card-border text-muted hover:border-brand hover:text-brand-deep"
                         }`}
                         dir="ltr"
                       >
@@ -126,7 +126,7 @@ export default function BookingForm({
       </div>
 
       {state?.error && (
-        <p className="rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400">
+        <p className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
           {state.error}
         </p>
       )}
@@ -134,7 +134,7 @@ export default function BookingForm({
       <button
         disabled={pending || !slotId || wordCount === 0 || tooLong}
         type="submit"
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-background transition hover:bg-brand-hover disabled:opacity-50"
+        className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-brand-on transition hover:bg-brand-hover disabled:opacity-50"
       >
         {pending && <Spinner />}
         {pending ? "در حال ارسال..." : "ارسال درخواست"}

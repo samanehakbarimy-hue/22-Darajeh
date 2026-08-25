@@ -42,7 +42,7 @@ export default function RequestMessage({
         </p>
 
         {state?.saved && (
-          <p className="mt-2 flex items-center gap-1.5 text-xs text-brand">
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-brand-deep">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -66,7 +66,7 @@ export default function RequestMessage({
               setDraft(message);
               setEditing(true);
             }}
-            className="mt-2 text-xs text-brand hover:underline"
+            className="mt-2 text-xs text-brand-deep hover:underline"
           >
             ویرایش پیام
           </button>
@@ -86,13 +86,13 @@ export default function RequestMessage({
         className="w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
       />
       {state?.error && (
-        <p className="mt-1 text-xs text-red-400">{state.error}</p>
+        <p className="mt-1 text-xs text-danger">{state.error}</p>
       )}
       <div className="mt-2 flex gap-2">
         <button
           type="submit"
           disabled={pending || draft.trim().length === 0}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-background disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-brand-on disabled:opacity-50"
         >
           {pending && <Spinner />}
         {pending ? "در حال ذخیره..." : "ذخیره"}

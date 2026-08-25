@@ -92,7 +92,7 @@ function Column({
             onClick={() => selectAt(v)}
             className={`flex w-full snap-center items-center justify-center tabular-nums transition ${
               selected
-                ? "text-lg font-bold text-brand"
+                ? "text-lg font-bold text-brand-deep"
                 : "text-xs text-muted/40"
             }`}
             style={{ height: ITEM_HEIGHT }}

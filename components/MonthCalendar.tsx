@@ -103,7 +103,7 @@ export default function MonthCalendar({
           type="button"
           onClick={() => shiftMonth(-1)}
           aria-label="ماه قبل"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-card-border text-sm text-muted transition hover:border-brand hover:text-brand"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-card-border text-sm text-muted transition hover:border-brand hover:text-brand-deep"
         >
           ‹
         </button>
@@ -112,7 +112,7 @@ export default function MonthCalendar({
           type="button"
           onClick={() => shiftMonth(1)}
           aria-label="ماه بعد"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-card-border text-sm text-muted transition hover:border-brand hover:text-brand"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-card-border text-sm text-muted transition hover:border-brand hover:text-brand-deep"
         >
           ›
         </button>
@@ -122,7 +122,7 @@ export default function MonthCalendar({
         {weekdays.map((w, i) => (
           <span
             key={w}
-            className={`py-1 ${i >= 5 ? "text-amber-400/70" : "text-muted"}`}
+            className={`py-1 ${i >= 5 ? "text-warning/70" : "text-muted"}`}
           >
             {w}
           </span>
@@ -149,14 +149,14 @@ export default function MonthCalendar({
               title={weekend ? "تعطیل" : undefined}
               className={`relative aspect-square rounded-lg text-sm transition ${
                 selected
-                  ? "bg-brand font-bold text-background"
+                  ? "bg-brand font-bold text-brand-on"
                   : disabled
                     ? "cursor-not-allowed text-muted/30"
                     : marked
-                      ? "bg-brand-light font-bold text-brand hover:bg-brand hover:text-background"
+                      ? "bg-brand-light font-bold text-brand-deep hover:bg-brand hover:text-brand-on"
                       : weekend
-                        ? "text-amber-400/80 hover:bg-brand-light hover:text-brand"
-                        : "text-foreground hover:bg-brand-light hover:text-brand"
+                        ? "text-warning/80 hover:bg-brand-light hover:text-brand-deep"
+                        : "text-foreground hover:bg-brand-light hover:text-brand-deep"
               }`}
             >
               {useJalali ? fa(toJalaali(day).jd) : day.getDate()}

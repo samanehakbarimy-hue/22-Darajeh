@@ -51,18 +51,18 @@ export default async function SiteFooter() {
   const signedIn = await hasSession();
 
   return (
-    <footer className="mt-auto border-t border-card-border px-6 py-10">
+    <footer className="mt-auto bg-header px-6 py-10 text-header-foreground">
       <div className="mx-auto w-full max-w-5xl">
         <div className="grid grid-cols-2 gap-8 text-right sm:grid-cols-3">
           {GROUPS(signedIn).map((group) => (
             <div key={group.title}>
               <h3 className="text-sm font-bold">{group.title}</h3>
-              <ul className="mt-3 flex flex-col gap-2 text-sm text-muted">
+              <ul className="mt-3 flex flex-col gap-2 text-sm text-header-muted">
                 {group.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="inline-block py-1 hover:text-foreground"
+                      className="inline-block py-1 hover:text-header-foreground"
                     >
                       {link.label}
                     </Link>
@@ -74,14 +74,14 @@ export default async function SiteFooter() {
         </div>
 
         {/* The mark and its tagline, kept together the way the logo sets them. */}
-        <div className="mt-10 flex flex-col gap-3 border-t border-card-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 flex flex-col gap-3 border-t border-header-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <LogoMark size={32} />
-            <span className="text-sm font-semibold text-muted">
+            <span className="text-sm font-semibold text-header-muted">
               فرصت‌ها از زاویه‌ای تازه
             </span>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-header-muted">
             ۲۲ درجه — با کسی حرف بزن که همان کار را می‌کند.
           </p>
         </div>

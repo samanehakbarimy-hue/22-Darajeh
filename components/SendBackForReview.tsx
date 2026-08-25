@@ -33,7 +33,7 @@ export default function SendBackForReview({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="py-1.5 text-xs text-muted underline-offset-4 hover:text-brand hover:underline"
+          className="py-1.5 text-xs text-muted underline-offset-4 hover:text-brand-deep hover:underline"
         >
           بازبینی دوباره
         </button>
@@ -62,7 +62,7 @@ export default function SendBackForReview({
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <button
           type="submit"
-          className="rounded-full border border-card-border px-4 py-1.5 text-xs font-medium text-red-400 hover:border-red-400"
+          className="rounded-full border border-card-border px-4 py-1.5 text-xs font-medium text-danger hover:border-danger"
         >
           بفرست برای اصلاح
         </button>

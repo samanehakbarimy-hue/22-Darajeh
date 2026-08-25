@@ -27,7 +27,7 @@ const STATUS = {
   declined: {
     mark: "✕",
     label: "رد شده",
-    className: "border border-red-400/40 text-red-400",
+    className: "border border-danger/40 text-danger",
   },
   cancelled: {
     mark: "✕",
@@ -129,7 +129,7 @@ export default async function MyRequestsPage() {
                         ? "bg-success-light text-success"
                         : b.status === "pending"
                           ? "border border-card-border text-muted"
-                          : "border border-red-400/40 text-red-400"
+                          : "border border-danger/40 text-danger"
                     }`}
                   >
                     {b.status === "accepted"
@@ -151,7 +151,7 @@ export default async function MyRequestsPage() {
                     href={b.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-3 inline-block rounded-full border border-card-border px-4 py-2 text-xs hover:border-brand hover:text-brand"
+                    className="mt-3 inline-block rounded-full border border-card-border px-4 py-2 text-xs hover:border-brand hover:text-brand-deep"
                   >
                     📎 {b.fileName}
                   </a>
@@ -196,7 +196,7 @@ export default async function MyRequestsPage() {
           <p className="text-muted">هنوز درخواستی نفرستادی.</p>
           <Link
             href="/specialists"
-            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+            className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
           >
             پیدا کردن متخصص
           </Link>
@@ -256,7 +256,7 @@ export default async function MyRequestsPage() {
 
                 <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
                   {slot && (
-                    <span className="text-brand">
+                    <span className="text-brand-deep">
                       {timeFormatter.format(new Date(slot.start_time))}
                     </span>
                   )}
@@ -306,7 +306,7 @@ export default async function MyRequestsPage() {
                         href={meetingLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+                        className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
                       >
                         ورود به جلسه
                       </a>

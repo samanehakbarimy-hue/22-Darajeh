@@ -203,7 +203,7 @@ export default function MentorProfileForm({
             />
             <label
               htmlFor="photo"
-              className="inline-block cursor-pointer rounded-full bg-brand-light px-5 py-2 text-sm font-medium text-brand transition hover:bg-brand hover:text-background"
+              className="inline-block cursor-pointer rounded-full bg-brand-light px-5 py-2 text-sm font-medium text-brand-deep transition hover:bg-brand hover:text-brand-on"
             >
               {preview ? "تغییر عکس" : "انتخاب عکس"}
             </label>
@@ -214,7 +214,7 @@ export default function MentorProfileForm({
             </p>
           </div>
         </div>
-        {photoError && <p className="text-sm text-red-400">{photoError}</p>}
+        {photoError && <p className="text-sm text-danger">{photoError}</p>}
 
         <div>
           <label htmlFor="headline" className="mb-1.5 block text-sm font-medium">
@@ -282,8 +282,8 @@ export default function MentorProfileForm({
                 aria-pressed={seniority === level.value}
                 className={`rounded-full border px-4 py-2 text-sm transition ${
                   seniority === level.value
-                    ? "border-brand bg-brand-light text-brand"
-                    : "border-card-border text-muted hover:border-brand hover:text-brand"
+                    ? "border-brand bg-brand-light text-brand-deep"
+                    : "border-card-border text-muted hover:border-brand hover:text-brand-deep"
                 }`}
               >
                 {level.label}
@@ -319,14 +319,14 @@ export default function MentorProfileForm({
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-sm text-brand"
+                  className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-sm text-brand-deep"
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
                     aria-label={`حذف ${tag}`}
-                    className="text-brand/60 transition hover:text-brand"
+                    className="text-brand-deep/60 transition hover:text-brand-deep"
                   >
                     ×
                   </button>
@@ -353,7 +353,7 @@ export default function MentorProfileForm({
                   key={tag}
                   type="button"
                   onClick={() => addTag(tag)}
-                  className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand"
+                  className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand-deep"
                 >
                   + {tag}
                 </button>
@@ -365,7 +365,7 @@ export default function MentorProfileForm({
             <button
               type="button"
               onClick={() => addTag(draft)}
-              className="mt-3 text-xs text-brand hover:underline"
+              className="mt-3 text-xs text-brand-deep hover:underline"
             >
               افزودن «{draft.trim()}» به‌عنوان تخصص جدید
             </button>
@@ -449,12 +449,12 @@ export default function MentorProfileForm({
       </Section>
 
       {state?.error && (
-        <p className="rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400">
+        <p className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
           {state.error}
         </p>
       )}
       {state?.success && (
-        <p className="rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm text-brand">
+        <p className="rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm text-brand-deep">
           پروفایلت ذخیره شد.
         </p>
       )}
@@ -462,7 +462,7 @@ export default function MentorProfileForm({
       <button
         disabled={pending}
         type="submit"
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 font-semibold text-background transition hover:bg-brand-hover disabled:opacity-60"
+        className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 font-semibold text-brand-on transition hover:bg-brand-hover disabled:opacity-60"
       >
         {pending && <Spinner />}
         {pending ? "در حال ذخیره..." : "ذخیره پروفایل"}

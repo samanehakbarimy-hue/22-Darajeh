@@ -24,7 +24,7 @@ export default function LoginForm({
     <>
       {confirmFailed && !resendState?.success && (
         <div className="mt-6 rounded-lg border border-card-border bg-card p-4 text-sm">
-          <p className="text-red-400">
+          <p className="text-danger">
             لینک تأیید ایمیل منقضی شده یا قبلاً استفاده شده.
           </p>
           <p className="mt-1 text-muted">
@@ -41,18 +41,18 @@ export default function LoginForm({
             <button
               disabled={resendPending}
               type="submit"
-              className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-hover disabled:opacity-60"
+              className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-on hover:bg-brand-hover disabled:opacity-60"
             >
               {resendPending ? "..." : "ارسال دوباره"}
             </button>
           </form>
           {resendState?.error && (
-            <p className="mt-2 text-red-400">{resendState.error}</p>
+            <p className="mt-2 text-danger">{resendState.error}</p>
           )}
         </div>
       )}
       {resendState?.success && (
-        <p className="mt-6 text-sm text-brand">
+        <p className="mt-6 text-sm text-brand-deep">
           لینک تازه فرستاده شد، ایمیلت رو چک کن.
         </p>
       )}
@@ -90,7 +90,7 @@ export default function LoginForm({
                 get in, which is here, not on some other page. */}
             <Link
               href="/forgot-password"
-              className="text-xs text-muted hover:text-brand"
+              className="text-xs text-muted hover:text-brand-deep"
             >
               فراموشش کردی؟
             </Link>
@@ -103,12 +103,12 @@ export default function LoginForm({
           />
         </div>
 
-        {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
+        {state?.error && <p className="text-sm text-danger">{state.error}</p>}
 
         <button
           disabled={pending}
           type="submit"
-          className="inline-flex items-center justify-center gap-2 mt-2 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 mt-2 rounded-full bg-brand px-6 py-3 font-semibold text-brand-on hover:bg-brand-hover disabled:opacity-60"
         >
           {pending && <Spinner />}
         {pending ? "در حال ورود..." : "ورود"}
@@ -117,11 +117,11 @@ export default function LoginForm({
 
       <p className="mt-6 text-center text-sm text-muted">
         حساب نداری؟{" "}
-        <Link href="/signup/seeker" className="font-medium text-brand">
+        <Link href="/signup/seeker" className="font-medium text-brand-deep">
           ثبت‌نام به‌عنوان متقاضی
         </Link>{" "}
         یا{" "}
-        <Link href="/signup/mentor" className="font-medium text-brand">
+        <Link href="/signup/mentor" className="font-medium text-brand-deep">
           متخصص شو
         </Link>
       </p>

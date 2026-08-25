@@ -116,18 +116,18 @@ export default async function MentorAvailabilityPage() {
                     />
                     <button
                       type="submit"
-                      className="shrink-0 text-sm text-red-400 hover:text-red-300"
+                      className="shrink-0 text-sm text-danger hover:text-danger-hover"
                     >
                       حذف
                     </button>
                   </form>
                 ) : (
-                  <span className="shrink-0 text-sm text-brand">رزرو شده</span>
+                  <span className="shrink-0 text-sm text-brand-deep">رزرو شده</span>
                 )}
               </div>
 
               {booked.length > 0 && (
-                <p className="mt-1 text-xs text-brand">
+                <p className="mt-1 text-xs text-brand-deep">
                   {`${booked.length.toLocaleString("fa-IR")} جلسه رزرو شده`}
                 </p>
               )}

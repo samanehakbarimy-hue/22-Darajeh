@@ -37,12 +37,12 @@ export default function ResetPasswordForm() {
         />
       </div>
 
-      {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
+      {state?.error && <p className="text-sm text-danger">{state.error}</p>}
 
       <button
         disabled={pending}
         type="submit"
-        className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover disabled:opacity-60"
+        className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-brand-on hover:bg-brand-hover disabled:opacity-60"
       >
         {pending && <Spinner />}
         {pending ? "در حال ذخیره..." : "ذخیره رمز تازه"}

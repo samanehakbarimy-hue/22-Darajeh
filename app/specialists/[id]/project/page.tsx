@@ -48,7 +48,7 @@ export default async function ProjectBriefPage({
         </p>
         <Link
           href={`/specialists/${id}`}
-          className="mt-6 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover"
+          className="mt-6 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-brand-on hover:bg-brand-hover"
         >
           برگشت به پروفایل
         </Link>
@@ -69,7 +69,7 @@ export default async function ProjectBriefPage({
         </p>
         <Link
           href="/dashboard/sessions"
-          className="mt-6 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover"
+          className="mt-6 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-brand-on hover:bg-brand-hover"
         >
           دیدن درخواست‌ها
         </Link>

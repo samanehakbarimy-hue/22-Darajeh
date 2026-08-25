@@ -31,12 +31,12 @@ export default function CancelBooking({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="text-xs text-muted underline-offset-4 hover:text-red-400 hover:underline"
+          className="text-xs text-muted underline-offset-4 hover:text-danger hover:underline"
         >
           {kind === "request" ? "انصراف از درخواست" : "لغو جلسه"}
         </button>
         {state?.error && (
-          <p className="mt-2 text-sm text-red-400">{state.error}</p>
+          <p className="mt-2 text-sm text-danger">{state.error}</p>
         )}
       </div>
     );
@@ -86,7 +86,7 @@ export default function CancelBooking({
       </div>
 
       {state?.error && (
-        <p className="mt-2 text-sm text-red-400">{state.error}</p>
+        <p className="mt-2 text-sm text-danger">{state.error}</p>
       )}
     </form>
   );

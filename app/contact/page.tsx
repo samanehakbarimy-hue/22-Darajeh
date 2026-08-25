@@ -20,7 +20,7 @@ export default function ContactPage() {
 
       <a
         href={`mailto:${CONTACT_EMAIL}`}
-        className="mt-8 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover"
+        className="mt-8 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-brand-on hover:bg-brand-hover"
         dir="ltr"
       >
         {CONTACT_EMAIL}
@@ -29,13 +29,13 @@ export default function ContactPage() {
       <div className="mt-12 border-t border-card-border pt-8">
         <h2 className="font-bold">شاید جوابت اینجا باشه</h2>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-          <Link href="/faq" className="text-brand hover:underline">
+          <Link href="/faq" className="text-brand-deep hover:underline">
             سؤال‌های پرتکرار
           </Link>
-          <Link href="/privacy" className="text-brand hover:underline">
+          <Link href="/privacy" className="text-brand-deep hover:underline">
             حریم خصوصی
           </Link>
-          <Link href="/terms" className="text-brand hover:underline">
+          <Link href="/terms" className="text-brand-deep hover:underline">
             قوانین استفاده
           </Link>
         </div>

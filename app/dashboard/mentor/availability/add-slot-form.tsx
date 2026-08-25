@@ -129,7 +129,7 @@ export default function AddSlotForm({
                   {allTimes.map((t) => (
                     <span
                       key={t}
-                      className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-xs text-brand"
+                      className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep"
                     >
                       <span dir="ltr">
                         {useJalali
@@ -140,7 +140,7 @@ export default function AddSlotForm({
                         type="button"
                         onClick={() => removeTime(t)}
                         aria-label={`حذف ${t}`}
-                        className="text-brand/60 transition hover:text-brand"
+                        className="text-brand-deep/60 transition hover:text-brand-deep"
                       >
                         ×
                       </button>
@@ -165,8 +165,8 @@ export default function AddSlotForm({
                       onClick={() => toggleTime(start)}
                       className={`rounded-lg border px-2 py-2 transition ${
                         on
-                          ? "border-brand bg-brand-light text-brand"
-                          : "border-card-border text-muted hover:border-brand hover:text-brand"
+                          ? "border-brand bg-brand-light text-brand-deep"
+                          : "border-card-border text-muted hover:border-brand hover:text-brand-deep"
                       }`}
                     >
                       <span className="block text-sm font-bold" dir="ltr">
@@ -203,14 +203,14 @@ export default function AddSlotForm({
       </div>
 
       {state?.error && (
-        <p className="mt-4 rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400">
+        <p className="mt-4 rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
           {state.error}
         </p>
       )}
       {/* Drop the confirmation as soon as a new selection starts, so it never
           describes something other than what the button is about to do. */}
       {state?.added && allTimes.length === 0 ? (
-        <p className="mt-4 rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm text-brand">
+        <p className="mt-4 rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm text-brand-deep">
           زمان‌های آزادت اضافه شد.
         </p>
       ) : null}
@@ -218,7 +218,7 @@ export default function AddSlotForm({
       <button
         type="submit"
         disabled={pending || !selectedDate || allTimes.length === 0}
-        className="mt-6 w-full rounded-full bg-brand px-6 py-3 font-semibold text-background transition hover:bg-brand-hover disabled:opacity-50"
+        className="mt-6 w-full rounded-full bg-brand px-6 py-3 font-semibold text-brand-on transition hover:bg-brand-hover disabled:opacity-50"
       >
         {pending
           ? "در حال افزودن..."

@@ -124,7 +124,7 @@ export default async function SpecialistsPage({
         />
         <button
           type="submit"
-          className="shrink-0 rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+          className="shrink-0 rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
         >
           پیدا کردن
         </button>
@@ -136,8 +136,8 @@ export default async function SpecialistsPage({
             href="/specialists"
             className={`rounded-full border px-4 py-2 text-sm transition ${
               tag
-                ? "border-card-border text-muted hover:border-brand hover:text-brand"
-                : "border-brand bg-brand-light text-brand"
+                ? "border-card-border text-muted hover:border-brand hover:text-brand-deep"
+                : "border-brand bg-brand-light text-brand-deep"
             }`}
           >
             همه
@@ -148,8 +148,8 @@ export default async function SpecialistsPage({
               href={`/specialists?tag=${encodeURIComponent(available)}`}
               className={`rounded-full border px-4 py-2 text-sm transition ${
                 tag === available
-                  ? "border-brand bg-brand-light text-brand"
-                  : "border-card-border text-muted hover:border-brand hover:text-brand"
+                  ? "border-brand bg-brand-light text-brand-deep"
+                  : "border-card-border text-muted hover:border-brand hover:text-brand-deep"
               }`}
             >
               {available}
@@ -174,7 +174,7 @@ export default async function SpecialistsPage({
                     ? `/specialists?tag=${encodeURIComponent(tag)}`
                     : "/specialists"
                 }
-                className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted hover:border-brand hover:text-brand"
+                className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted hover:border-brand hover:text-brand-deep"
               >
                 جستجو: «{q}»<span aria-hidden>×</span>
               </Link>
@@ -186,7 +186,7 @@ export default async function SpecialistsPage({
                     ? `/specialists?q=${encodeURIComponent(q ?? "")}`
                     : "/specialists"
                 }
-                className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted hover:border-brand hover:text-brand"
+                className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted hover:border-brand hover:text-brand-deep"
               >
                 حوزه: «{tag}»<span aria-hidden>×</span>
               </Link>
@@ -199,7 +199,7 @@ export default async function SpecialistsPage({
 
           <Link
             href="/specialists"
-            className="mt-5 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+            className="mt-5 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
           >
             پاک کردن جستجو
           </Link>

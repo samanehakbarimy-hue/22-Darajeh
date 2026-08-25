@@ -37,7 +37,7 @@ export default function ConfirmedSessionLink({
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+            className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
           >
             ورود به جلسه
           </a>
@@ -72,7 +72,7 @@ export default function ConfirmedSessionLink({
       )}
 
       {state?.error && (
-        <p className="mt-2 text-sm text-red-400">{state.error}</p>
+        <p className="mt-2 text-sm text-danger">{state.error}</p>
       )}
     </div>
   );

@@ -148,7 +148,7 @@ export default async function AdminPage() {
                     meeting_link: string | null;
                   } | null
                 )?.meeting_link && (
-                  <p className="mt-2 rounded-xl border border-brand/40 bg-brand-light px-3 py-2 text-xs leading-6 text-brand">
+                  <p className="mt-2 rounded-xl border border-brand/40 bg-brand-light px-3 py-2 text-xs leading-6 text-brand-deep">
                     لینک جلسه ندارد. تأیید کردن، پروفایلی را منتشر می‌کند که
                     می‌شود رزروش کرد ولی نمی‌شود دیدش — دکمه تأیید به‌جایش
                     درخواست اصلاح می‌فرستد.
@@ -156,7 +156,7 @@ export default async function AdminPage() {
                 )}
 
                 {seniorityBadge(mentor.seniority) && (
-                  <p className="mt-2 inline-block rounded-full border border-brand/40 bg-brand-light px-3 py-1 text-xs text-brand">
+                  <p className="mt-2 inline-block rounded-full border border-brand/40 bg-brand-light px-3 py-1 text-xs text-brand-deep">
                     ادعای تجربه: {seniorityBadge(mentor.seniority)}
                   </p>
                 )}
@@ -169,7 +169,7 @@ export default async function AdminPage() {
                     href={mentor.linkedin_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 block text-sm text-brand"
+                    className="mt-2 block text-sm text-brand-deep"
                   >
                     لینکدین
                   </a>
@@ -179,7 +179,7 @@ export default async function AdminPage() {
                     <input type="hidden" name="mentor_id" value={mentor.id} />
                     <button
                       type="submit"
-                      className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-hover"
+                      className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-on hover:bg-brand-hover"
                     >
                       تأیید
                     </button>
@@ -218,7 +218,7 @@ export default async function AdminPage() {
                   />
                   <button
                     type="submit"
-                    className="mt-3 rounded-full border border-card-border px-4 py-2 text-sm font-medium hover:border-brand hover:text-brand"
+                    className="mt-3 rounded-full border border-card-border px-4 py-2 text-sm font-medium hover:border-brand hover:text-brand-deep"
                   >
                     فرستادن برای اصلاح
                   </button>
@@ -233,7 +233,7 @@ export default async function AdminPage() {
         <h2 className="text-lg font-bold">اعضا</h2>
 
         {membersError && (
-          <p className="mt-4 text-sm text-red-400">
+          <p className="mt-4 text-sm text-danger">
             خطا در خواندن فهرست اعضا: {membersError.message}
           </p>
         )}
@@ -271,7 +271,7 @@ export default async function AdminPage() {
                         member.status === "approved" ? (
                           <Link
                             href={`/specialists/${member.id}`}
-                            className="inline-block py-1 hover:text-brand"
+                            className="inline-block py-1 hover:text-brand-deep"
                           >
                             {member.full_name}
                           </Link>
@@ -309,7 +309,7 @@ export default async function AdminPage() {
                           />
                           <button
                             type="submit"
-                            className="text-xs text-brand hover:underline"
+                            className="text-xs text-brand-deep hover:underline"
                           >
                             بازگرداندن به بررسی
                           </button>

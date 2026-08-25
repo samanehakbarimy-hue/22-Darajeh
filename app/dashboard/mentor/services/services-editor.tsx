@@ -177,7 +177,7 @@ export default function ServicesEditor({
                         formAction={deleteAction}
                         name="id"
                         value={existing.id}
-                        className="rounded-full border border-card-border px-4 py-2 text-xs text-red-400 hover:border-red-400"
+                        className="rounded-full border border-card-border px-4 py-2 text-xs text-danger hover:border-danger"
                       >
                         حذف
                       </button>
@@ -185,7 +185,7 @@ export default function ServicesEditor({
                   </div>
 
                   {needsConfirm === session.key && (
-                    <p className="rounded-xl border border-brand/40 bg-brand-light px-3 py-2 text-xs leading-6 text-brand">
+                    <p className="rounded-xl border border-brand/40 bg-brand-light px-3 py-2 text-xs leading-6 text-brand-deep">
                       این قیمت خیلی از پیشنهاد فاصله دارد. اگر عمدی است، یک بار
                       دیگر بزن تا ذخیره شود.
                     </p>
@@ -206,10 +206,10 @@ export default function ServicesEditor({
         </ul>
 
         {saveState?.error && (
-          <p className="mt-3 text-sm text-red-400">{saveState.error}</p>
+          <p className="mt-3 text-sm text-danger">{saveState.error}</p>
         )}
         {deleteState?.error && (
-          <p className="mt-3 text-sm text-red-400">{deleteState.error}</p>
+          <p className="mt-3 text-sm text-danger">{deleteState.error}</p>
         )}
       </section>
 
@@ -284,7 +284,7 @@ export default function ServicesEditor({
                 formAction={deleteAction}
                 name="id"
                 value={projectRate.id}
-                className="rounded-full border border-card-border px-4 py-2 text-xs text-red-400 hover:border-red-400"
+                className="rounded-full border border-card-border px-4 py-2 text-xs text-danger hover:border-danger"
               >
                 حذف
               </button>

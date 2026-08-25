@@ -49,14 +49,14 @@ export default async function Navbar() {
           : [{ href: "/specialists", label: "پیدا کردن متخصص" }];
 
   return (
-    <header className="flex items-center justify-between border-b border-card-border px-6 py-4 sm:px-12">
+    <header className="flex items-center justify-between border-b border-header-border bg-header px-6 py-4 text-header-foreground sm:px-12">
       <Logo />
       <nav className="flex items-center gap-4 text-sm font-medium">
         {links.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className="py-1 text-muted hover:text-foreground"
+            className="py-1 text-header-muted hover:text-header-foreground"
           >
             {link.label}
           </Link>
@@ -66,7 +66,7 @@ export default async function Navbar() {
           <>
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 text-muted hover:text-foreground"
+              className="flex items-center gap-2 text-header-muted hover:text-header-foreground"
             >
               <Avatar photoUrl={photoUrl} name={fullName ?? "?"} size={28} />
               {fullName ?? "پروفایل من"}
@@ -74,7 +74,7 @@ export default async function Navbar() {
             <form action={logout}>
               <button
                 type="submit"
-                className="py-1 text-muted hover:text-foreground"
+                className="py-1 text-header-muted hover:text-header-foreground"
               >
                 خروج
               </button>
@@ -82,12 +82,12 @@ export default async function Navbar() {
           </>
         ) : (
           <>
-            <Link href="/login" className="text-muted hover:text-foreground">
+            <Link href="/login" className="text-header-muted hover:text-header-foreground">
               ورود
             </Link>
             <Link
               href="/signup/mentor"
-              className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-hover"
+              className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-on hover:bg-brand-hover"
             >
               به متخصص‌ها بپیوند
             </Link>

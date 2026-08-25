@@ -230,7 +230,7 @@ export default async function DashboardPage({
   return (
     <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
       {booked === "1" && (
-        <div className="mb-6 rounded-xl border border-brand bg-brand-light px-4 py-3 text-sm text-brand">
+        <div className="mb-6 rounded-xl border border-brand bg-brand-light px-4 py-3 text-sm text-brand-deep">
           درخواستت فرستاده شد. منتظر تأیید متخصص باش.
         </div>
       )}
@@ -241,7 +241,7 @@ export default async function DashboardPage({
         <div>
           <h1 className="text-2xl font-bold">{profile?.full_name}</h1>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-            <span className="rounded-full bg-brand-light px-3 py-1 text-brand">
+            <span className="rounded-full bg-brand-light px-3 py-1 text-brand-deep">
               {roleLabel}
             </span>
             {profile?.role === "mentor" && (
@@ -257,19 +257,19 @@ export default async function DashboardPage({
             <>
               <Link
                 href="/dashboard/mentor/profile"
-                className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand"
+                className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand-deep"
               >
                 {mentorStatus ? "پروفایل من" : "تکمیل پروفایل"}
               </Link>
               <Link
                 href="/dashboard/mentor/availability"
-                className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand"
+                className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand-deep"
               >
                 زمان‌های آزاد
               </Link>
               <Link
                 href="/dashboard/mentor/services"
-                className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand"
+                className="rounded-full border border-card-border px-4 py-2 text-sm transition hover:border-brand hover:text-brand-deep"
               >
                 خدمات و قیمت‌ها
               </Link>
@@ -278,7 +278,7 @@ export default async function DashboardPage({
           {profile?.role === "admin" && (
             <Link
               href="/admin"
-              className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-background hover:bg-brand-hover"
+              className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-on hover:bg-brand-hover"
             >
               پنل مدیریت
             </Link>
@@ -337,7 +337,7 @@ export default async function DashboardPage({
                   {step.done ? "✓" : "•"}
                 </span>
                 {step.href && !step.done ? (
-                  <Link href={step.href} className="text-brand hover:underline">
+                  <Link href={step.href} className="text-brand-deep hover:underline">
                     {step.label}
                   </Link>
                 ) : (
@@ -357,7 +357,7 @@ export default async function DashboardPage({
             <h2 className="text-lg font-bold">جلسات من</h2>
             <Link
               href="/dashboard/sessions"
-              className="text-sm text-brand hover:underline"
+              className="text-sm text-brand-deep hover:underline"
             >
               دیدن همه
             </Link>
@@ -394,7 +394,7 @@ export default async function DashboardPage({
             {seekerBookings.length > 0 && (
               <Link
                 href="/dashboard/requests"
-                className="text-sm text-brand hover:underline"
+                className="text-sm text-brand-deep hover:underline"
               >
                 دیدن همه
               </Link>
@@ -406,7 +406,7 @@ export default async function DashboardPage({
               <p className="text-muted">هنوز جلسه‌ای رزرو نکردی.</p>
               <Link
                 href="/specialists"
-                className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+                className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
               >
                 پیدا کردن متخصص
               </Link>
@@ -422,7 +422,7 @@ export default async function DashboardPage({
                     <div>
                       <p className="font-bold">{b.mentor?.full_name}</p>
                       {b.slot && (
-                        <p className="mt-1 text-sm text-brand">
+                        <p className="mt-1 text-sm text-brand-deep">
                           {timeFormatter.format(new Date(b.slot.start_time))}
                         </p>
                       )}
@@ -431,9 +431,9 @@ export default async function DashboardPage({
                       className={`shrink-0 rounded-full px-3 py-1 text-xs ${
                         b.status === "cancelled" ||
                         (b.status === "pending" && b.expired)
-                          ? "border border-red-400/40 text-red-400"
+                          ? "border border-danger/40 text-danger"
                           : b.status === "confirmed"
-                            ? "bg-brand-light text-brand"
+                            ? "bg-brand-light text-brand-deep"
                             : "border border-card-border text-muted"
                       }`}
                     >
@@ -474,7 +474,7 @@ export default async function DashboardPage({
                       {!b.cancelledByMe && (
                         <Link
                           href="/specialists"
-                          className="mt-3 inline-block rounded-full border border-card-border px-5 py-2 text-sm hover:border-brand hover:text-brand"
+                          className="mt-3 inline-block rounded-full border border-card-border px-5 py-2 text-sm hover:border-brand hover:text-brand-deep"
                         >
                           وقت دیگری پیدا کن
                         </Link>
@@ -488,7 +488,7 @@ export default async function DashboardPage({
                       </p>
                       <Link
                         href="/specialists"
-                        className="mt-3 inline-block rounded-full border border-card-border px-5 py-2 text-sm hover:border-brand hover:text-brand"
+                        className="mt-3 inline-block rounded-full border border-card-border px-5 py-2 text-sm hover:border-brand hover:text-brand-deep"
                       >
                         وقت دیگری پیدا کن
                       </Link>
@@ -509,7 +509,7 @@ export default async function DashboardPage({
                         href={b.meetingLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-background hover:bg-brand-hover"
+                        className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
                       >
                         ورود به جلسه
                       </a>

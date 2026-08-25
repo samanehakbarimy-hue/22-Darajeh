@@ -65,12 +65,12 @@ export default function MentorSignupPage() {
           />
         </div>
 
-        {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
+        {state?.error && <p className="text-sm text-danger">{state.error}</p>}
 
         <button
           disabled={pending}
           type="submit"
-          className="inline-flex items-center justify-center gap-2 mt-2 rounded-full bg-brand px-6 py-3 font-semibold text-background hover:bg-brand-hover disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 mt-2 rounded-full bg-brand px-6 py-3 font-semibold text-brand-on hover:bg-brand-hover disabled:opacity-60"
         >
           {pending && <Spinner />}
         {pending ? "در حال ثبت‌نام..." : "ثبت‌نام"}
@@ -79,7 +79,7 @@ export default function MentorSignupPage() {
 
       <p className="mt-6 text-center text-sm text-muted">
         حساب داری؟{" "}
-        <Link href="/login" className="font-medium text-brand">
+        <Link href="/login" className="font-medium text-brand-deep">
           وارد شو
         </Link>
       </p>

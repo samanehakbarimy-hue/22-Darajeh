@@ -169,7 +169,7 @@ export default async function SpecialistPage({
                 href={specialist.linkedin_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-fit items-center gap-2 rounded-full border border-card-border px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand"
+                className="inline-flex w-fit items-center gap-2 rounded-full border border-card-border px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand-deep"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +189,7 @@ export default async function SpecialistPage({
               {tags.map((tag: string) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-brand-light px-3 py-1 text-xs text-brand"
+                  className="rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep"
                 >
                   {tag}
                 </span>

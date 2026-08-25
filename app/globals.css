@@ -1,35 +1,64 @@
 @import "tailwindcss";
 
 :root {
-  /* Ink Teal + Coral. The ground is a deep desaturated teal rather than a
-     neutral black, so the coral reads as warm against it. */
-  --background: #0f1818;
-  --card: #172322;
-  --card-border: #2c3a38;
-  --foreground: #f5f1ea;
-  --muted: #a8b3ae;
+  /* Ink Teal + Coral, on a light ground. The page is white and the header
+     keeps the deep teal the brand started in, so the page has a lid and the
+     coral logo has something to sit against.
+
+     Every pairing below is measured. Nothing here is chosen by eye. */
+  --background: #ffffff;
+  --card: #f7faf9;
+  --card-border: #e4ecea;
+  --foreground: #101d1c;
+  --muted: #5b6b68;
+
+  /* The header is its own small dark theme, so it needs its own tokens --
+     the page ones all invert against it. */
+  --header: #0f1818;
+  --header-foreground: #f5f1ea;
+  --header-muted: #a8b3ae;
+  --header-border: #2c3a38;
 
   /* Coral is rationed: primary CTAs, the selected state, and accents that
-     genuinely need to pull the eye. Spreading it further would spend the
-     one colour that is meant to mean "act here".
+     genuinely need to pull the eye. Spreading it further would spend the one
+     colour that is meant to mean "act here".
 
-     Buttons carry a DARK label, not white — 6.26:1 against the coral, where
-     white manages only 2.55. */
+     It takes two values on a light ground, because no single coral can do
+     both jobs. This one is a FILL. As text on white it manages only 2.88:1
+     and fails. */
   --color-brand: #ff6657;
 
-  /* Hover brightens. With a dark label, darkening the fill would cut its
-     contrast; lighter takes it to 7.02:1. */
-  --color-brand-hover: #ff786b;
+  /* Hover darkens now. On a dark page a brighter coral read as lit; on white
+     it reads as washed out. */
+  --color-brand-hover: #f2503f;
 
-  /* Coral mixed into the ground, for the selected chip: dark enough that
-     coral text still clears AA on it at 4.58:1. */
-  --color-brand-light: #442926;
+  /* The label that sits on a coral fill: dark, at 6.56:1. White would give
+     2.88:1 -- which is what most sites in this category ship, and it is not
+     good enough. */
+  --color-brand-on: #14100f;
+
+  /* Coral as TEXT or an icon on a light ground, at 5.02:1. Same hue family,
+     deep enough to read. */
+  --color-brand-deep: #c93d2b;
+
+  /* Coral mixed into white, for the selected chip. The deep coral still
+     clears AA on it at 4.56:1. */
+  --color-brand-light: #fff1ef;
 
   /* Status colours stay off the brand. Coral IS a red, so an approved chip
      borrowing it would read as an alert and sit indistinguishable next to
-     one. Green carries approval instead, at 6.90:1 on a card. */
-  --color-success: #3fbf7f;
-  --color-success-light: #12231d;
+     one. Green carries approval instead. */
+  --color-success: #0f7a4f;
+  --color-success-light: #eaf6f0;
+
+  /* Errors were Tailwind's red-400, which is built for a dark ground and
+     falls to 2.77:1 on white. */
+  --color-danger: #c62828;
+  --color-danger-hover: #a71d1d;
+  --color-danger-light: #fdeded;
+
+  /* Likewise amber-400, which manages 1.8:1 on white. */
+  --color-warning: #a1620a;
 }
 
 @theme inline {
@@ -38,11 +67,21 @@
   --color-card: var(--card);
   --color-card-border: var(--card-border);
   --color-muted: var(--muted);
+  --color-header: var(--header);
+  --color-header-foreground: var(--header-foreground);
+  --color-header-muted: var(--header-muted);
+  --color-header-border: var(--header-border);
   --color-brand: var(--color-brand);
   --color-brand-light: var(--color-brand-light);
   --color-brand-hover: var(--color-brand-hover);
+  --color-brand-on: var(--color-brand-on);
+  --color-brand-deep: var(--color-brand-deep);
   --color-success: var(--color-success);
   --color-success-light: var(--color-success-light);
+  --color-danger: var(--color-danger);
+  --color-danger-hover: var(--color-danger-hover);
+  --color-danger-light: var(--color-danger-light);
+  --color-warning: var(--color-warning);
   --font-sans: var(--font-vazirmatn);
 }
 
@@ -84,7 +123,7 @@ a[href] {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-brand);
+  outline: 2px solid var(--color-brand-deep);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -218,9 +257,13 @@ button:disabled {
   opacity: 0.62;
 }
 
-/* The halo the photograph came with was keyed away along with the background
-   -- a glow is added light, not opaque pixels, so it is rebuilt here where it
-   can blend properly and carry the brand coral. */
+/* The halo the photograph came with was keyed away along with the background,
+   and is rebuilt here so it can carry the brand coral.
+
+   On a white page a glow cannot be brighter than the ground, so it is not
+   painted as light: it multiplies a warm coral into the paper, clear at the
+   centre and strongest a little way out. That is the shape the halo had in
+   the photograph anyway -- a ring, not a blob. */
 .hero-hands__glow {
   position: absolute;
   left: 50%;
@@ -231,13 +274,14 @@ button:disabled {
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgb(255 232 214 / 0.78) 0%,
-    rgb(255 150 122 / 0.42) 30%,
-    rgb(255 102 87 / 0.14) 54%,
-    transparent 72%
+    rgb(255 255 255 / 0) 0%,
+    rgb(255 214 198 / 0.34) 26%,
+    rgb(255 163 138 / 0.46) 44%,
+    rgb(255 140 116 / 0.18) 60%,
+    transparent 76%
   );
-  mix-blend-mode: screen;
-  filter: blur(8px);
+  mix-blend-mode: multiply;
+  filter: blur(10px);
 }
 
 /* Both branches below drive the same three keyframes. The only difference is

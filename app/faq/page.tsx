@@ -59,7 +59,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "چطور متخصص بشوم؟",
     a: (
       <>
-        از <Link href="/signup/mentor" className="text-brand hover:underline">
+        از <Link href="/signup/mentor" className="text-brand-deep hover:underline">
           همین‌جا
         </Link>{" "}
         ثبت‌نام کن، پروفایلت را کامل کن و زمان‌های آزادت را بگذار. بعد از بررسی
@@ -73,7 +73,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
       <>
         نه. شماره تماس متخصص فقط برای خودش و ادمین قابل دیدن است و هیچ‌وقت به
         کاربران نشان داده نمی‌شود. جزئیات بیشتر در{" "}
-        <Link href="/privacy" className="text-brand hover:underline">
+        <Link href="/privacy" className="text-brand-deep hover:underline">
           حریم خصوصی
         </Link>
         .
@@ -115,7 +115,7 @@ export default function FaqPage() {
 
       <p className="mt-10 text-sm text-muted">
         جوابت اینجا نبود؟{" "}
-        <Link href="/contact" className="text-brand hover:underline">
+        <Link href="/contact" className="text-brand-deep hover:underline">
           بهمون پیام بده
         </Link>
         .
