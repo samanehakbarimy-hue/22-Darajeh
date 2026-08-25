@@ -197,25 +197,6 @@ export default async function SpecialistPage({
         </div>
       </div>
 
-      {skills.length > 0 && (
-        <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
-          <h2 className="text-lg font-bold">مهارت‌ها و ابزارها</h2>
-          {/* The specific thing someone is looking for. "نفت و گاز" says
-              almost nothing on its own; PV Elite and ASME VIII say whether
-              this is the person who can answer the question. */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            {skills.map((skill: string) => (
-              <span
-                key={skill}
-                className="rounded-full border border-card-border px-3 py-1.5 text-sm text-muted"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
       <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
           <h2 className="text-lg font-bold">درباره من</h2>
           <p className="mt-3 whitespace-pre-line leading-8 text-muted">
@@ -236,6 +217,26 @@ export default async function SpecialistPage({
           </div>
         </div>
 
+      {skills.length > 0 && (
+        <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
+          <h2 className="text-lg font-bold">مهارت‌ها و ابزارها</h2>
+          {/* Under the bio, not above it: the introduction is what someone
+              reads, and these are what they check it against. "نفت و گاز"
+              says almost nothing on its own; PV Elite and ASME VIII say
+              whether this is the person who can answer the question. */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {skills.map((skill: string) => (
+              <span
+                key={skill}
+                className="rounded-full border border-card-border px-3 py-1.5 text-sm text-muted"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
         </div>
 
         {/* Placed explicitly rather than by source order: beside the header on
@@ -255,6 +256,7 @@ export default async function SpecialistPage({
           />
         </aside>
       </div>
+
     </div>
   );
 }
