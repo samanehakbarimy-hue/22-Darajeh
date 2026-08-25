@@ -5,56 +5,123 @@ import { saveMentorProfile } from "@/lib/actions/mentor";
 import Spinner from "@/components/Spinner";
 import { SENIORITY_LEVELS } from "@/lib/seniority";
 
-const SUGGESTED_TAGS = [
-  // فناوری
-  "توسعه نرم‌افزار",
-  "طراحی UX/UI",
-  "داده و تحلیل",
-  "هوش مصنوعی",
-  "امنیت سایبری",
-  "شبکه و زیرساخت",
-  // کسب‌وکار
-  "مدیریت محصول",
-  "مدیریت پروژه",
-  "بازاریابی دیجیتال",
-  "فروش",
-  "رشد کسب‌وکار",
-  "کارآفرینی",
-  "مدیریت مالی",
-  "حسابداری",
-  "منابع انسانی",
-  "لجستیک و زنجیره تأمین",
-  // صنعت و مهندسی
-  "نفت و گاز",
-  "پتروشیمی",
-  "مهندسی مکانیک",
-  "مهندسی برق",
-  "مهندسی عمران",
-  "معماری",
-  "ساختمان و املاک",
-  "انرژی و تجدیدپذیر",
-  "کشاورزی",
-  "صنایع غذایی",
-  // سلامت و علوم
-  "پزشکی و سلامت",
-  "پرستاری",
-  "داروسازی",
-  "روان‌شناسی",
-  "زیست‌فناوری",
-  // خدمات و سایر
-  "حقوق",
-  "آموزش و تدریس",
-  "ترجمه و محتوا",
-  "رسانه و تولید محتوا",
-  "گردشگری",
-  "بیمه",
-  "بانکداری",
-  // مسیر شغلی
-  "مهاجرت تحصیلی",
-  "مهاجرت کاری",
-  "رزومه و مصاحبه",
-  "مسیر شغلی",
+// Grouped, because the flat list was shown eight at a time and the first eight
+// were all software. A mechanical engineer in oil and gas opened this form, was
+// offered توسعه نرم‌افزار and هوش مصنوعی, and added a single tag — «نفت و گاز»
+// sat seventeenth, invisible unless he already knew to type it.
+const TAG_GROUPS: { sector: string; tags: string[] }[] = [
+  {
+    sector: "فناوری",
+    tags: [
+      "توسعه نرم‌افزار",
+      "طراحی UX/UI",
+      "داده و تحلیل",
+      "هوش مصنوعی",
+      "امنیت سایبری",
+      "شبکه و زیرساخت",
+    ],
+  },
+  {
+    sector: "کسب‌وکار",
+    tags: [
+      "مدیریت محصول",
+      "مدیریت پروژه",
+      "بازاریابی دیجیتال",
+      "فروش",
+      "رشد کسب‌وکار",
+      "کارآفرینی",
+      "مدیریت مالی",
+      "حسابداری",
+      "منابع انسانی",
+      "لجستیک و زنجیره تأمین",
+    ],
+  },
+  {
+    sector: "صنعت و مهندسی",
+    tags: [
+      "نفت و گاز",
+      "پتروشیمی",
+      "مهندسی مکانیک",
+      "مهندسی برق",
+      "مهندسی عمران",
+      "معماری",
+      "ساختمان و املاک",
+      "انرژی و تجدیدپذیر",
+      "کشاورزی",
+      "صنایع غذایی",
+    ],
+  },
+  {
+    sector: "سلامت و علوم",
+    tags: [
+      "پزشکی و سلامت",
+      "پرستاری",
+      "داروسازی",
+      "روان‌شناسی",
+      "زیست‌فناوری",
+    ],
+  },
+  {
+    sector: "خدمات و سایر",
+    tags: [
+      "حقوق",
+      "آموزش و تدریس",
+      "ترجمه و محتوا",
+      "رسانه و تولید محتوا",
+      "گردشگری",
+      "بیمه",
+      "بانکداری",
+    ],
+  },
+  {
+    sector: "مسیر شغلی",
+    tags: ["مهاجرت تحصیلی", "مهاجرت کاری", "رزومه و مصاحبه", "مسیر شغلی"],
+  },
 ];
+
+const SUGGESTED_TAGS = TAG_GROUPS.flatMap((group) => group.tags);
+
+// Both languages are offered, because an Iranian engineer routinely writes the
+// English title professionally — this profile said "Senior Mechanical Engineer"
+// on a Persian page. Each is searchable by the other, so "mech" and «مکانیک»
+// reach the same job, and whichever is clicked is the one that shows.
+const JOB_TITLE_PAIRS: [string, string][] = [
+  ["مهندس نرم‌افزار", "Software Engineer"],
+  ["توسعه‌دهنده فرانت‌اند", "Frontend Developer"],
+  ["توسعه‌دهنده بک‌اند", "Backend Developer"],
+  ["مهندس دواپس", "DevOps Engineer"],
+  ["مدیر محصول", "Product Manager"],
+  ["طراح UX/UI", "UX/UI Designer"],
+  ["تحلیلگر داده", "Data Analyst"],
+  ["دانشمند داده", "Data Scientist"],
+  ["مدیر پروژه", "Project Manager"],
+  ["تحلیلگر کسب‌وکار", "Business Analyst"],
+  ["مدیر بازاریابی", "Marketing Manager"],
+  ["کارشناس بازاریابی دیجیتال", "Digital Marketing Specialist"],
+  ["مدیر فروش", "Sales Manager"],
+  ["مدیر مالی", "Financial Manager"],
+  ["حسابدار", "Accountant"],
+  ["مدیر منابع انسانی", "HR Manager"],
+  ["مهندس مکانیک", "Mechanical Engineer"],
+  ["مهندس برق", "Electrical Engineer"],
+  ["مهندس عمران", "Civil Engineer"],
+  ["مهندس شیمی", "Chemical Engineer"],
+  ["مهندس فرآیند", "Process Engineer"],
+  ["مهندس تجهیزات ثابت", "Static Equipment Engineer"],
+  ["مهندس نفت", "Petroleum Engineer"],
+  ["معمار", "Architect"],
+  ["پزشک عمومی", "General Practitioner"],
+  ["پرستار", "Nurse"],
+  ["داروساز", "Pharmacist"],
+  ["روان‌شناس", "Psychologist"],
+  ["وکیل", "Lawyer"],
+  ["مدرس", "Teacher"],
+];
+
+const JOB_TITLES = JOB_TITLE_PAIRS.flatMap(([fa, en]) => [
+  { label: fa, alt: en },
+  { label: en, alt: fa },
+]);
 
 const MAX_PHOTO_MB = 3;
 
@@ -131,9 +198,24 @@ export default function MentorProfileForm({
   const [draft, setDraft] = useState("");
 
   const query = draft.trim().toLowerCase();
-  const matches = SUGGESTED_TAGS.filter(
-    (tag) => !tags.includes(tag) && tag.toLowerCase().includes(query),
-  ).slice(0, 8);
+  // A flat shortlist while they are typing; before they type, the whole set by
+  // sector, so nobody has to guess that their own industry is in there.
+  const matches = query
+    ? SUGGESTED_TAGS.filter(
+        (tag) => !tags.includes(tag) && tag.toLowerCase().includes(query),
+      ).slice(0, 8)
+    : [];
+
+  const titleQuery = headline.trim().toLowerCase();
+  const titleMatches =
+    titleQuery.length < 2
+      ? []
+      : JOB_TITLES.filter(
+          (title) =>
+            title.label.toLowerCase() !== titleQuery &&
+            (title.label.toLowerCase().includes(titleQuery) ||
+              title.alt.toLowerCase().includes(titleQuery)),
+        ).slice(0, 6);
 
   function addTag(tag: string) {
     const clean = tag.trim();
@@ -227,7 +309,22 @@ export default function MentorProfileForm({
             onChange={(e) => setHeadline(e.target.value)}
             placeholder="مثلاً «مدیر ارشد پروژه»"
             className={FIELD_CLASS}
+            autoComplete="off"
           />
+          {titleMatches.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {titleMatches.map((title) => (
+                <button
+                  key={title.label}
+                  type="button"
+                  onClick={() => setHeadline(title.label)}
+                  className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand-deep"
+                >
+                  {title.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
@@ -346,18 +443,48 @@ export default function MentorProfileForm({
           {/* The real value the server reads. */}
           <input type="hidden" name="expertise_tags" value={tags.join("، ")} />
 
-          {matches.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {matches.map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => addTag(tag)}
-                  className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand-deep"
-                >
-                  + {tag}
-                </button>
-              ))}
+          {query ? (
+            matches.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {matches.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => addTag(tag)}
+                    className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand-deep"
+                  >
+                    + {tag}
+                  </button>
+                ))}
+              </div>
+            )
+          ) : (
+            <div className="mt-4 flex flex-col gap-4">
+              {TAG_GROUPS.map((group) => {
+                const remaining = group.tags.filter(
+                  (tag) => !tags.includes(tag),
+                );
+                if (remaining.length === 0) return null;
+                return (
+                  <div key={group.sector}>
+                    <h4 className="mb-2 text-xs font-medium text-muted">
+                      {group.sector}
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {remaining.map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => addTag(tag)}
+                          className="rounded-full border border-card-border px-3 py-1.5 text-xs text-muted transition hover:border-brand hover:text-brand-deep"
+                        >
+                          + {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
