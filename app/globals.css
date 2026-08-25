@@ -112,21 +112,27 @@ button:disabled {
 }
 
 /* ---------------------------------------------------------------------------
-   Landing hero intro. Plays once, behind the hero, and settles at opacity 0
-   so nothing is left sitting over the page afterwards.
+   Landing hero.
+
+   Two hands arrive once, on load, and meet in the middle. After that the
+   reader drives them: scrolling down draws them apart, scrolling back up
+   brings them together. Nothing else on the site moves.
 
    The two images are halves of one photograph whose white background has been
-   keyed out, so their left/top/width percentages are the crop's real position
-   in the original 1672x941 frame -- change one and the hands stop meeting.
-   Physical `left` on purpose: the geometry is the photograph's, not the
-   document's, so it must not flip with RTL.
+   keyed out, so the left/top/width percentages below are the crop's real
+   position in the original 1672x941 frame -- change one and the hands stop
+   meeting. Physical `left` on purpose: the geometry is the photograph's, not
+   the document's, so it must not flip with RTL.
 --------------------------------------------------------------------------- */
 .hero-hands {
   /* Distance from the top of <main> down to the point where the fingertips
      touch. Anchoring the meeting point rather than the top edge keeps the
      hands landing in the same place while the box itself grows with the
-     viewport. Kept above the headline so the glow never sits under text. */
+     viewport. */
   --hero-hands-meet: 150px;
+
+  /* How far the reader scrolls to pull the hands fully apart. */
+  --hero-hands-travel: 420px;
 
   position: absolute;
   left: 0;
@@ -143,70 +149,78 @@ button:disabled {
   z-index: 0;
 }
 
-.hero-hands img {
-  position: absolute;
-  height: auto;
-  opacity: 0;
-  /* Longhands rather than the animation shorthand: the shorthand resets
-     animation-name to none, and it does so at a higher specificity than the
-     per-hand rules below, which left the hands sitting still at opacity 0. */
-  animation-duration: 4.6s;
-  animation-delay: 0.25s;
-  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
-  animation-fill-mode: both;
+/* Only on the first visit to the page. Coming back to it later, the hands are
+   simply already there. */
+.hero-hands--entering {
+  animation: 1.1s 0.2s ease both hero-hands-appear;
 }
 
-.hero-hands__seeker {
+@keyframes hero-hands-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The wrapper holds the photograph's geometry and the one-time arrival. The
+   image inside holds the scroll. Two transforms on two elements, so neither
+   has to know about the other. */
+.hero-hands__place {
+  position: absolute;
+  display: block;
+}
+
+.hero-hands__place--seeker {
   left: 0;
   top: 35.07%;
   width: 51.44%;
-  animation-name: hero-hand-from-left;
 }
 
-.hero-hands__specialist {
+.hero-hands__place--specialist {
   left: 49.04%;
   top: 19.13%;
   width: 50.96%;
-  animation-name: hero-hand-from-right;
 }
 
-@keyframes hero-hand-from-left {
-  0% {
+.hero-hands--entering .hero-hands__place--seeker {
+  animation: 1.5s 0.2s cubic-bezier(0.22, 0.61, 0.36, 1) both hero-hand-arrive-left;
+}
+
+.hero-hands--entering .hero-hands__place--specialist {
+  animation: 1.5s 0.2s cubic-bezier(0.22, 0.61, 0.36, 1) both hero-hand-arrive-right;
+}
+
+@keyframes hero-hand-arrive-left {
+  from {
     transform: translateX(-58%);
-    opacity: 0;
   }
-  32%,
-  58% {
+  to {
     transform: translateX(0);
-    opacity: 0.62;
-    animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
-  }
-  100% {
-    transform: translateX(-58%);
-    opacity: 0;
   }
 }
 
-@keyframes hero-hand-from-right {
-  0% {
+@keyframes hero-hand-arrive-right {
+  from {
     transform: translateX(58%);
-    opacity: 0;
   }
-  32%,
-  58% {
+  to {
     transform: translateX(0);
-    opacity: 0.62;
-    animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
-  }
-  100% {
-    transform: translateX(58%);
-    opacity: 0;
   }
 }
 
-/* The halo the photograph came with was keyed away with the background -- a
-   glow is added light, not opaque pixels, so it is rebuilt here where it can
-   blend properly and carry the brand coral. */
+.hero-hands__hand {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Atmosphere behind live text, so they stop short of full opacity. */
+  opacity: 0.62;
+}
+
+/* The halo the photograph came with was keyed away along with the background
+   -- a glow is added light, not opaque pixels, so it is rebuilt here where it
+   can blend properly and carry the brand coral. */
 .hero-hands__glow {
   position: absolute;
   left: 50%;
@@ -224,26 +238,90 @@ button:disabled {
   );
   mix-blend-mode: screen;
   filter: blur(8px);
-  animation: 4.6s 0.25s ease both hero-hand-glow;
 }
 
-@keyframes hero-hand-glow {
-  0%,
-  26% {
-    opacity: 0;
-    scale: 0.45;
+/* Both branches below drive the same three keyframes. The only difference is
+   what advances them: the reader's scroll where the browser supports it, and
+   a timer where it does not. */
+@keyframes hero-hand-part-left {
+  from {
+    transform: translateX(0);
+    opacity: 0.62;
   }
-  42% {
-    opacity: 0.95;
+  to {
+    transform: translateX(-58%);
+    opacity: 0;
+  }
+}
+
+@keyframes hero-hand-part-right {
+  from {
+    transform: translateX(0);
+    opacity: 0.62;
+  }
+  to {
+    transform: translateX(58%);
+    opacity: 0;
+  }
+}
+
+@keyframes hero-glow-part {
+  from {
+    opacity: 1;
     scale: 1;
   }
-  58% {
-    opacity: 0.8;
-    scale: 1.03;
-  }
-  100% {
+  to {
     opacity: 0;
-    scale: 1.35;
+    scale: 1.5;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .hero-hands__hand,
+  .hero-hands__glow {
+    animation-timeline: scroll(root block);
+    animation-range: 0 var(--hero-hands-travel);
+    /* Scrubbing follows the finger, so it has to be linear. Any easing here
+       would make the hands lag behind the scroll and feel broken. */
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+  }
+
+  .hero-hands__hand--seeker {
+    animation-name: hero-hand-part-left;
+  }
+
+  .hero-hands__hand--specialist {
+    animation-name: hero-hand-part-right;
+  }
+
+  .hero-hands__glow {
+    animation-name: hero-glow-part;
+  }
+}
+
+/* Browsers without scroll-driven animation get the same withdrawal on a timer,
+   after a pause long enough to see the hands meet. Without this they would sit
+   over the headline for as long as the page is open. */
+@supports not (animation-timeline: scroll()) {
+  .hero-hands__hand,
+  .hero-hands__glow {
+    animation-duration: 1.6s;
+    animation-delay: 2.9s;
+    animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
+    animation-fill-mode: both;
+  }
+
+  .hero-hands__hand--seeker {
+    animation-name: hero-hand-part-left;
+  }
+
+  .hero-hands__hand--specialist {
+    animation-name: hero-hand-part-right;
+  }
+
+  .hero-hands__glow {
+    animation-name: hero-glow-part;
   }
 }
 
