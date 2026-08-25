@@ -7,11 +7,16 @@ import PasswordInput from "@/components/PasswordInput";
 import LinkedInButton from "@/components/LinkedInButton";
 import Spinner from "@/components/Spinner";
 
+/* Helping and earning, in that order — the two reasons somebody does this.
+   The money line says what is true today: the price is theirs to set, and the
+   online payment is not switched on yet. The site already says that on every
+   paid session, and a signup page promising otherwise would be the one place
+   that lies. */
 const WHY = [
+  "به کسی کمک می‌کنی که همان راهی را می‌رود که خودت رفته‌ای.",
+  "قیمت جلسه‌های تخصصی و کار پروژه‌ای را خودت تعیین می‌کنی — پرداخت آنلاین به‌زودی فعال می‌شود.",
   "زمان‌ها را خودت می‌گذاری؛ هر درخواستی را می‌توانی بپذیری یا رد کنی.",
-  "هر گفتگو ۲۲ دقیقه است — کوتاه و مشخص.",
-  "جلسه روی لینک خودت برگزار می‌شود و شماره تماس هیچ‌وقت نمایش داده نمی‌شود.",
-  "ثبت‌نام یکی‌دو دقیقه بیشتر نیست.",
+  "گفتگوی ۲۲ دقیقه‌ای رایگان است — همان‌جاست که آدم‌ها پیدایت می‌کنند.",
 ];
 
 /* The three stages are the ones that already exist — signing up, filling the
@@ -32,7 +37,7 @@ function StageBar() {
         return (
           <li
             key={label}
-            className={`flex items-center ${i < STAGES.length - 1 ? "flex-1" : ""}`}
+            className={`flex items-start ${i < STAGES.length - 1 ? "flex-1" : ""}`}
           >
             <div className="flex shrink-0 flex-col items-center gap-2">
               <span
@@ -52,8 +57,10 @@ function StageBar() {
                 {label}
               </span>
             </div>
+            {/* Half the circle's height down, so the line meets the circles
+                rather than floating between them and their labels. */}
             {i < STAGES.length - 1 && (
-              <div className="mx-3 h-px flex-1 bg-card-border" />
+              <div className="mx-3 mt-4 h-px flex-1 bg-card-border" />
             )}
           </li>
         );
