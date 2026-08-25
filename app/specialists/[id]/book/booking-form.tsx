@@ -61,7 +61,7 @@ export default function BookingForm({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="سلام! من ... هستم و در حال حاضر روی ... کار می‌کنم. دوست دارم درباره ... باهات صحبت کنم چون ..."
-          className="w-full rounded-lg border border-card-border bg-background px-4 py-3 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+          className="w-full rounded-lg border border-card-border bg-background px-4 py-3 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
         />
         {/* Only the ceiling is a rule, so only mention it when it is close. */}
         {wordCount > MAX_WORDS - 20 && (

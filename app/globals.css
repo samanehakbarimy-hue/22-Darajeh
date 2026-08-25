@@ -122,10 +122,17 @@ a[href] {
     color 150ms ease;
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-brand-deep);
-  outline-offset: 2px;
-  border-radius: 4px;
+/* In @layer base on purpose. Unlayered rules beat every Tailwind layer, so
+   sitting outside one meant this outline won against the `outline-none` on
+   two dozen text fields that draw their own focus ring -- and each of them
+   got a stray rectangle inside its own rounded border. In the base layer the
+   utility wins, and anything that has not opted out still gets a ring. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-brand-deep);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 button:disabled {

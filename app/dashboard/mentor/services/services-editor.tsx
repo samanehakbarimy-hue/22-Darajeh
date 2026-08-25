@@ -12,7 +12,7 @@ import PriceInput, { onlyDigits } from "@/components/PriceInput";
 
 
 const FIELD =
-  "rounded-xl border border-card-border bg-background px-4 py-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20";
+  "rounded-xl border border-card-border bg-background px-4 py-3 text-sm outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20";
 
 /**
  * Two halves, because the two kinds of offer are shaped differently.

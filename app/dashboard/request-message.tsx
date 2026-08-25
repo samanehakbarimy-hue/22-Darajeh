@@ -83,7 +83,7 @@ export default function RequestMessage({
         rows={4}
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
-        className="w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+        className="w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
       />
       {state?.error && (
         <p className="mt-1 text-xs text-danger">{state.error}</p>

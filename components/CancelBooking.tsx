@@ -63,7 +63,7 @@ export default function CancelBooking({
           name="reason"
           maxLength={500}
           autoComplete="off"
-          className="mt-1.5 w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+          className="mt-1.5 w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
           placeholder="مثلاً: برایم کاری پیش آمد"
         />
       </label>

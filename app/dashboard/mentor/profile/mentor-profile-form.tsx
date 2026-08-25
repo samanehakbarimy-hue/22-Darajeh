@@ -59,7 +59,7 @@ const SUGGESTED_TAGS = [
 const MAX_PHOTO_MB = 3;
 
 const FIELD_CLASS =
-  "w-full rounded-lg border border-card-border bg-background px-4 py-2.5 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20";
+  "w-full rounded-lg border border-card-border bg-background px-4 py-2.5 outline-none transition focus:border-brand-deep focus:ring-2 focus:ring-brand/20";
 
 function parseTags(raw: string): string[] {
   return raw

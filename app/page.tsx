@@ -97,7 +97,7 @@ export default async function Home({
           {/* A plain GET form, so search works without JavaScript. */}
           <form
             action="/specialists"
-            className="mx-auto mt-9 flex max-w-xl items-center gap-2 rounded-full border border-card-border bg-card p-2 focus-within:border-brand"
+            className="mx-auto mt-9 flex max-w-xl items-center gap-2 rounded-full border border-card-border bg-card p-2 focus-within:border-brand-deep"
           >
             <label htmlFor="q" className="sr-only">
               جستجوی کارشناس

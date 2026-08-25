@@ -57,7 +57,7 @@ export default function SendBackForReview({
         required
         maxLength={500}
         placeholder="چه چیزی باید اصلاح شود؟ همین متن را خودش می‌بیند."
-        className="mt-2 w-full rounded-lg border border-card-border bg-background px-3 py-2 text-xs leading-6 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+        className="mt-2 w-full rounded-lg border border-card-border bg-background px-3 py-2 text-xs leading-6 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
       />
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <button

@@ -214,7 +214,7 @@ export default async function AdminPage() {
                     required
                     maxLength={500}
                     placeholder="چه چیزی باید اصلاح شود؟ همین متن را خودش می‌بیند."
-                    className="w-full rounded-xl border border-card-border bg-background px-4 py-3 text-sm leading-7 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                    className="w-full rounded-xl border border-card-border bg-background px-4 py-3 text-sm leading-7 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
                   />
                   <button
                     type="submit"

@@ -106,7 +106,7 @@ export default async function SpecialistsPage({
 
       <form
         action="/specialists"
-        className="mt-8 flex max-w-xl items-center gap-2 rounded-full border border-card-border bg-card p-2 focus-within:border-brand"
+        className="mt-8 flex max-w-xl items-center gap-2 rounded-full border border-card-border bg-card p-2 focus-within:border-brand-deep"
       >
         <label htmlFor="q" className="sr-only">
           جستجوی کارشناس

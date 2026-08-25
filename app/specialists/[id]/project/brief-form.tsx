@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import Spinner from "@/components/Spinner";
 
 const FIELD =
-  "w-full rounded-xl border border-card-border bg-card px-4 py-3 text-sm leading-7 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20";
+  "w-full rounded-xl border border-card-border bg-card px-4 py-3 text-sm leading-7 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20";
 
 const MAX_BYTES = 20 * 1024 * 1024;
 

@@ -73,7 +73,7 @@ export default function AccountForm({
             name="full_name"
             required
             defaultValue={initialFullName}
-            className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+            className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
           />
         </div>
 

@@ -6,7 +6,7 @@ import PriceInput from "@/components/PriceInput";
 import { respondToBrief } from "@/lib/actions/project-brief";
 
 const FIELD =
-  "w-full rounded-xl border border-card-border bg-background px-4 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20";
+  "w-full rounded-xl border border-card-border bg-background px-4 py-2.5 text-sm outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20";
 
 /**
  * Answering a brief: terms, or no.
