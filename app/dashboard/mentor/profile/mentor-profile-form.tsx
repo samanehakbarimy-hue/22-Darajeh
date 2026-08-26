@@ -649,8 +649,10 @@ export default function MentorProfileForm({
         </p>
       )}
       {state?.success && (
-        <p className="rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm text-brand-deep">
-          پروفایلت ذخیره شد.
+        <p className="rounded-lg border border-brand/30 bg-brand-light px-4 py-3 text-sm leading-7 text-brand-deep">
+          {state.backToReview
+            ? "ذخیره شد و دوباره برای بررسی رفت. تا وقتی ادمین تأییدش کند، پروفایلت روی سایت نمایش داده نمی‌شود."
+            : "پروفایلت ذخیره شد."}
         </p>
       )}
 

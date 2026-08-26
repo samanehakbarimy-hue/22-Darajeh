@@ -3,7 +3,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { processAvatar } from "@/lib/images";
 
-export type MentorProfileState = { error?: string; success?: boolean } | undefined;
+export type MentorProfileState =
+  | { error?: string; success?: boolean; backToReview?: boolean }
+  | undefined;
 
 export async function saveMentorProfile(
   _prevState: MentorProfileState,
@@ -189,5 +191,14 @@ export async function saveMentorProfile(
     return { error: resubmitError.message };
   }
 
-  return { success: true };
+  // A public edit takes an approved specialist off the list until somebody
+  // looks again — a database trigger does it, not this action. They have to be
+  // told, or they simply vanish from the site with a note saying "saved".
+  const { data: saved } = await supabase
+    .from("mentor_profiles")
+    .select("status")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return { success: true, backToReview: saved?.status === "pending" };
 }
