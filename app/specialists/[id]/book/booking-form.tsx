@@ -39,6 +39,16 @@ export default function BookingForm({
   const wordCount = message.trim().split(/\s+/).filter(Boolean).length;
   const tooLong = wordCount > MAX_WORDS;
 
+  // Said in the order the page asks for them, so it names the first thing
+  // still undone rather than everything at once.
+  const missing = !slotId
+    ? "یک زمان انتخاب کن."
+    : wordCount === 0
+      ? "چند خط بنویس تا کارشناس بداند دنبال چه هستی."
+      : tooLong
+        ? `کمی کوتاهش کن — ${fa(wordCount)} کلمه از ${fa(MAX_WORDS)}.`
+        : "";
+
   const daySlots = selectedDay ? (byDay.get(isoDate(selectedDay)) ?? []) : [];
 
   return (
@@ -131,14 +141,24 @@ export default function BookingForm({
         </p>
       )}
 
-      <button
-        disabled={pending || !slotId || wordCount === 0 || tooLong}
-        type="submit"
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-brand-on transition hover:bg-brand-hover disabled:opacity-50"
-      >
-        {pending && <Spinner />}
-        {pending ? "در حال ارسال..." : "ارسال درخواست"}
-      </button>
+      <div>
+        <button
+          disabled={pending || !slotId || wordCount === 0 || tooLong}
+          type="submit"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-brand-on transition hover:bg-brand-hover disabled:opacity-50"
+        >
+          {pending && <Spinner />}
+          {pending ? "در حال ارسال..." : "ارسال درخواست"}
+        </button>
+
+        {/* A greyed-out button that never says why is a dead end somebody
+            walks away from — and the missing piece is usually the message,
+            which is above the calendar and out of sight by the time they
+            reach here. */}
+        {!pending && missing && (
+          <p className="mt-3 text-sm text-muted">{missing}</p>
+        )}
+      </div>
     </form>
   );
 }
