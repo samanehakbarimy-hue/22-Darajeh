@@ -21,7 +21,7 @@ import { formatMoney } from "@/lib/rates";
 export type ServiceKind = "consultation" | "hourly_project";
 
 /** The two tabs on a profile. The free call sits inside sessions. */
-export type ServiceTab = "sessions" | "projects";
+export type ServiceTab = "intro" | "sessions" | "projects";
 
 /** A row of mentor_services. */
 export type MentorService = {
@@ -38,9 +38,12 @@ export type MentorService = {
   is_negotiable: boolean;
 };
 
+// Three ways to work with somebody, cheapest first — and the first one is
+// free, which is the whole proposition of the site rather than a tier of it.
 export const TABS: { tab: ServiceTab; label: string }[] = [
-  { tab: "sessions", label: "جلسات" },
-  { tab: "projects", label: "پروژه‌ها" },
+  { tab: "intro", label: "گفت‌وگوی مشاوره‌ای" },
+  { tab: "sessions", label: "جلسات تخصصی" },
+  { tab: "projects", label: "کار پروژه (نفر-ساعت)" },
 ];
 
 export const KIND_LABEL: Record<ServiceKind, string> = {
