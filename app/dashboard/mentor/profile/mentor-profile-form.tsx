@@ -77,6 +77,18 @@ const MAX_PHOTO_MB = 3;
 const FIELD_CLASS =
   "w-full rounded-lg border border-card-border bg-background px-4 py-2.5 outline-none transition focus:border-brand-deep focus:ring-2 focus:ring-brand/20";
 
+/* A field that holds what has already been chosen, with the cursor sitting
+   after it. The chips used to sit in their own row above the box, which read
+   as a list of things that had happened somewhere else rather than as the
+   contents of the field. Focus is drawn on the box, since the real input
+   inside it has no border of its own. */
+const CHIP_FIELD_CLASS =
+  "flex w-full flex-wrap items-center gap-2 rounded-lg border border-card-border bg-background px-3 py-2 transition focus-within:border-brand-deep focus-within:ring-2 focus-within:ring-brand/20";
+const CHIP_INPUT_CLASS =
+  "min-w-[9rem] flex-1 bg-transparent px-1 py-1 outline-none placeholder:text-muted";
+const CHIP_CLASS =
+  "flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-sm text-brand-deep";
+
 function parseTags(raw: string): string[] {
   return raw
     .split(/[,،]/)
@@ -362,35 +374,29 @@ export default function MentorProfileForm({
           >
             حوزه‌های تخصص
           </label>
-        {tags.length > 0 && (
-          <div className="mb-3 flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-sm text-brand-deep"
+        <div className={CHIP_FIELD_CLASS}>
+          {tags.map((tag) => (
+            <span key={tag} className={CHIP_CLASS}>
+              {tag}
+              <button
+                type="button"
+                onClick={() => removeTag(tag)}
+                aria-label={`حذف ${tag}`}
+                className="text-brand-deep/60 transition hover:text-brand-deep"
               >
-                {tag}
-                <button
-                  type="button"
-                  onClick={() => removeTag(tag)}
-                  aria-label={`حذف ${tag}`}
-                  className="text-brand-deep/60 transition hover:text-brand-deep"
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-
-        <input
-          id="tag_draft"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={handleTagKeyDown}
-          placeholder="مثلاً «نفت و گاز»"
-          className={FIELD_CLASS}
-        />
+                ×
+              </button>
+            </span>
+          ))}
+          <input
+            id="tag_draft"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={handleTagKeyDown}
+            placeholder="افزودن حوزه…"
+            className={CHIP_INPUT_CLASS}
+          />
+        </div>
         {/* The real value the server reads. */}
         <input type="hidden" name="expertise_tags" value={tags.join("، ")} />
 
@@ -505,42 +511,34 @@ export default function MentorProfileForm({
         description="چیزهایی که باهاشان کار می‌کنی. متقاضی‌ها معمولاً دنبال همین‌اند، نه فقط عنوان حوزه."
       >
         <div>
-          {skills.length > 0 && (
-            <div className="mb-3 flex flex-wrap gap-2">
-              {skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="inline-flex items-center gap-1 rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep"
+          <div className={CHIP_FIELD_CLASS}>
+            {skills.map((skill) => (
+              <span key={skill} className={CHIP_CLASS}>
+                {skill}
+                <button
+                  type="button"
+                  onClick={() => removeSkill(skill)}
+                  aria-label={`حذف ${skill}`}
+                  className="text-brand-deep/60 transition hover:text-brand-deep"
                 >
-                  {skill}
-                  <button
-                    type="button"
-                    onClick={() => removeSkill(skill)}
-                    aria-label={`حذف ${skill}`}
-                    className="text-sm leading-none"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-
-          <input
-            id="skill_draft"
-            value={skillDraft}
-            onChange={(e) => setSkillDraft(e.target.value)}
-            onKeyDown={handleSkillKeyDown}
-            // Named from what is still on offer, not the whole list: it was
-            // suggesting a tool the specialist had already picked.
-            placeholder={
-              suggested.length
-                ? `مثلاً «${skillMatches[0] ?? skillPool[0]}»`
-                : "اول سمت یا حوزه‌ات را بنویس تا پیشنهادها دقیق‌تر شوند"
-            }
-            className={FIELD_CLASS}
-            autoComplete="off"
-          />
+                  ×
+                </button>
+              </span>
+            ))}
+            <input
+              id="skill_draft"
+              value={skillDraft}
+              onChange={(e) => setSkillDraft(e.target.value)}
+              onKeyDown={handleSkillKeyDown}
+              placeholder={
+                suggested.length
+                  ? "افزودن مهارت…"
+                  : "اول سمت یا حوزه را بنویس تا پیشنهادها دقیق‌تر شوند"
+              }
+              className={CHIP_INPUT_CLASS}
+              autoComplete="off"
+            />
+          </div>
           <input type="hidden" name="skills" value={skills.join("، ")} />
 
           {skillMatches.length > 0 && (
