@@ -3,12 +3,15 @@ import { signInWithLinkedIn } from "@/lib/actions/auth";
 export default function LinkedInButton({
   role,
   label,
+  next,
 }: {
   role?: "mentor" | "seeker";
   label: string;
+  /** Where they were headed before we asked them to sign in. */
+  next?: string;
 }) {
   return (
-    <form action={signInWithLinkedIn.bind(null, role)}>
+    <form action={signInWithLinkedIn.bind(null, role, next)}>
       <button
         type="submit"
         className="flex w-full items-center justify-center gap-2 rounded-full border border-card-border px-6 py-3 font-medium hover:bg-card"

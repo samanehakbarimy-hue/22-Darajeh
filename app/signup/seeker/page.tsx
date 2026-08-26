@@ -1,14 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signUpSeeker } from "@/lib/actions/auth";
 import PasswordInput from "@/components/PasswordInput";
 import LinkedInButton from "@/components/LinkedInButton";
 import Spinner from "@/components/Spinner";
 
-export default function SeekerSignupPage() {
+function SeekerSignupPageForm() {
   const [state, action, pending] = useActionState(signUpSeeker, undefined);
+  const next = useSearchParams().get("next") ?? "";
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-16">
@@ -18,7 +20,7 @@ export default function SeekerSignupPage() {
       </p>
 
       <div className="mt-8">
-        <LinkedInButton role="seeker" label="ثبت‌نام با لینکدین" />
+        <LinkedInButton role="seeker" label="ثبت‌نام با لینکدین" next={next} />
       </div>
 
       <div className="my-6 flex items-center gap-3 text-xs text-muted">
@@ -28,6 +30,7 @@ export default function SeekerSignupPage() {
       </div>
 
       <form action={action} className="flex flex-col gap-4">
+        <input type="hidden" name="next" value={next} />
         <div>
           <label htmlFor="full_name" className="mb-1 block text-sm font-medium">
             نام و نام خانوادگی
@@ -103,5 +106,15 @@ export default function SeekerSignupPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function SeekerSignupPage() {
+  // useSearchParams needs a boundary, or the build refuses to prerender
+  // the page around it.
+  return (
+    <Suspense>
+      <SeekerSignupPageForm />
+    </Suspense>
   );
 }

@@ -15,8 +15,9 @@ renamed it. Creating `middleware.ts` alongside it fails the build. `proxy.ts`
 holds the session refresh and the `SITE_PRIVATE` gate that rewrites signed-out
 visitors to `/soon`.
 
-**Run `npm test`.** Twelve tests in `lib/__tests__/` cover money formatting,
-session timing, and that every job title carries its own tool suggestions.
+**Run `npm test`.** Fifteen tests in `lib/__tests__/` cover money formatting,
+session timing, that every job title carries its own tool suggestions, and
+which post-login redirects are allowed back out.
 They run under Node's own test runner with a `@/` alias hook — no framework.
 
 **`npm run lint` reports 3 pre-existing errors in `scripts/db.js`**

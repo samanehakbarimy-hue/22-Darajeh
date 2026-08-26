@@ -58,7 +58,7 @@ export default function LoginForm({
       )}
 
       <div className="mt-8">
-        <LinkedInButton label="ورود با لینکدین" />
+        <LinkedInButton label="ورود با لینکدین" next={next} />
       </div>
 
       <div className="my-6 flex items-center gap-3 text-xs text-muted">
@@ -117,11 +117,17 @@ export default function LoginForm({
 
       <p className="mt-6 text-center text-sm text-muted">
         حساب نداری؟{" "}
-        <Link href="/signup/seeker" className="font-medium text-brand-deep">
+        <Link
+          href={next ? `/signup/seeker?next=${encodeURIComponent(next)}` : "/signup/seeker"}
+          className="font-medium text-brand-deep"
+        >
           ثبت‌نام به‌عنوان متقاضی
         </Link>{" "}
         یا{" "}
-        <Link href="/signup/mentor" className="font-medium text-brand-deep">
+        <Link
+          href={next ? `/signup/mentor?next=${encodeURIComponent(next)}` : "/signup/mentor"}
+          className="font-medium text-brand-deep"
+        >
           کارشناس شو
         </Link>
       </p>

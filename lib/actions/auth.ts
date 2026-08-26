@@ -3,8 +3,10 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { safeNext } from "@/lib/next-path";
 
 export type AuthFormState = { error?: string } | undefined;
+
 
 async function signUp(
   formData: FormData,
@@ -22,6 +24,11 @@ async function signUp(
     return { error: "رمز عبور باید حداقل ۶ کاراکتر باشد." };
   }
 
+  // Somebody who was trying to book when we stopped them to ask for an
+  // account is still trying to book. Carried into the confirmation link too,
+  // because the account does not exist until they follow it.
+  const next = safeNext(formData.get("next"));
+
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
   const { data, error } = await supabase.auth.signUp({
@@ -32,7 +39,9 @@ async function signUp(
       // Without this the confirmation link lands on the site root carrying
       // ?code=..., which nothing exchanges for a session, so the person
       // arrives still logged out.
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: next
+        ? `${origin}/auth/callback?next=${encodeURIComponent(next)}`
+        : `${origin}/auth/callback`,
     },
   });
 
@@ -41,7 +50,7 @@ async function signUp(
   }
 
   if (data.session) {
-    redirect("/dashboard");
+    redirect(next || "/dashboard");
   }
 
   redirect("/signup/check-email");
@@ -96,8 +105,7 @@ export async function login(
     return { error: "ایمیل یا رمز عبور اشتباه است." };
   }
 
-  const next = String(formData.get("next") ?? "").trim();
-  redirect(next.startsWith("/") ? next : "/dashboard");
+  redirect(safeNext(formData.get("next")) || "/dashboard");
 }
 
 export type ResendState = { error?: string; success?: boolean } | undefined;
@@ -121,12 +129,21 @@ export async function resendConfirmation(
   return { success: true };
 }
 
-export async function signInWithLinkedIn(role?: "mentor" | "seeker") {
+export async function signInWithLinkedIn(
+  role?: "mentor" | "seeker",
+  next?: string,
+) {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
-  const callbackUrl = role
-    ? `${origin}/auth/callback?role=${role}`
+  const params = new URLSearchParams();
+  if (role) params.set("role", role);
+  const wanted = safeNext(next);
+  if (wanted) params.set("next", wanted);
+
+  const query = params.toString();
+  const callbackUrl = query
+    ? `${origin}/auth/callback?${query}`
     : `${origin}/auth/callback`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({

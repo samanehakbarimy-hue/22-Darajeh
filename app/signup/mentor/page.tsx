@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signUpMentor } from "@/lib/actions/auth";
 import PasswordInput from "@/components/PasswordInput";
 import LinkedInButton from "@/components/LinkedInButton";
@@ -19,8 +20,9 @@ const WHY = [
   "گفتگوی ۲۲ دقیقه‌ای رایگان است — کوتاه و مشخص.",
 ];
 
-export default function MentorSignupPage() {
+function MentorSignupPageForm() {
   const [state, action, pending] = useActionState(signUpMentor, undefined);
+  const next = useSearchParams().get("next") ?? "";
 
   return (
     <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
@@ -35,7 +37,11 @@ export default function MentorSignupPage() {
       <div className="mt-10 grid gap-8 md:grid-cols-5 md:gap-10">
         <div className="md:col-span-3">
           <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
-            <LinkedInButton role="mentor" label="ثبت‌نام با لینکدین" />
+            <LinkedInButton
+              role="mentor"
+              label="ثبت‌نام با لینکدین"
+              next={next}
+            />
 
             <div className="my-6 flex items-center gap-3 text-xs text-muted">
               <div className="h-px flex-1 bg-card-border" />
@@ -44,6 +50,7 @@ export default function MentorSignupPage() {
             </div>
 
             <form action={action} className="flex flex-col gap-4">
+              <input type="hidden" name="next" value={next} />
               <div>
                 <label
                   htmlFor="full_name"
@@ -138,5 +145,15 @@ export default function MentorSignupPage() {
         </aside>
       </div>
     </div>
+  );
+}
+
+export default function MentorSignupPage() {
+  // useSearchParams needs a boundary, or the build refuses to prerender
+  // the page around it.
+  return (
+    <Suspense>
+      <MentorSignupPageForm />
+    </Suspense>
   );
 }
