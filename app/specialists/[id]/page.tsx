@@ -19,7 +19,7 @@ export default async function SpecialistPage({
   const { data: specialist } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, company, country, bio, expertise_tags, skills, linkedin_url, seniority, status, admin_summary, profiles(full_name, photo_url, created_at)",
+      "id, headline, company, country, bio, expertise_tags, skills, linkedin_url, seniority, status, admin_summary, profiles!mentor_profiles_id_fkey(full_name, photo_url, created_at)",
     )
     .eq("id", id)
     .eq("status", "approved")

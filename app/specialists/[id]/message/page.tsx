@@ -22,7 +22,7 @@ export default async function MessageSpecialistPage({
 
   const { data: specialist } = await supabase
     .from("mentor_profiles")
-    .select("id, status, profiles(full_name)")
+    .select("id, status, profiles!mentor_profiles_id_fkey(full_name)")
     .eq("id", id)
     .eq("status", "approved")
     .maybeSingle();

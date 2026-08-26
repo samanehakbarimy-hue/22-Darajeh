@@ -21,7 +21,7 @@ export default async function BookSpecialistPage({
 
   const { data: specialist } = await supabase
     .from("mentor_profiles")
-    .select("id, status, headline, country, profiles(full_name, photo_url)")
+    .select("id, status, headline, country, profiles!mentor_profiles_id_fkey(full_name, photo_url)")
     .eq("id", id)
     .eq("status", "approved")
     .maybeSingle();

@@ -172,7 +172,7 @@ export async function notifyProfileForReview(mentorId: string): Promise<void> {
     // Their own row, read by them — this runs inside their save.
     const { data } = await supabase
       .from("mentor_profiles")
-      .select("headline, profiles(full_name)")
+      .select("headline, profiles!mentor_profiles_id_fkey(full_name)")
       .eq("id", mentorId)
       .maybeSingle();
 

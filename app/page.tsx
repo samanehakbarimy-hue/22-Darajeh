@@ -72,7 +72,7 @@ export default async function Home({
   const { data: specialists } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, country, bio, expertise_tags, profiles(full_name, photo_url)",
+      "id, headline, country, bio, expertise_tags, profiles!mentor_profiles_id_fkey(full_name, photo_url)",
     )
     .eq("status", "approved")
     .order("created_at", { ascending: false })

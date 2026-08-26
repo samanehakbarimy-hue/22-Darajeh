@@ -377,7 +377,7 @@ export default async function AdminPage() {
   const { data: pendingMentors } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, bio, expertise_tags, linkedin_url, headline, seniority, profiles(full_name), mentor_meeting_links(meeting_link)",
+      "id, bio, expertise_tags, linkedin_url, headline, seniority, profiles!mentor_profiles_id_fkey(full_name), mentor_meeting_links(meeting_link)",
     )
     .eq("status", "pending")
     .order("created_at", { ascending: true });

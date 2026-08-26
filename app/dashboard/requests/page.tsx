@@ -50,7 +50,7 @@ export default async function MyRequestsPage() {
   const { data: bookings } = await supabase
     .from("bookings")
     .select(
-      "id, mentor_id, status, message, seen_at, edited_at, created_at, meeting_link, cancelled_by, cancel_reason, availability_slots(start_time, end_time), mentor_profiles(headline, profiles(full_name, photo_url))",
+      "id, mentor_id, status, message, seen_at, edited_at, created_at, meeting_link, cancelled_by, cancel_reason, availability_slots(start_time, end_time), mentor_profiles(headline, profiles!mentor_profiles_id_fkey(full_name, photo_url))",
     )
     .eq("seeker_id", user.id)
     .order("created_at", { ascending: false });
@@ -74,7 +74,7 @@ export default async function MyRequestsPage() {
   const { data: briefRows } = await supabase
     .from("project_briefs")
     .select(
-      "id, brief, status, quoted_rate_toman, estimated_hours, reply_note, created_at, attachment_path, attachment_name, mentor_profiles(profiles(full_name))",
+      "id, brief, status, quoted_rate_toman, estimated_hours, reply_note, created_at, attachment_path, attachment_name, mentor_profiles(profiles!mentor_profiles_id_fkey(full_name))",
     )
     .eq("seeker_id", user.id)
     .order("created_at", { ascending: false });

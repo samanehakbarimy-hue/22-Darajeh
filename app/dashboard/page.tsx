@@ -120,7 +120,7 @@ export default async function DashboardPage({
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, mentor_id, status, message, seen_at, edited_at, meeting_link, cancelled_by, cancel_reason, availability_slots(start_time, end_time), mentor_profiles(profiles(full_name))",
+        "id, mentor_id, status, message, seen_at, edited_at, meeting_link, cancelled_by, cancel_reason, availability_slots(start_time, end_time), mentor_profiles(profiles!mentor_profiles_id_fkey(full_name))",
       )
       .eq("seeker_id", user.id)
       .in("status", ["pending", "confirmed", "cancelled"])

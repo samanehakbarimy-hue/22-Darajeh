@@ -22,7 +22,7 @@ export default async function ProjectBriefPage({
 
   const { data: mentor } = await supabase
     .from("mentor_profiles")
-    .select("id, headline, profiles(full_name)")
+    .select("id, headline, profiles!mentor_profiles_id_fkey(full_name)")
     .eq("id", id)
     .eq("status", "approved")
     .maybeSingle();
