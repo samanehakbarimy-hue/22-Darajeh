@@ -645,3 +645,125 @@ select 'What each person can see' as section, check_name, expected, actual,
        (actual like expected || '%') as pass
   from results order by 2;
 rollback;
+
+-- ============================================================
+-- A seeker is someone too
+-- ============================================================
+begin;
+create temp table if not exists results(
+  flow text, check_name text, expected text, actual text
+) on commit drop;
+grant all on results to authenticated;
+
+create or replace function pg_temp.act_as(u uuid) returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', u, 'role', 'authenticated')::text, true);
+end $$;
+
+create or replace function pg_temp.act_as_nobody() returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims', '', true);
+end $$;
+
+create or replace function pg_temp.record(f text, c text, e text, a text)
+returns void language plpgsql security definer as $$
+begin
+  insert into results values (f, c, e, a);
+end $$;
+
+create or replace function pg_temp.seed() returns void language plpgsql as $$
+begin
+  perform pg_temp.act_as_nobody();
+
+  insert into auth.users (id, email, raw_user_meta_data) values
+    ('aaaaaaaa-0000-4000-8000-000000000001','a@example.invalid','{"role":"seeker","full_name":"Seeker A"}'),
+    ('bbbbbbbb-0000-4000-8000-000000000002','b@example.invalid','{"role":"seeker","full_name":"Seeker B"}'),
+    ('cccccccc-0000-4000-8000-000000000003','m@example.invalid','{"role":"mentor","full_name":"Mentor M"}'),
+    ('dddddddd-0000-4000-8000-000000000004','u@example.invalid','{"role":"mentor","full_name":"Mentor U"}');
+
+  insert into mentor_profiles (id, bio, status) values
+    ('cccccccc-0000-4000-8000-000000000003','approved mentor','approved'),
+    ('dddddddd-0000-4000-8000-000000000004','not yet approved','pending');
+
+  insert into mentor_meeting_links (id, meeting_link)
+    values ('cccccccc-0000-4000-8000-000000000003','https://meet.example.invalid/m');
+
+  insert into availability_slots (id, mentor_id, start_time, end_time) values
+    ('11111111-0000-4000-8000-000000000001','cccccccc-0000-4000-8000-000000000003', now()+interval '1 day', now()+interval '1 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000002','cccccccc-0000-4000-8000-000000000003', now()+interval '2 day', now()+interval '2 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000003','cccccccc-0000-4000-8000-000000000003', now()+interval '3 day', now()+interval '3 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000004','cccccccc-0000-4000-8000-000000000003', now()+interval '4 day', now()+interval '4 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000005','cccccccc-0000-4000-8000-000000000003', now()+interval '5 day', now()+interval '5 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000009','cccccccc-0000-4000-8000-000000000003', now()-interval '2 day', now()-interval '2 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000010','cccccccc-0000-4000-8000-000000000003', now()-interval '3 day', now()-interval '3 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000011','cccccccc-0000-4000-8000-000000000003', now()-interval '4 day', now()-interval '4 day' + interval '22 min'),
+    ('22222222-0000-4000-8000-000000000001','dddddddd-0000-4000-8000-000000000004', now()+interval '1 day', now()+interval '1 day' + interval '22 min');
+end $$;
+create or replace function pg_temp.try_as(
+  actor uuid, stmt text, flow text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  if actor is null then perform pg_temp.act_as_nobody();
+  else perform pg_temp.act_as(actor); end if;
+  begin
+    execute 'set local role authenticated';
+    execute stmt;
+    outcome := 'ok';
+  exception when others then outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.record(flow, chk, expected, outcome);
+end $$;
+
+create or replace function pg_temp.read_as(
+  actor uuid, dbrole text, q text, flow text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  if actor is null then perform pg_temp.act_as_nobody();
+  else perform pg_temp.act_as(actor); end if;
+  begin
+    execute 'set local role ' || quote_ident(dbrole);
+    execute q into outcome;
+    outcome := coalesce(outcome, 'null');
+  exception when others then outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.record(flow, chk, expected, outcome);
+end $$;
+
+select pg_temp.seed();
+select pg_temp.act_as_nobody();
+
+-- A seeker stores their own number
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'insert into seeker_contacts (id, phone) values (''aaaaaaaa-0000-4000-8000-000000000001'',''09120000001'')',
+  'seeker contacts','a seeker stores their own number','ok');
+
+-- and nobody else''s
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'insert into seeker_contacts (id, phone) values (''bbbbbbbb-0000-4000-8000-000000000002'',''09120000002'')',
+  'seeker contacts','but not somebody else''''s','refused');
+
+select pg_temp.read_as('bbbbbbbb-0000-4000-8000-000000000002','authenticated','select count(*)::text from seeker_contacts','seeker contacts','another seeker cannot read it','0');
+select pg_temp.read_as('cccccccc-0000-4000-8000-000000000003','authenticated','select count(*)::text from seeker_contacts','seeker contacts','nor can a specialist','0');
+select pg_temp.read_as(null,'anon','select count(*)::text from seeker_contacts','seeker contacts','nor a signed-out visitor','0');
+select pg_temp.read_as('aaaaaaaa-0000-4000-8000-000000000001','authenticated','select count(*)::text from seeker_contacts','seeker contacts','the seeker reads their own','1');
+select pg_temp.read_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4','authenticated','select count(*)::text from seeker_contacts','seeker contacts','the admin can read it','1');
+
+-- The admin list carries the number, and still refuses everyone else
+select pg_temp.read_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4','authenticated',
+  'select phone from admin_list_members() where id=''aaaaaaaa-0000-4000-8000-000000000001''',
+  'seeker contacts','the admin list shows the seeker number','09120000001');
+select pg_temp.read_as('aaaaaaaa-0000-4000-8000-000000000001','authenticated',
+  'select count(*)::text from admin_list_members()',
+  'seeker contacts','and still refuses a seeker','refused: Only an admin can list members');
+
+select 'A seeker is someone too' as section, check_name, expected, actual,
+       (actual like expected || '%') as pass
+  from results order by 2;
+rollback;

@@ -29,6 +29,27 @@ export async function GET(request: NextRequest) {
           .eq("id", data.user.id);
       }
 
+      // A seeker gave their mobile when signing up, where there was no session
+      // yet to write it with. It travelled here in the account metadata; store
+      // it now, and never over an existing one — the account settings page is
+      // where a number gets changed, not a second confirmation link.
+      const meta = data.user.user_metadata ?? {};
+      const metaPhone = typeof meta.phone === "string" ? meta.phone : "";
+
+      if (meta.role === "seeker" && metaPhone) {
+        const { data: existingContact } = await supabase
+          .from("seeker_contacts")
+          .select("id")
+          .eq("id", data.user.id)
+          .maybeSingle();
+
+        if (!existingContact) {
+          await supabase
+            .from("seeker_contacts")
+            .insert({ id: data.user.id, phone: metaPhone });
+        }
+      }
+
       // When an existing email/password account signs in with LinkedIn for
       // the first time, Supabase links the identity to that same account
       // instead of creating a new one — which means the profile-creation

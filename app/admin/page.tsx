@@ -21,13 +21,8 @@ type Member = {
   role: "mentor" | "seeker" | "admin";
   photo_url: string | null;
   status: "pending" | "approved" | "rejected" | "changes_requested" | null;
+  phone: string | null;
   created_at: string;
-};
-
-const ROLE_LABEL: Record<Member["role"], string> = {
-  mentor: "کارشناس",
-  seeker: "متقاضی",
-  admin: "ادمین",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -42,6 +37,125 @@ function Stat({ label, value }: { label: string; value: number }) {
     <div className="rounded-xl border border-card-border bg-card px-4 py-3">
       <div className="text-2xl font-bold">{value.toLocaleString("fa-IR")}</div>
       <div className="mt-0.5 text-xs text-muted">{label}</div>
+    </div>
+  );
+}
+
+/**
+ * One kind of member, listed on its own.
+ *
+ * A specialist has a profile to approve and a status to act on; a seeker has
+ * neither and never will. They were sharing a table with a "role" column,
+ * which was readable with two rows and would not be with two hundred.
+ */
+function MemberGroup({
+  title,
+  empty,
+  members,
+  showStatus = false,
+}: {
+  title: string;
+  empty: string;
+  members: Member[];
+  showStatus?: boolean;
+}) {
+  const dateFormatter = dateFormats.fullDate;
+
+  return (
+    <div className="mt-8">
+      <h3 className="font-bold">
+        {title}{" "}
+        <span className="text-sm font-normal text-muted">
+          ({members.length.toLocaleString("fa-IR")})
+        </span>
+      </h3>
+
+      {members.length === 0 ? (
+        <p className="mt-3 text-sm text-muted">{empty}</p>
+      ) : (
+        <div className="mt-3 overflow-x-auto rounded-xl border border-card-border">
+          <table className="w-full text-right text-sm">
+            <thead className="bg-card text-muted">
+              <tr>
+                <th className="px-4 py-3 font-medium">نام</th>
+                <th className="px-4 py-3 font-medium">ایمیل</th>
+                <th className="px-4 py-3 font-medium">موبایل</th>
+                {showStatus && <th className="px-4 py-3 font-medium">وضعیت</th>}
+                <th className="px-4 py-3 font-medium">تاریخ عضویت</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member) => (
+                <tr
+                  key={member.id}
+                  className="border-t border-card-border align-middle"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Avatar
+                        photoUrl={member.photo_url}
+                        name={member.full_name}
+                        size={28}
+                      />
+                      {member.role === "mentor" &&
+                      member.status === "approved" ? (
+                        <Link
+                          href={`/specialists/${member.id}`}
+                          className="inline-block py-1 hover:text-brand-deep"
+                        >
+                          {member.full_name}
+                        </Link>
+                      ) : (
+                        <span>{member.full_name}</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-muted" dir="ltr">
+                    {member.email}
+                  </td>
+                  <td className="px-4 py-3 text-muted" dir="ltr">
+                    {member.phone ?? "—"}
+                  </td>
+                  {showStatus && (
+                    <td className="px-4 py-3 text-muted">
+                      {member.status
+                        ? (STATUS_LABEL[member.status] ?? member.status)
+                        : "—"}
+                      {/* A rejection has to be undoable: it is one click
+                          away from approval and asks nothing first. */}
+                      {member.status === "approved" && (
+                        <SendBackForReview
+                          mentorId={member.id}
+                          name={member.full_name}
+                        />
+                      )}
+                      {(member.status === "rejected" ||
+                        member.status === "changes_requested") && (
+                        <form action={reopenMentorReview} className="mt-1">
+                          <input
+                            type="hidden"
+                            name="mentor_id"
+                            value={member.id}
+                          />
+                          <button
+                            type="submit"
+                            className="text-xs text-brand-deep hover:underline"
+                          >
+                            بازگرداندن به بررسی
+                          </button>
+                        </form>
+                      )}
+                    </td>
+                  )}
+                  <td className="px-4 py-3 text-muted">
+                    {dateFormatter.format(new Date(member.created_at))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
@@ -82,7 +196,8 @@ export default async function AdminPage() {
     .select("id", { count: "exact", head: true });
 
   const mentors = members.filter((m) => m.role === "mentor");
-  const dateFormatter = dateFormats.fullDate;
+  const seekers = members.filter((m) => m.role === "seeker");
+  const admins = members.filter((m) => m.role === "admin");
 
   return (
     <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
@@ -238,92 +353,19 @@ export default async function AdminPage() {
           </p>
         )}
 
-        {!membersError && members.length === 0 && (
-          <p className="mt-4 text-muted">هنوز کسی ثبت‌نام نکرده.</p>
-        )}
-
-        {members.length > 0 && (
-          <div className="mt-4 overflow-x-auto rounded-xl border border-card-border">
-            <table className="w-full text-right text-sm">
-              <thead className="bg-card text-muted">
-                <tr>
-                  <th className="px-4 py-3 font-medium">نام</th>
-                  <th className="px-4 py-3 font-medium">ایمیل</th>
-                  <th className="px-4 py-3 font-medium">نقش</th>
-                  <th className="px-4 py-3 font-medium">وضعیت</th>
-                  <th className="px-4 py-3 font-medium">تاریخ عضویت</th>
-                </tr>
-              </thead>
-              <tbody>
-                {members.map((member) => (
-                  <tr
-                    key={member.id}
-                    className="border-t border-card-border align-middle"
-                  >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <Avatar
-                          photoUrl={member.photo_url}
-                          name={member.full_name}
-                          size={28}
-                        />
-                        {member.role === "mentor" &&
-                        member.status === "approved" ? (
-                          <Link
-                            href={`/specialists/${member.id}`}
-                            className="inline-block py-1 hover:text-brand-deep"
-                          >
-                            {member.full_name}
-                          </Link>
-                        ) : (
-                          <span>{member.full_name}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-muted" dir="ltr">
-                      {member.email}
-                    </td>
-                    <td className="px-4 py-3 text-muted">
-                      {ROLE_LABEL[member.role]}
-                    </td>
-                    <td className="px-4 py-3 text-muted">
-                      {member.status
-                        ? (STATUS_LABEL[member.status] ?? member.status)
-                        : "—"}
-                      {/* A rejection has to be undoable: it is one click
-                          away from approval and asks nothing first. */}
-                      {member.role === "mentor" &&
-                        member.status === "approved" && (
-                          <SendBackForReview
-                            mentorId={member.id}
-                            name={member.full_name}
-                          />
-                        )}
-                      {(member.status === "rejected" ||
-                        member.status === "changes_requested") && (
-                        <form action={reopenMentorReview} className="mt-1">
-                          <input
-                            type="hidden"
-                            name="mentor_id"
-                            value={member.id}
-                          />
-                          <button
-                            type="submit"
-                            className="text-xs text-brand-deep hover:underline"
-                          >
-                            بازگرداندن به بررسی
-                          </button>
-                        </form>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-muted">
-                      {dateFormatter.format(new Date(member.created_at))}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <MemberGroup
+          title="کارشناس‌ها"
+          empty="هنوز کارشناسی ثبت‌نام نکرده."
+          members={mentors}
+          showStatus
+        />
+        <MemberGroup
+          title="متقاضی‌ها"
+          empty="هنوز متقاضی‌ای ثبت‌نام نکرده."
+          members={seekers}
+        />
+        {admins.length > 0 && (
+          <MemberGroup title="ادمین‌ها" empty="" members={admins} />
         )}
       </section>
     </div>

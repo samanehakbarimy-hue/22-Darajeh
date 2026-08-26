@@ -9,6 +9,7 @@ export type AuthFormState = { error?: string } | undefined;
 async function signUp(
   formData: FormData,
   role: "mentor" | "seeker",
+  extra: Record<string, string> = {},
 ): Promise<AuthFormState> {
   const fullName = String(formData.get("full_name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
@@ -27,7 +28,7 @@ async function signUp(
     email,
     password,
     options: {
-      data: { full_name: fullName, role },
+      data: { full_name: fullName, role, ...extra },
       // Without this the confirmation link lands on the site root carrying
       // ?code=..., which nothing exchanges for a session, so the person
       // arrives still logged out.
@@ -57,7 +58,21 @@ export async function signUpSeeker(
   _prevState: AuthFormState,
   formData: FormData,
 ) {
-  return signUp(formData, "seeker");
+  // Persian digits are what an Iranian phone keypad gives you, and they are
+  // not what anybody wants to dial later.
+  const phone = String(formData.get("phone") ?? "")
+    .trim()
+    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
+    .replace(/[\s-]/g, "");
+
+  if (!/^09\d{9}$/.test(phone)) {
+    return { error: "شماره موبایل را کامل و به شکل ۰۹۱۲۳۴۵۶۷۸۹ بنویس." };
+  }
+
+  // No session exists yet — the email has to be confirmed first — so the
+  // number travels in the account metadata and is written into
+  // seeker_contacts on the first sign-in, in app/auth/callback.
+  return signUp(formData, "seeker", { phone });
 }
 
 export async function login(
