@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { processAvatar } from "@/lib/images";
+import { notifyProfileForReview } from "@/lib/email/notifications";
 
 export type MentorProfileState =
   | { error?: string; success?: boolean; backToReview?: boolean }
@@ -19,6 +20,13 @@ export async function saveMentorProfile(
   if (!user) {
     return { error: "لطفاً دوباره وارد شو." };
   }
+
+  const { data: before } = await supabase
+    .from("mentor_profiles")
+    .select("status")
+    .eq("id", user.id)
+    .maybeSingle();
+  const statusBefore = before?.status ?? null;
 
   const headline = String(formData.get("headline") ?? "").trim();
   const company = String(formData.get("company") ?? "")
@@ -199,6 +207,11 @@ export async function saveMentorProfile(
     .select("status")
     .eq("id", user.id)
     .maybeSingle();
+
+  // Only on the way in. Saving again while already pending is not news.
+  if (saved?.status === "pending" && statusBefore !== "pending") {
+    await notifyProfileForReview(user.id);
+  }
 
   return { success: true, backToReview: saved?.status === "pending" };
 }

@@ -150,3 +150,49 @@ export async function notifyCancelled(
     }),
   });
 }
+
+/**
+ * Something is waiting in the review queue.
+ *
+ * Goes to the address the contact page already publishes, so this needs no new
+ * secret and leaks nothing: a specialist triggering it could have read it off
+ * the site anyway. ADMIN_NOTIFY_EMAIL overrides it.
+ *
+ * Sent because the queue is a page nobody thinks to open. A profile edit now
+ * takes an approved specialist off the site until somebody looks, and with one
+ * specialist that means the browse page can quietly empty out — a fixed typo
+ * should not cost a day of being invisible.
+ */
+export async function notifyProfileForReview(mentorId: string): Promise<void> {
+  const to = process.env.ADMIN_NOTIFY_EMAIL ?? "info@22darajeh.com";
+
+  try {
+    const supabase = await createClient();
+
+    // Their own row, read by them — this runs inside their save.
+    const { data } = await supabase
+      .from("mentor_profiles")
+      .select("headline, profiles(full_name)")
+      .eq("id", mentorId)
+      .maybeSingle();
+
+    const name =
+      (data?.profiles as unknown as { full_name: string } | null)?.full_name ??
+      "یک کارشناس";
+    const headline = data?.headline ?? "";
+
+    await sendEmail({
+      to,
+      subject: "یک پروفایل منتظر بررسی است",
+      html: emailLayout({
+        heading: `${esc(name)} پروفایلش را برای بررسی فرستاد`,
+        body: `
+          ${headline ? `<div>${esc(headline)}</div>` : ""}
+          <div style="margin-top:14px">تا وقتی تأیید نشود، روی فهرست کارشناس‌ها دیده نمی‌شود.</div>`,
+        action: { label: "دیدن صف بررسی", href: `${SITE}/admin` },
+      }),
+    });
+  } catch {
+    // A notice that cannot be sent is never a save that fails.
+  }
+}
