@@ -15,16 +15,13 @@ import {
 import { fa } from "@/lib/persian";
 
 /** A numbered step in what a plan includes. */
-function Included({ n, title, body }: { n: number; title: string; body: string }) {
+function Included({ n, title }: { n: number; title: string }) {
   return (
     <li className="flex items-start gap-3">
       <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-light text-xs font-bold text-brand-deep">
         {fa(n)}
       </span>
-      <span className="text-sm leading-6">
-        <span className="font-medium">{title}</span>
-        {body && <span className="block text-muted">{body}</span>}
-      </span>
+      <span className="text-sm leading-6">{title}</span>
     </li>
   );
 }
@@ -121,15 +118,9 @@ export default function ServiceBooking({
   const sessions = services.filter((s) => s.kind === "consultation");
   const projectRate = services.find((s) => s.kind === "hourly_project") ?? null;
 
-  const cheapestSession = sessions.length
-    ? sessions.reduce((low, s) =>
-        (s.price_toman ?? Infinity) < (low.price_toman ?? Infinity) ? s : low,
-      )
-    : null;
-
   return (
     <div className="flex flex-col gap-4">
-      <div className="overflow-hidden rounded-2xl border border-card-border bg-card">
+      <div className="overflow-hidden rounded-2xl border border-card-border bg-card shadow-sm">
         <div className="p-5">
           <div
             role="tablist"
@@ -173,27 +164,19 @@ export default function ServiceBooking({
             {active === "intro" && (
               <>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-brand-deep">
+                  <span className="text-2xl font-bold text-brand-deep">
                     رایگان
                   </span>
                   <span className="text-sm text-muted">
                     / {fa(FREE_CALL.minutes)} دقیقه
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-muted">
-                  بدون کارت بانکی. همین حالا قابل رزرو است.
-                </p>
 
-                <ul className="mt-5 flex flex-col gap-3">
-                  <Included
-                    n={1}
-                    title="بگو دنبال چه هستی"
-                    body="سؤالت را موقع رزرو می‌نویسی تا کارشناس آماده بیاید."
-                  />
+                <ul className="mt-4 flex flex-col gap-2.5">
+                  <Included n={1} title="بگو دنبال چه هستی" />
                   <Included
                     n={2}
                     title={`${fa(FREE_CALL.minutes)} دقیقه گفت‌وگوی ویدیویی`}
-                    body="روی لینک جلسه‌ی خود کارشناس برگزار می‌شود."
                   />
                 </ul>
               </>
@@ -201,20 +184,13 @@ export default function ServiceBooking({
 
             {active === "sessions" && (
               <>
-                {cheapestSession ? (
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold">
-                      {formatServicePrice(cheapestSession)}
-                    </span>
-                    <span className="text-sm text-muted">به بالا</span>
-                  </div>
-                ) : (
-                  <div className="text-sm text-muted">
+                {sessions.length === 0 && (
+                  <p className="text-sm text-muted">
                     این کارشناس هنوز جلسه‌ی تخصصی نگذاشته.
-                  </div>
+                  </p>
                 )}
 
-                <ul className="mt-3 flex flex-col">
+                <ul className="flex flex-col">
                   {sessions.map((service) => (
                     <ServiceRow
                       key={service.id}
@@ -232,14 +208,12 @@ export default function ServiceBooking({
               <>
                 {projectRate ? (
                   <>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-bold">
-                        {projectRate.is_negotiable
-                          ? "قابل مذاکره"
-                          : formatServicePrice(projectRate)}
-                      </span>
+                    <div className="text-lg font-bold">
+                      {projectRate.is_negotiable
+                        ? "قابل مذاکره"
+                        : formatServicePrice(projectRate)}
                     </div>
-                    <p className="mt-1 text-sm leading-6 text-muted">
+                    <p className="mt-2 text-sm leading-6 text-muted">
                       کارَت را توضیح بده و فایل‌هایش را بفرست؛ کارشناس می‌بیند و
                       می‌گوید قبول می‌کند یا نه.
                     </p>
@@ -270,7 +244,7 @@ export default function ServiceBooking({
               href={`/specialists/${specialistId}/book`}
               className="block rounded-full bg-brand px-5 py-3 text-center text-sm font-semibold text-brand-on transition hover:bg-brand-hover"
             >
-              رزرو گفت‌وگوی رایگان
+              رزرو گفت‌وگو
             </Link>
           ) : (
             <span
@@ -300,7 +274,7 @@ export default function ServiceBooking({
 
       {/* Availability, in its own box under the card — the same place the
           profiles this one is measured against put it. */}
-      <div className="rounded-2xl border border-card-border bg-card p-5">
+      <div className="rounded-2xl border border-card-border bg-card shadow-sm p-5">
         <div className="flex items-start gap-2 text-sm">
           <svg
             aria-hidden

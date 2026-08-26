@@ -97,7 +97,7 @@ export default async function SpecialistPage({
         <span className="text-foreground">{name}</span>
       </nav>
 
-      <div className="mt-8 grid grid-cols-1 items-start gap-10 lg:grid-cols-[1fr_380px]">
+      <div className="mt-8 grid grid-cols-1 items-start gap-10 md:grid-cols-[1fr_340px] lg:grid-cols-[1fr_380px]">
         <div className="flex flex-col gap-10">
           {/* The portrait is square and large. A profile is a person, and a
               104px circle beside a heading read as a row in a list. */}
@@ -137,7 +137,8 @@ export default async function SpecialistPage({
                   href={specialist.linkedin_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand-deep"
+                  aria-label="پروفایل لینکدین"
+                  className="mt-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-card-border text-muted transition hover:border-brand hover:text-brand-deep"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +148,6 @@ export default async function SpecialistPage({
                   >
                     <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95C21.6 8.75 22 11 22 14v7h-4v-6.2c0-1.5-.03-3.4-2.1-3.4-2.1 0-2.4 1.6-2.4 3.3V21h-4V9Z" />
                   </svg>
-                  لینکدین
                 </a>
               )}
             </div>
@@ -242,7 +242,7 @@ export default async function SpecialistPage({
             )}
           </div>
 
-          <div className="rounded-2xl border border-card-border bg-card p-6 sm:p-8">
+          <div className="rounded-2xl border border-card-border bg-card shadow-sm p-6 sm:p-8">
             <h2 className="text-xl font-bold">درباره من</h2>
             <p className="mt-4 whitespace-pre-line leading-8 text-muted">
               {specialist.bio}
@@ -262,7 +262,7 @@ export default async function SpecialistPage({
 
         {/* The decision panel, pinned beside the profile on a wide screen and
             sitting under the name once the columns stack. */}
-        <aside className="h-fit lg:sticky lg:top-6">
+        <aside className="h-fit md:sticky md:top-6">
           <ServiceBooking
             specialistId={specialist.id}
             hasSlots={Boolean(slots && slots.length > 0)}
