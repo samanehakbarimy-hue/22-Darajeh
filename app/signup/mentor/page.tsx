@@ -6,6 +6,7 @@ import { signUpMentor } from "@/lib/actions/auth";
 import PasswordInput from "@/components/PasswordInput";
 import LinkedInButton from "@/components/LinkedInButton";
 import Spinner from "@/components/Spinner";
+import StageBar from "@/components/StageBar";
 
 /* Helping and earning, in that order — the two reasons somebody does this.
    The money line claims only what a specialist really controls, which is the
@@ -18,56 +19,6 @@ const WHY = [
   "گفتگوی ۲۲ دقیقه‌ای رایگان است — کوتاه و مشخص.",
 ];
 
-/* The three stages are the ones that already exist — signing up, filling the
-   profile in, waiting for the admin. The form itself is not split across
-   them: it asks for three things, and breaking three fields into three
-   screens would add clicks without removing any work. What the bar is for is
-   telling someone on the first screen that there are two more, and that the
-   last one is not theirs to do. */
-const STAGES = ["ثبت‌نام", "کامل کردن پروفایل", "بررسی و انتشار"];
-const CURRENT_STAGE = 0;
-
-function StageBar() {
-  return (
-    <ol className="mt-8 flex items-start">
-      {STAGES.map((label, i) => {
-        const done = i < CURRENT_STAGE;
-        const here = i === CURRENT_STAGE;
-        return (
-          <li
-            key={label}
-            className={`flex items-start ${i < STAGES.length - 1 ? "flex-1" : ""}`}
-          >
-            <div className="flex shrink-0 flex-col items-center gap-2">
-              <span
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
-                  here || done
-                    ? "bg-brand text-brand-on"
-                    : "border border-card-border bg-card text-muted"
-                }`}
-              >
-                {(i + 1).toLocaleString("fa-IR")}
-              </span>
-              <span
-                className={`text-center text-xs leading-5 ${
-                  here ? "font-medium text-foreground" : "text-muted"
-                }`}
-              >
-                {label}
-              </span>
-            </div>
-            {/* Half the circle's height down, so the line meets the circles
-                rather than floating between them and their labels. */}
-            {i < STAGES.length - 1 && (
-              <div className="mx-3 mt-4 h-px flex-1 bg-card-border" />
-            )}
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
 export default function MentorSignupPage() {
   const [state, action, pending] = useActionState(signUpMentor, undefined);
 
@@ -75,7 +26,7 @@ export default function MentorSignupPage() {
     <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">ثبت‌نام به‌عنوان کارشناس</h1>
 
-      <StageBar />
+      <StageBar current={0} />
 
       {/* Two columns rather than one narrow one: the form is the work, and the
           reasons to do it sit beside it instead of pushing it down the page.

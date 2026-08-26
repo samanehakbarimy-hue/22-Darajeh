@@ -304,6 +304,7 @@ export default function MentorProfileForm({
         </div>
         {photoError && <p className="text-sm text-danger">{photoError}</p>}
 
+        <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="headline" className="mb-1.5 block text-sm font-medium">
             سمت فعلی
@@ -351,6 +352,7 @@ export default function MentorProfileForm({
             کنار سمتت روی پروفایل نوشته می‌شود. برای خیلی‌ها همین جای کار است
             که نشان می‌دهد با چه کسی طرف‌اند.
           </p>
+        </div>
         </div>
 
         <div>
@@ -421,6 +423,7 @@ export default function MentorProfileForm({
           </p>
         </div>
 
+        <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="country" className="mb-1.5 block text-sm font-medium">
             کشور محل زندگی
@@ -477,6 +480,7 @@ export default function MentorProfileForm({
               </button>
             ))}
           </div>
+        </div>
         </div>
 
         <div>

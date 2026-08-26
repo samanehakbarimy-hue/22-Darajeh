@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import MentorProfileForm from "./mentor-profile-form";
+import StageBar from "@/components/StageBar";
 import { isGoogleConnectOffered } from "@/lib/google/meet";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -70,11 +71,15 @@ export default async function MentorProfilePage({
   const showGoogleSection = googleConnected || isGoogleConnectOffered();
 
   return (
-    <div className="mx-auto w-full max-w-xl flex-1 px-6 py-16">
+    <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">پروفایل کارشناس</h1>
       <p className="mt-2 text-sm text-muted">
         این اطلاعات بعد از تأیید ادمین، به‌صورت عمومی نمایش داده می‌شه.
       </p>
+
+      {/* The same bar as the signup page, one step along: this screen is the
+          middle of becoming a specialist, not a form that arrived on its own. */}
+      <StageBar current={1} />
 
       {/* Sent back for a correction. The reason is shown in full, because
           "your profile was not accepted" with no reason is the thing that
