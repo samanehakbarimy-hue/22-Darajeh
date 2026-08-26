@@ -36,13 +36,17 @@ export async function approveMentor(formData: FormData) {
     .maybeSingle();
 
   // Connected to Google counts: their bookings get links automatically.
-  const { data: google } = await supabase
-    .from("mentor_google_connected")
-    .select("id")
-    .eq("id", id)
-    .maybeSingle();
+  //
+  // Through a function, not the mentor_google_connected view. That view runs
+  // as the caller over a table whose only policy is "auth.uid() = id", so an
+  // admin reading it matched nothing and every Google-connected specialist
+  // looked link-less — this button sent them away asking for a link they did
+  // not need.
+  const { data: hasGoogle } = await supabase.rpc("mentor_has_google", {
+    mentor: id,
+  });
 
-  if (!link?.meeting_link && !google) {
+  if (!link?.meeting_link && !hasGoogle) {
     await setMentorStatus(
       id,
       "changes_requested",

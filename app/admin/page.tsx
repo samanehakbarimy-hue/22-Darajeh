@@ -22,6 +22,7 @@ type Member = {
   photo_url: string | null;
   status: "pending" | "approved" | "rejected" | "changes_requested" | null;
   phone: string | null;
+  has_google: boolean;
   created_at: string;
 };
 
@@ -274,10 +275,13 @@ function SpecialistList({
                   <span dir="ltr" className="break-all text-muted">
                     {meetingLink}
                   </span>
+                ) : member.has_google ? (
+                  <span className="text-muted">
+                    برای هر جلسه از حساب گوگل ساخته می‌شود.
+                  </span>
                 ) : (
                   <span className="text-muted">
-                    ندارد — یا حساب گوگل وصل است، یا رزروها جایی برای رفتن
-                    ندارند.
+                    ندارد — رزروها جایی برای رفتن ندارند.
                   </span>
                 )}
               </Detail>
@@ -355,6 +359,10 @@ export default async function AdminPage() {
     (mentorDetails ?? []).map((row) => [row.id as string, row]),
   );
 
+  const googleConnectedIds = new Set(
+    members.filter((m) => m.has_google).map((m) => m.id),
+  );
+
   const { count: bookingCount } = await supabase
     .from("bookings")
     .select("id", { count: "exact", head: true });
@@ -426,7 +434,8 @@ export default async function AdminPage() {
                   mentor.mentor_meeting_links as unknown as {
                     meeting_link: string | null;
                   } | null
-                )?.meeting_link && (
+                )?.meeting_link &&
+                  !googleConnectedIds.has(mentor.id) && (
                   <p className="mt-2 rounded-xl border border-brand/40 bg-brand-light px-3 py-2 text-xs leading-6 text-brand-deep">
                     لینک جلسه ندارد. تأیید کردن، پروفایلی را منتشر می‌کند که
                     می‌شود رزروش کرد ولی نمی‌شود دیدش — دکمه تأیید به‌جایش

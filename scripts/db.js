@@ -17,6 +17,17 @@ const { Client } = require("pg");
 const ROOT = path.resolve(__dirname, "..");
 const PROJECT_REF = "akpkogwmchczuxapnlgy";
 
+// Through the connection pooler rather than db.<ref>.supabase.co, because the
+// direct host has an AAAA record and no A record. On a network without working
+// IPv6 it does not resolve at all — this script worked in the morning and
+// stopped by the evening, with nothing changed but the route out. The pooler
+// answers on IPv4 too.
+//
+// Session mode (5432), not transaction mode (6543). Migrations and the access
+// rule tests lean on transactions, temp tables and SET LOCAL ROLE, and session
+// mode gives all three exactly as a direct connection would.
+const POOLER_HOST = "aws-1-eu-west-1.pooler.supabase.com";
+
 function readPassword() {
   const envPath = path.join(ROOT, ".env.local");
   if (!fs.existsSync(envPath)) {
@@ -55,9 +66,11 @@ function readSql() {
   try {
     const { label, sql } = readSql();
     client = new Client({
-      connectionString: `postgresql://postgres:${encodeURIComponent(
+      // The pooler wants the project ref in the username; the password is the
+      // same database password as before.
+      connectionString: `postgresql://postgres.${PROJECT_REF}:${encodeURIComponent(
         readPassword(),
-      )}@db.${PROJECT_REF}.supabase.co:5432/postgres`,
+      )}@${POOLER_HOST}:5432/postgres`,
       ssl: { rejectUnauthorized: false },
       connectionTimeoutMillis: 20000,
     });
