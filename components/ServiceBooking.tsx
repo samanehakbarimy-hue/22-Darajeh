@@ -125,7 +125,7 @@ export default function ServiceBooking({
           <div
             role="tablist"
             aria-label="راه‌های کار با این کارشناس"
-            className="flex gap-1 rounded-full border border-card-border p-1"
+            className="flex items-stretch gap-1 rounded-2xl border border-card-border p-1"
           >
             {TABS.map((tab, index) => {
               const selected = tab.tab === active;
@@ -143,13 +143,18 @@ export default function ServiceBooking({
                   tabIndex={selected ? 0 : -1}
                   onClick={() => setActive(tab.tab)}
                   onKeyDown={(event) => onKeyDown(event, index)}
-                  className={`flex-1 rounded-full px-2 py-2 text-xs font-medium leading-5 transition ${
+                  className={`flex-1 rounded-2xl px-2 py-2 text-xs font-medium leading-5 transition ${
                     selected
                       ? "bg-brand text-brand-on"
                       : "text-muted hover:text-foreground"
                   }`}
                 >
-                  {tab.label}
+                  <span className="block">{tab.label}</span>
+                  {tab.note && (
+                    <span className="block text-[11px] opacity-80">
+                      {tab.note}
+                    </span>
+                  )}
                 </button>
               );
             })}

@@ -5,6 +5,8 @@ import { dateFormats } from "@/lib/persian";
 import ServiceBooking from "@/components/ServiceBooking";
 import type { MentorService } from "@/lib/services";
 import { seniorityBadge } from "@/lib/seniority";
+import SaveSpecialist from "@/components/SaveSpecialist";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function SpecialistPage({
   params,
@@ -97,6 +99,18 @@ export default async function SpecialistPage({
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : null;
 
+  // Whether this visitor has kept this specialist. Private to them: the
+  // policy on saved_specialists only ever matches their own rows.
+  const viewer = await getCurrentUser();
+  const { data: savedRow } = viewer
+    ? await supabase
+        .from("saved_specialists")
+        .select("mentor_id")
+        .eq("seeker_id", viewer.id)
+        .eq("mentor_id", id)
+        .maybeSingle()
+    : { data: null };
+
   const timeFormatter = dateFormats.full;
   const dayFormatter = dateFormats.fullDate;
 
@@ -116,7 +130,7 @@ export default async function SpecialistPage({
         <span className="text-foreground">{name}</span>
       </nav>
 
-      <div className="mt-8 grid grid-cols-1 items-start gap-10 md:grid-cols-[1fr_340px] lg:grid-cols-[1fr_380px]">
+      <div className="mt-8 grid grid-cols-1 items-start gap-10 md:grid-cols-[1fr_380px] lg:grid-cols-[1fr_430px]">
         <div className="flex flex-col gap-10">
           {/* The portrait is square and large. A profile is a person, and a
               104px circle beside a heading read as a row in a list. */}
@@ -126,10 +140,10 @@ export default async function SpecialistPage({
               <img
                 src={profile.photo_url}
                 alt={name}
-                className="h-56 w-56 shrink-0 rounded-2xl object-cover"
+                className="h-48 w-48 shrink-0 rounded-2xl object-cover"
               />
             ) : (
-              <div className="flex h-56 w-56 shrink-0 items-center justify-center rounded-2xl bg-brand-light text-6xl font-bold text-brand-deep">
+              <div className="flex h-48 w-48 shrink-0 items-center justify-center rounded-2xl bg-brand-light text-6xl font-bold text-brand-deep">
                 {name.slice(0, 1)}
               </div>
             )}
@@ -151,13 +165,20 @@ export default async function SpecialistPage({
                 </p>
               )}
 
+              <SaveSpecialist
+                specialistId={specialist.id}
+                saved={Boolean(savedRow)}
+                signedIn={Boolean(viewer)}
+                hasSlots={Boolean(slots && slots.length > 0)}
+              />
+
               {specialist.linkedin_url && (
                 <a
                   href={specialist.linkedin_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="پروفایل لینکدین"
-                  className="mt-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-card-border text-muted transition hover:border-brand hover:text-brand-deep"
+                  className="mt-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-card-border text-muted transition hover:border-brand hover:text-brand-deep"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

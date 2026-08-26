@@ -29,7 +29,7 @@ or `--query "..."`. It connects as **superuser and bypasses RLS**, so any test
 of a policy must switch role inside a transaction first, or it proves nothing.
 
 **Access rules have their own suite**: `node scripts/db.js
-supabase/tests/access_rules.sql`. 115 checks that impersonate a seeker, a
+supabase/tests/access_rules.sql`. 124 checks that impersonate a seeker, a
 specialist, an admin and a signed-out visitor against the live database, all
 inside transactions that roll back. Every printed row must say `pass = true`.
 It exists because two ways to make yourself an admin shipped and sat there
