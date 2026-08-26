@@ -88,3 +88,31 @@ export async function rejectMentor(formData: FormData) {
   if (!id) return;
   await setMentorStatus(id, "rejected");
 }
+
+/**
+ * The house view of a specialist, in the site's voice.
+ *
+ * Written by an admin and nobody else — a trigger on the column enforces that,
+ * so this action does not have to be the only thing standing there.
+ */
+export async function saveAdminSummary(formData: FormData) {
+  const id = String(formData.get("mentor_id") ?? "");
+  if (!id) return;
+
+  const summary = String(formData.get("admin_summary") ?? "")
+    .trim()
+    .slice(0, 1200);
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("mentor_profiles")
+    .update({ admin_summary: summary || null })
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/admin");
+  revalidatePath(`/specialists/${id}`);
+}

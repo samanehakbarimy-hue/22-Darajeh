@@ -6,6 +6,7 @@ import {
   reopenMentorReview,
   rejectMentor,
   requestMentorChanges,
+  saveAdminSummary,
  } from "@/lib/actions/admin";
 import { seniorityBadge } from "@/lib/seniority";
 import Avatar from "@/components/Avatar";
@@ -126,6 +127,7 @@ type MentorDetail = {
   skills: string[] | null;
   linkedin_url: string | null;
   seniority: string | null;
+  admin_summary: string | null;
   mentor_meeting_links: unknown;
 };
 
@@ -308,6 +310,40 @@ function SpecialistList({
                 {detail.bio}
               </p>
             )}
+
+            {/* The house view, in the site's voice rather than theirs. It sits
+                on their public page above their own introduction, and is worth
+                having precisely because the reader knows they did not write
+                it — so a trigger stops them from being able to. */}
+            <form
+              action={saveAdminSummary}
+              className="mt-5 border-t border-card-border pt-5"
+            >
+              <input type="hidden" name="mentor_id" value={member.id} />
+              <label
+                htmlFor={`summary-${member.id}`}
+                className="mb-1.5 block text-sm font-medium"
+              >
+                معرفی ۲۲ درجه
+                <span className="mr-1 text-xs font-normal text-muted">
+                  (روی پروفایل عمومی دیده می‌شود)
+                </span>
+              </label>
+              <textarea
+                id={`summary-${member.id}`}
+                name="admin_summary"
+                rows={4}
+                maxLength={1200}
+                defaultValue={detail?.admin_summary ?? ""}
+                className="w-full rounded-xl border border-card-border bg-background px-4 py-3 text-sm leading-7 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
+              />
+              <button
+                type="submit"
+                className="mt-3 rounded-full border border-card-border px-4 py-2 text-sm font-medium hover:border-brand hover:text-brand-deep"
+              >
+                ذخیره معرفی
+              </button>
+            </form>
           </li>
         );
       })}
@@ -352,7 +388,7 @@ export default async function AdminPage() {
   const { data: mentorDetails } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, company, bio, expertise_tags, skills, linkedin_url, seniority, mentor_meeting_links(meeting_link)",
+      "id, headline, company, bio, expertise_tags, skills, linkedin_url, seniority, admin_summary, mentor_meeting_links(meeting_link)",
     );
 
   const detailById = new Map(

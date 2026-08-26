@@ -17,7 +17,7 @@ export default async function SpecialistPage({
   const { data: specialist } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, company, country, bio, expertise_tags, skills, linkedin_url, seniority, status, profiles(full_name, photo_url, created_at)",
+      "id, headline, company, country, bio, expertise_tags, skills, linkedin_url, seniority, status, admin_summary, profiles(full_name, photo_url, created_at)",
     )
     .eq("id", id)
     .eq("status", "approved")
@@ -260,6 +260,21 @@ export default async function SpecialistPage({
               </div>
             )}
           </div>
+
+          {specialist.admin_summary && (
+            <div className="rounded-2xl border border-card-border bg-card p-6 shadow-sm sm:p-8">
+              <h2 className="text-xl font-bold">معرفی ۲۲ درجه</h2>
+              <p className="mt-4 whitespace-pre-line leading-8 text-muted">
+                {specialist.admin_summary}
+              </p>
+              {reviews.length > 0 && (
+                <p className="mt-4 border-t border-card-border pt-4 text-xs text-muted">
+                  بر پایه‌ی {reviews.length.toLocaleString("fa-IR")} نظر ثبت‌شده
+                  از کسانی که وقت گرفتند.
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="rounded-2xl border border-card-border bg-card shadow-sm p-6 sm:p-8">
             <h2 className="text-xl font-bold">درباره من</h2>
