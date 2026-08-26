@@ -21,20 +21,19 @@ export async function toggleSaved(formData: FormData) {
 
   if (!user) return;
 
-  const { data: existing } = await supabase
+  // Delete first and look at what came back, rather than reading and then
+  // deciding. A read that returned nothing when the row was in fact there —
+  // any hiccup between the two calls — left this inserting over a row that
+  // already existed, which the primary key refuses, so the button appeared to
+  // do nothing at all.
+  const { data: removed } = await supabase
     .from("saved_specialists")
-    .select("mentor_id")
+    .delete()
     .eq("seeker_id", user.id)
     .eq("mentor_id", mentorId)
-    .maybeSingle();
+    .select("mentor_id");
 
-  if (existing) {
-    await supabase
-      .from("saved_specialists")
-      .delete()
-      .eq("seeker_id", user.id)
-      .eq("mentor_id", mentorId);
-  } else {
+  if (!removed || removed.length === 0) {
     await supabase
       .from("saved_specialists")
       .insert({ seeker_id: user.id, mentor_id: mentorId });

@@ -168,90 +168,42 @@ export default async function SpecialistPage({
                 specialistId={specialist.id}
                 saved={Boolean(savedRow)}
                 signedIn={Boolean(viewer)}
+                linkedinUrl={specialist.linkedin_url}
               />
 
-              {specialist.linkedin_url && (
-                <a
-                  href={specialist.linkedin_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="پروفایل لینکدین"
-                  className="mt-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-card-border text-muted transition hover:border-brand hover:text-brand-deep"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-4 w-4"
-                  >
-                    <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95C21.6 8.75 22 11 22 14v7h-4v-6.2c0-1.5-.03-3.4-2.1-3.4-2.1 0-2.4 1.6-2.4 3.3V21h-4V9Z" />
-                  </svg>
-                </a>
-              )}
+              {/* Where they are and how long they have been at it: two
+                  short facts that belong beside the name, not in a column
+                  of their own. */}
+              <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
+                {specialist.country && <span>{specialist.country}</span>}
+                {specialist.country && seniorityBadge(specialist.seniority) && (
+                  <span aria-hidden>·</span>
+                )}
+                {seniorityBadge(specialist.seniority) && (
+                  <span>{seniorityBadge(specialist.seniority)}</span>
+                )}
+              </p>
             </div>
           </div>
 
-          {/* Facts on one side, what they work with on the other. */}
-          <div className="grid gap-8 sm:grid-cols-2">
-            <ul className="flex flex-col gap-3 text-sm">
-              {specialist.country && (
-                <li className="flex items-center gap-2">
-                  <svg
-                    aria-hidden
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4 shrink-0 text-muted"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+          {skills.length > 0 && (
+            <div>
+              <h2 className="font-bold">مهارت‌ها و ابزارها</h2>
+              {/* Coloured now that the field chips have gone from this page:
+                  these are the words somebody scans for, and grey outlines
+                  read as disabled. */}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {skills.map((skill: string) => (
+                  <span
+                    key={skill}
+                    className="rounded-full bg-brand-light px-3 py-1.5 text-sm text-brand-deep"
                   >
-                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                  {specialist.country}
-                </li>
-              )}
-
-              {seniorityBadge(specialist.seniority) && (
-                <li className="flex items-center gap-2">
-                  <svg
-                    aria-hidden
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4 shrink-0 text-muted"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 7v5l3 2" />
-                  </svg>
-                  {seniorityBadge(specialist.seniority)}
-                </li>
-              )}
-
-            </ul>
-
-            {skills.length > 0 && (
-              <div>
-                <h2 className="font-bold">مهارت‌ها و ابزارها</h2>
-                {/* All of them. A count of the ones being hidden asks a
-                    question instead of answering one. */}
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {skills.map((skill: string) => (
-                    <span
-                      key={skill}
-                      className="rounded-full border border-card-border px-3 py-1.5 text-sm text-muted"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+                    {skill}
+                  </span>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {specialist.admin_summary && (
             <div className="rounded-2xl border border-card-border bg-card p-6 shadow-sm sm:p-8">

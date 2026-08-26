@@ -15,10 +15,14 @@ export default function SaveSpecialist({
   specialistId,
   saved,
   signedIn,
+  linkedinUrl,
 }: {
   specialistId: string;
   saved: boolean;
   signedIn: boolean;
+  /** Sits in this row rather than below it: it is one of the same three
+      things somebody does here, not a footnote. */
+  linkedinUrl?: string | null;
 }) {
   const shape =
     "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition";
@@ -91,6 +95,28 @@ export default function SaveSpecialist({
         </svg>
         پیام
       </Link>
+
+      {/* The mark in its own colour and no ring around it — LinkedIn's badge
+          is a known shape, and a grey circle around it made it look like one
+          more of our buttons. */}
+      {linkedinUrl && (
+        <a
+          href={linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="پروفایل لینکدین"
+          className="inline-flex items-center p-1 text-[#0A66C2] transition hover:opacity-80"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="h-6 w-6"
+          >
+            <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95C21.6 8.75 22 11 22 14v7h-4v-6.2c0-1.5-.03-3.4-2.1-3.4-2.1 0-2.4 1.6-2.4 3.3V21h-4V9Z" />
+          </svg>
+        </a>
+      )}
     </div>
   );
 }
