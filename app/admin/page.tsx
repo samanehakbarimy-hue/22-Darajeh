@@ -52,12 +52,10 @@ function MemberGroup({
   title,
   empty,
   members,
-  showStatus = false,
 }: {
   title: string;
   empty: string;
   members: Member[];
-  showStatus?: boolean;
 }) {
   const dateFormatter = dateFormats.fullDate;
 
@@ -80,7 +78,6 @@ function MemberGroup({
                 <th className="px-4 py-3 font-medium">نام</th>
                 <th className="px-4 py-3 font-medium">ایمیل</th>
                 <th className="px-4 py-3 font-medium">موبایل</th>
-                {showStatus && <th className="px-4 py-3 font-medium">وضعیت</th>}
                 <th className="px-4 py-3 font-medium">تاریخ عضویت</th>
               </tr>
             </thead>
@@ -97,17 +94,7 @@ function MemberGroup({
                         name={member.full_name}
                         size={28}
                       />
-                      {member.role === "mentor" &&
-                      member.status === "approved" ? (
-                        <Link
-                          href={`/specialists/${member.id}`}
-                          className="inline-block py-1 hover:text-brand-deep"
-                        >
-                          {member.full_name}
-                        </Link>
-                      ) : (
-                        <span>{member.full_name}</span>
-                      )}
+                      <span>{member.full_name}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-muted" dir="ltr">
@@ -116,37 +103,6 @@ function MemberGroup({
                   <td className="px-4 py-3 text-muted" dir="ltr">
                     {member.phone ?? "—"}
                   </td>
-                  {showStatus && (
-                    <td className="px-4 py-3 text-muted">
-                      {member.status
-                        ? (STATUS_LABEL[member.status] ?? member.status)
-                        : "—"}
-                      {/* A rejection has to be undoable: it is one click
-                          away from approval and asks nothing first. */}
-                      {member.status === "approved" && (
-                        <SendBackForReview
-                          mentorId={member.id}
-                          name={member.full_name}
-                        />
-                      )}
-                      {(member.status === "rejected" ||
-                        member.status === "changes_requested") && (
-                        <form action={reopenMentorReview} className="mt-1">
-                          <input
-                            type="hidden"
-                            name="mentor_id"
-                            value={member.id}
-                          />
-                          <button
-                            type="submit"
-                            className="text-xs text-brand-deep hover:underline"
-                          >
-                            بازگرداندن به بررسی
-                          </button>
-                        </form>
-                      )}
-                    </td>
-                  )}
                   <td className="px-4 py-3 text-muted">
                     {dateFormatter.format(new Date(member.created_at))}
                   </td>
@@ -157,6 +113,201 @@ function MemberGroup({
         </div>
       )}
     </div>
+  );
+}
+
+type MentorDetail = {
+  id: string;
+  headline: string | null;
+  company: string | null;
+  bio: string | null;
+  expertise_tags: string[] | null;
+  skills: string[] | null;
+  linkedin_url: string | null;
+  seniority: string | null;
+  mentor_meeting_links: unknown;
+};
+
+function Detail({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <span className="text-xs text-muted">{label}</span>
+      <div className="mt-0.5 text-sm">{children}</div>
+    </div>
+  );
+}
+
+/**
+ * A specialist, with everything it takes to believe them.
+ *
+ * They were a row in a table: a name, an email and a status. The queue at the
+ * top of this page shows the claims and the LinkedIn profile while somebody is
+ * waiting, and then that view is gone for good — so a specialist approved last
+ * month, or one whose profile has changed since, could not be checked again
+ * without opening the database.
+ */
+function SpecialistList({
+  members,
+  detailById,
+}: {
+  members: Member[];
+  detailById: Map<string, MentorDetail>;
+}) {
+  const dateFormatter = dateFormats.fullDate;
+
+  if (members.length === 0) {
+    return <p className="mt-3 text-sm text-muted">هنوز کارشناسی ثبت‌نام نکرده.</p>;
+  }
+
+  return (
+    <ul className="mt-3 flex flex-col gap-4">
+      {members.map((member) => {
+        const detail = detailById.get(member.id);
+        const meetingLink = (
+          detail?.mentor_meeting_links as { meeting_link: string | null } | null
+        )?.meeting_link;
+        const tags = detail?.expertise_tags ?? [];
+        const skills = detail?.skills ?? [];
+
+        return (
+          <li
+            key={member.id}
+            className="rounded-xl border border-card-border bg-card p-6"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Avatar
+                  photoUrl={member.photo_url}
+                  name={member.full_name}
+                  size={44}
+                />
+                <div>
+                  <h4 className="font-bold">
+                    {member.status === "approved" ? (
+                      <Link
+                        href={`/specialists/${member.id}`}
+                        className="hover:text-brand-deep"
+                      >
+                        {member.full_name}
+                      </Link>
+                    ) : (
+                      member.full_name
+                    )}
+                  </h4>
+                  {detail?.headline && (
+                    <p className="mt-0.5 text-sm text-muted">
+                      {detail.headline}
+                      {detail.company ? ` — ${detail.company}` : ""}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="text-left">
+                <span className="text-sm">
+                  {member.status
+                    ? (STATUS_LABEL[member.status] ?? member.status)
+                    : "—"}
+                </span>
+                {member.status === "approved" && (
+                  <SendBackForReview
+                    mentorId={member.id}
+                    name={member.full_name}
+                  />
+                )}
+                {(member.status === "rejected" ||
+                  member.status === "changes_requested") && (
+                  <form action={reopenMentorReview} className="mt-1">
+                    <input type="hidden" name="mentor_id" value={member.id} />
+                    <button
+                      type="submit"
+                      className="text-xs text-brand-deep hover:underline"
+                    >
+                      بازگرداندن به بررسی
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <Detail label="ایمیل">
+                <span dir="ltr" className="text-muted">
+                  {member.email}
+                </span>
+              </Detail>
+              <Detail label="موبایل">
+                <span dir="ltr" className="text-muted">
+                  {member.phone ?? "—"}
+                </span>
+              </Detail>
+
+              {/* The one thing that can be checked against the outside world.
+                  Its absence is worth seeing too: a claim of fifteen years
+                  with nowhere to check it is the case to look at hardest. */}
+              <Detail label="لینکدین">
+                {detail?.linkedin_url ? (
+                  <a
+                    href={detail.linkedin_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    dir="ltr"
+                    className="break-all text-brand-deep hover:underline"
+                  >
+                    {detail.linkedin_url}
+                  </a>
+                ) : (
+                  <span className="text-muted">
+                    نگذاشته — راهی برای راستی‌آزمایی بیرون از سایت نیست.
+                  </span>
+                )}
+              </Detail>
+
+              <Detail label="ادعای تجربه">
+                <span className="text-muted">
+                  {seniorityBadge(detail?.seniority ?? null) || "—"}
+                </span>
+              </Detail>
+
+              <Detail label="لینک جلسه">
+                {meetingLink ? (
+                  <span dir="ltr" className="break-all text-muted">
+                    {meetingLink}
+                  </span>
+                ) : (
+                  <span className="text-muted">
+                    ندارد — یا حساب گوگل وصل است، یا رزروها جایی برای رفتن
+                    ندارند.
+                  </span>
+                )}
+              </Detail>
+
+              <Detail label="تاریخ عضویت">
+                <span className="text-muted">
+                  {dateFormatter.format(new Date(member.created_at))}
+                </span>
+              </Detail>
+            </div>
+
+            {tags.length > 0 && (
+              <p className="mt-4 text-sm text-muted">
+                حوزه‌ها: {tags.join("، ")}
+              </p>
+            )}
+            {skills.length > 0 && (
+              <p className="mt-1 text-sm text-muted">
+                ابزارها: {skills.join("، ")}
+              </p>
+            )}
+            {detail?.bio && (
+              <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted">
+                {detail.bio}
+              </p>
+            )}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -190,6 +341,19 @@ export default async function AdminPage() {
     )
     .eq("status", "pending")
     .order("created_at", { ascending: true });
+
+  // Everything an admin needs in order to believe a specialist is who they
+  // say they are. The pending queue above shows this for someone waiting; a
+  // specialist who was approved last month left no way to check them again.
+  const { data: mentorDetails } = await supabase
+    .from("mentor_profiles")
+    .select(
+      "id, headline, company, bio, expertise_tags, skills, linkedin_url, seniority, mentor_meeting_links(meeting_link)",
+    );
+
+  const detailById = new Map(
+    (mentorDetails ?? []).map((row) => [row.id as string, row]),
+  );
 
   const { count: bookingCount } = await supabase
     .from("bookings")
@@ -353,12 +517,15 @@ export default async function AdminPage() {
           </p>
         )}
 
-        <MemberGroup
-          title="کارشناس‌ها"
-          empty="هنوز کارشناسی ثبت‌نام نکرده."
-          members={mentors}
-          showStatus
-        />
+        <div className="mt-8">
+          <h3 className="font-bold">
+            کارشناس‌ها{" "}
+            <span className="text-sm font-normal text-muted">
+              ({mentors.length.toLocaleString("fa-IR")})
+            </span>
+          </h3>
+          <SpecialistList members={mentors} detailById={detailById} />
+        </div>
         <MemberGroup
           title="متقاضی‌ها"
           empty="هنوز متقاضی‌ای ثبت‌نام نکرده."
