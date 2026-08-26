@@ -57,7 +57,6 @@ export default async function SpecialistPage({
     created_at: string;
   } | null;
   const name = profile?.full_name ?? "";
-  const tags = specialist.expertise_tags ?? [];
   const skills = specialist.skills ?? [];
   const held = heldCount ?? 0;
 
@@ -169,7 +168,6 @@ export default async function SpecialistPage({
                 specialistId={specialist.id}
                 saved={Boolean(savedRow)}
                 signedIn={Boolean(viewer)}
-                hasSlots={Boolean(slots && slots.length > 0)}
               />
 
               {specialist.linkedin_url && (
@@ -234,33 +232,6 @@ export default async function SpecialistPage({
                 </li>
               )}
 
-              {tags.length > 0 && (
-                <li className="flex items-start gap-2">
-                  <svg
-                    aria-hidden
-                    viewBox="0 0 24 24"
-                    className="mt-0.5 h-4 w-4 shrink-0 text-muted"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" />
-                    <circle cx="7.5" cy="7.5" r="1.5" />
-                  </svg>
-                  <span className="flex flex-wrap gap-1.5">
-                    {tags.map((tag: string) => (
-                      <span
-                        key={tag}
-                        className="rounded-full bg-brand-light px-2.5 py-0.5 text-xs text-brand-deep"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </span>
-                </li>
-              )}
             </ul>
 
             {skills.length > 0 && (

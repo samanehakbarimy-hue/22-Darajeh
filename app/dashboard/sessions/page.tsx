@@ -8,6 +8,7 @@ import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
 import BriefReply from "@/components/BriefReply";
 import { signAttachment } from "@/lib/briefs";
+import { markInquiryAnswered } from "@/lib/actions/inquiries";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function MySessionsPage() {
@@ -65,6 +66,24 @@ export default async function MySessionsPage() {
     .eq("mentor_id", user.id)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
+
+  // Names come off the join: the policy on inquiries already limits this to
+  // the two people in it, and the specialist may read a seeker they are
+  // talking to.
+  const { data: inquiryRows } = await supabase
+    .from("inquiries")
+    .select("id, body, created_at, profiles!inquiries_seeker_id_fkey(full_name)")
+    .eq("mentor_id", user.id)
+    .is("answered_at", null)
+    .order("created_at", { ascending: true });
+
+  const openInquiries = (inquiryRows ?? []).map((row) => ({
+    id: row.id as string,
+    body: row.body as string,
+    seeker_name:
+      (row.profiles as unknown as { full_name: string } | null)?.full_name ??
+      "یک متقاضی",
+  }));
 
   const briefs = await Promise.all(
     (briefRows ?? []).map(async (b) => ({
@@ -248,6 +267,47 @@ export default async function MySessionsPage() {
                     </SubmitButton>
                   </form>
                 </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Questions from people who were not ready to book. Answering one is
+          what lets that person ask again, so the button is the point of the
+          card rather than a tidy-up afterwards. */}
+      {openInquiries.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-bold">
+            پیام‌های بی‌جواب
+            <span className="mr-2 rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs text-brand-on">
+              {openInquiries.length.toLocaleString("fa-IR")}
+            </span>
+          </h2>
+          <p className="mt-1.5 text-sm leading-7 text-muted">
+            کسی پیش از رزرو سؤالی پرسیده. تا وقتی جواب ندهی، نمی‌تواند پیام
+            تازه‌ای بفرستد.
+          </p>
+
+          <ul className="mt-4 flex flex-col gap-4">
+            {openInquiries.map((inquiry) => (
+              <li
+                key={inquiry.id}
+                className="rounded-2xl border border-card-border bg-card p-6"
+              >
+                <p className="font-bold">{inquiry.seeker_name}</p>
+                <p className="mt-2 whitespace-pre-line leading-8 text-muted">
+                  {inquiry.body}
+                </p>
+                <form action={markInquiryAnswered} className="mt-4">
+                  <input type="hidden" name="inquiry_id" value={inquiry.id} />
+                  <button
+                    type="submit"
+                    className="rounded-full border border-card-border px-4 py-2 text-sm font-medium hover:border-brand hover:text-brand-deep"
+                  >
+                    جواب دادم
+                  </button>
+                </form>
               </li>
             ))}
           </ul>

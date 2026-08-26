@@ -8,19 +8,17 @@ import { toggleSaved } from "@/lib/actions/saved";
  * destination — the same door the booking button uses, so nobody is asked to
  * sign in and then dumped somewhere else.
  *
- * "Message" is deliberately the booking flow rather than a chat box. There is
- * no messaging on this site, and the first message is a 22-minute conversation.
+ * "Message" asks a question before committing to anything — the thing
+ * somebody wants when they are not yet sure this is the right person.
  */
 export default function SaveSpecialist({
   specialistId,
   saved,
   signedIn,
-  hasSlots,
 }: {
   specialistId: string;
   saved: boolean;
   signedIn: boolean;
-  hasSlots: boolean;
 }) {
   const shape =
     "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition";
@@ -76,11 +74,7 @@ export default function SaveSpecialist({
       )}
 
       <Link
-        href={
-          hasSlots
-            ? `/specialists/${specialistId}/book`
-            : `/specialists/${specialistId}/project`
-        }
+        href={`/specialists/${specialistId}/message`}
         className={`${shape} border-card-border text-muted hover:border-brand hover:text-brand-deep`}
       >
         <svg
