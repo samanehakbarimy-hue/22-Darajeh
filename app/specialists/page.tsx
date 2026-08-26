@@ -100,8 +100,8 @@ export default async function SpecialistsPage({
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">پیدا کردن کارشناس</h1>
       <p className="mt-2 text-muted">
-        حوزه‌ای که سؤالت درباره‌شه رو انتخاب کن و ۲۲ دقیقه رایگان با کسی حرف بزن
-        که همین حالا توی همان حوزه کار می‌کنه.
+        حوزه سؤالت را انتخاب کن و ۲۲ دقیقه رایگان با کسی حرف بزن که همین حالا
+        توی همان حوزه کار می‌کنه.
       </p>
 
       <form
@@ -158,44 +158,13 @@ export default async function SpecialistsPage({
         </div>
       )}
 
-      {/* A search that finds nothing is the common case while the list is
-          short, so it gets a real answer: what to drop, and the specialists
-          there are — rather than a dead end. */}
+      {/* Nothing found says so and offers the way out, and stops there. The
+          specialists there are follow underneath, which is the actual answer
+          to an empty search — a paragraph coaching somebody on how to spell is
+          not. */}
       {foundNothing && isFiltered && (
         <div className="mt-10 rounded-2xl border border-card-border bg-card p-8">
           <h2 className="text-xl font-bold">کارشناسی با این جستجو پیدا نشد</h2>
-          <p className="mt-3 text-sm text-muted">یکی از این‌ها را بردار:</p>
-
-          <div className="mt-3 flex flex-wrap gap-2">
-            {needle && (
-              <Link
-                href={
-                  tag
-                    ? `/specialists?tag=${encodeURIComponent(tag)}`
-                    : "/specialists"
-                }
-                className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted hover:border-brand hover:text-brand-deep"
-              >
-                جستجو: «{q}»<span aria-hidden>×</span>
-              </Link>
-            )}
-            {tag && (
-              <Link
-                href={
-                  needle
-                    ? `/specialists?q=${encodeURIComponent(q ?? "")}`
-                    : "/specialists"
-                }
-                className="inline-flex items-center gap-2 rounded-full border border-card-border px-4 py-1.5 text-sm text-muted hover:border-brand hover:text-brand-deep"
-              >
-                حوزه: «{tag}»<span aria-hidden>×</span>
-              </Link>
-            )}
-          </div>
-
-          <p className="mt-4 text-sm text-muted">
-            یا با کلمه‌های کلی‌تر بگرد و املای کلمه را یک بار دیگر ببین.
-          </p>
 
           <Link
             href="/specialists"
