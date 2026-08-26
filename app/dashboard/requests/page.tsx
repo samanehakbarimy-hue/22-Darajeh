@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import LeaveReview from "@/components/LeaveReview";
 import { createClient } from "@/lib/supabase/server";
 import Avatar from "@/components/Avatar";
 import RequestMessage from "../request-message";
@@ -55,6 +56,18 @@ export default async function MyRequestsPage() {
     .order("created_at", { ascending: false });
 
   const rows = bookings ?? [];
+
+  // Reviews are publicly readable, so this needs nothing special — it is only
+  // here to keep the invitation from being offered on a session already
+  // reviewed.
+  const { data: myReviews } = await supabase
+    .from("reviews")
+    .select("booking_id")
+    .eq("seeker_id", user.id);
+
+  const reviewed = new Set(
+    (myReviews ?? []).map((r) => r.booking_id as string),
+  );
 
   // Project briefs are a separate conversation from session requests, so they
   // are listed separately rather than sorted in among them.
@@ -291,9 +304,13 @@ export default async function MyRequestsPage() {
                 {b.status === "confirmed" &&
                   slot &&
                   sessionTiming(slot.start_time, slot.end_time) === "past" && (
-                    <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
-                      این جلسه برگزار شد.
-                    </p>
+                    <div className="mt-4 border-t border-card-border pt-4">
+                      <p className="text-sm text-muted">این جلسه برگزار شد.</p>
+                      {/* The only claim on a profile its owner cannot write,
+                          asked for at the one moment the person has something
+                          to say. */}
+                      {!reviewed.has(b.id) && <LeaveReview bookingId={b.id} />}
+                    </div>
                   )}
 
                 {b.status === "confirmed" &&

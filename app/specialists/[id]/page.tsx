@@ -79,7 +79,26 @@ export default async function SpecialistPage({
     mentor: id,
   });
 
+  // The one claim on this page written by somebody other than the specialist.
+  const { data: reviewRows } = await supabase.rpc("mentor_reviews", {
+    mentor: id,
+  });
+
+  type Review = {
+    id: string;
+    rating: number;
+    body: string;
+    created_at: string;
+    seeker_name: string | null;
+  };
+
+  const reviews = (reviewRows ?? []) as Review[];
+  const averageRating = reviews.length
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : null;
+
   const timeFormatter = dateFormats.full;
+  const dayFormatter = dateFormats.fullDate;
 
   return (
     // Wide, because this page is a profile beside a decision panel rather than
@@ -258,6 +277,53 @@ export default async function SpecialistPage({
               </p>
             )}
           </div>
+          {reviews.length > 0 && (
+            <div className="rounded-2xl border border-card-border bg-card p-6 shadow-sm sm:p-8">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h2 className="text-xl font-bold">نظر کسانی که وقت گرفتند</h2>
+                {averageRating !== null && (
+                  <p className="text-sm text-muted">
+                    <span className="font-bold text-foreground">
+                      {averageRating.toLocaleString("fa-IR", {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>{" "}
+                    از ۵ — {reviews.length.toLocaleString("fa-IR")} نظر
+                  </p>
+                )}
+              </div>
+
+              <ul className="mt-6 flex flex-col gap-6">
+                {reviews.map((review) => (
+                  <li
+                    key={review.id}
+                    className="border-b border-card-border pb-6 last:border-0 last:pb-0"
+                  >
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <span className="font-medium">
+                        {review.seeker_name ?? "یک متقاضی"}
+                      </span>
+                      <span
+                        className="text-sm text-brand-deep"
+                        aria-label={`${review.rating} از ۵`}
+                      >
+                        {"★".repeat(review.rating)}
+                        <span className="text-muted">
+                          {"★".repeat(5 - review.rating)}
+                        </span>
+                      </span>
+                      <span className="text-xs text-muted">
+                        {dayFormatter.format(new Date(review.created_at))}
+                      </span>
+                    </div>
+                    <p className="mt-2 whitespace-pre-line leading-8 text-muted">
+                      {review.body}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* The decision panel, pinned beside the profile on a wide screen and

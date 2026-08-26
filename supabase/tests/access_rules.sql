@@ -1011,3 +1011,179 @@ select 'An edited profile goes back in the queue' as section, check_name, expect
        (actual like expected || '%') as pass
   from results order by 2;
 rollback;
+
+-- ============================================================
+-- Only somebody who was there can review
+-- ============================================================
+begin;
+create temp table if not exists results(
+  flow text, check_name text, expected text, actual text
+) on commit drop;
+grant all on results to authenticated;
+
+create or replace function pg_temp.act_as(u uuid) returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', u, 'role', 'authenticated')::text, true);
+end $$;
+
+create or replace function pg_temp.act_as_nobody() returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims', '', true);
+end $$;
+
+create or replace function pg_temp.record(f text, c text, e text, a text)
+returns void language plpgsql security definer as $$
+begin
+  insert into results values (f, c, e, a);
+end $$;
+
+create or replace function pg_temp.seed() returns void language plpgsql as $$
+begin
+  perform pg_temp.act_as_nobody();
+
+  insert into auth.users (id, email, raw_user_meta_data) values
+    ('aaaaaaaa-0000-4000-8000-000000000001','a@example.invalid','{"role":"seeker","full_name":"Seeker A"}'),
+    ('bbbbbbbb-0000-4000-8000-000000000002','b@example.invalid','{"role":"seeker","full_name":"Seeker B"}'),
+    ('cccccccc-0000-4000-8000-000000000003','m@example.invalid','{"role":"mentor","full_name":"Mentor M"}'),
+    ('dddddddd-0000-4000-8000-000000000004','u@example.invalid','{"role":"mentor","full_name":"Mentor U"}');
+
+  insert into mentor_profiles (id, bio, status) values
+    ('cccccccc-0000-4000-8000-000000000003','approved mentor','approved'),
+    ('dddddddd-0000-4000-8000-000000000004','not yet approved','pending');
+
+  insert into mentor_meeting_links (id, meeting_link)
+    values ('cccccccc-0000-4000-8000-000000000003','https://meet.example.invalid/m');
+
+  insert into availability_slots (id, mentor_id, start_time, end_time) values
+    ('11111111-0000-4000-8000-000000000001','cccccccc-0000-4000-8000-000000000003', now()+interval '1 day', now()+interval '1 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000002','cccccccc-0000-4000-8000-000000000003', now()+interval '2 day', now()+interval '2 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000003','cccccccc-0000-4000-8000-000000000003', now()+interval '3 day', now()+interval '3 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000004','cccccccc-0000-4000-8000-000000000003', now()+interval '4 day', now()+interval '4 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000005','cccccccc-0000-4000-8000-000000000003', now()+interval '5 day', now()+interval '5 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000009','cccccccc-0000-4000-8000-000000000003', now()-interval '2 day', now()-interval '2 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000010','cccccccc-0000-4000-8000-000000000003', now()-interval '3 day', now()-interval '3 day' + interval '22 min'),
+    ('11111111-0000-4000-8000-000000000011','cccccccc-0000-4000-8000-000000000003', now()-interval '4 day', now()-interval '4 day' + interval '22 min'),
+    ('22222222-0000-4000-8000-000000000001','dddddddd-0000-4000-8000-000000000004', now()+interval '1 day', now()+interval '1 day' + interval '22 min');
+end $$;
+create or replace function pg_temp.read_as(
+  actor uuid, dbrole text, q text, flow text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  if actor is null then perform pg_temp.act_as_nobody();
+  else perform pg_temp.act_as(actor); end if;
+  begin
+    execute 'set local role ' || quote_ident(dbrole);
+    execute q into outcome;
+    outcome := coalesce(outcome, 'null');
+  exception when others then outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.record(flow, chk, expected, outcome);
+end $$;
+create or replace function pg_temp.try_as(
+  actor uuid, stmt text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  if actor is null then perform pg_temp.act_as_nobody();
+  else perform pg_temp.act_as(actor); end if;
+  begin
+    execute 'set local role ' || case when actor is null then 'anon' else 'authenticated' end;
+    execute stmt;
+    outcome := 'ok';
+  exception when others then outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.record('reviews', chk, expected, outcome);
+end $$;
+
+select pg_temp.seed();
+select pg_temp.act_as_nobody();
+
+-- A session that happened, and one that has not been accepted.
+insert into bookings (id, slot_id, mentor_id, seeker_id, status, message) values
+ ('0a000001-0000-4000-8000-000000000001','11111111-0000-4000-8000-000000000009','cccccccc-0000-4000-8000-000000000003','aaaaaaaa-0000-4000-8000-000000000001','confirmed','x'),
+ ('0a000002-0000-4000-8000-000000000002','11111111-0000-4000-8000-000000000010','cccccccc-0000-4000-8000-000000000003','aaaaaaaa-0000-4000-8000-000000000001','pending','x'),
+ ('0a000003-0000-4000-8000-000000000003','11111111-0000-4000-8000-000000000001','cccccccc-0000-4000-8000-000000000003','aaaaaaaa-0000-4000-8000-000000000001','confirmed','x');
+
+-- The seeker who was there
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'insert into reviews (booking_id, mentor_id, seeker_id, rating, body) values (''0a000001-0000-4000-8000-000000000001'',''cccccccc-0000-4000-8000-000000000003'',''aaaaaaaa-0000-4000-8000-000000000001'',5,''جلسه‌ی بسیار مفیدی بود و دقیقا همان چیزی را گفت که لازم داشتم.'')',
+  'the seeker who had the session can review it','ok');
+
+-- Twice
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'insert into reviews (booking_id, mentor_id, seeker_id, rating, body) values (''0a000001-0000-4000-8000-000000000001'',''cccccccc-0000-4000-8000-000000000003'',''aaaaaaaa-0000-4000-8000-000000000001'',1,''نظر دوم درباره همان جلسه که نباید ثبت شود.'')',
+  'but only once for the same session','refused');
+
+-- A session that was never accepted
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'insert into reviews (booking_id, mentor_id, seeker_id, rating, body) values (''0a000002-0000-4000-8000-000000000002'',''cccccccc-0000-4000-8000-000000000003'',''aaaaaaaa-0000-4000-8000-000000000001'',1,''جلسه‌ای که هیچ‌وقت پذیرفته نشد و برگزار نشد.'')',
+  'an unanswered request cannot be reviewed','refused');
+
+-- A session still in the future
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'insert into reviews (booking_id, mentor_id, seeker_id, rating, body) values (''0a000003-0000-4000-8000-000000000003'',''cccccccc-0000-4000-8000-000000000003'',''aaaaaaaa-0000-4000-8000-000000000001'',5,''جلسه‌ای که هنوز برگزار نشده و فردا است.'')',
+  'nor one that has not happened yet','refused');
+
+-- Somebody who was not there
+select pg_temp.try_as('bbbbbbbb-0000-4000-8000-000000000002',
+  'insert into reviews (booking_id, mentor_id, seeker_id, rating, body) values (''0a000001-0000-4000-8000-000000000001'',''cccccccc-0000-4000-8000-000000000003'',''bbbbbbbb-0000-4000-8000-000000000002'',1,''من در این جلسه نبودم ولی نظر می‌دهم.'')',
+  'a stranger cannot review it','refused');
+
+-- The specialist reviewing themselves
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'insert into reviews (booking_id, mentor_id, seeker_id, rating, body) values (''0a000001-0000-4000-8000-000000000001'',''cccccccc-0000-4000-8000-000000000003'',''cccccccc-0000-4000-8000-000000000003'',5,''خودم درباره خودم نظر می‌دهم که عالی بودم.'')',
+  'nor the specialist about themselves','refused');
+
+-- A rating outside the scale, and a one-word review
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'update reviews set rating = 9 where booking_id = ''0a000001-0000-4000-8000-000000000001''',
+  'editing a review runs but changes nothing','ok');
+select pg_temp.act_as_nobody();
+select pg_temp.record('reviews','the score it was given still stands','5', (select rating::text from reviews where booking_id='0a000001-0000-4000-8000-000000000001'));
+
+-- Reading
+select pg_temp.act_as_nobody();
+select pg_temp.record('reviews','a signed-out visitor can read them','1',
+  (select count(*)::text from reviews));
+
+-- Taking it back
+select pg_temp.try_as('bbbbbbbb-0000-4000-8000-000000000002',
+  'delete from reviews where booking_id = ''0a000001-0000-4000-8000-000000000001''',
+  'a stranger cannot delete it','ok');
+select pg_temp.act_as_nobody();
+select pg_temp.record('reviews','and it is still there afterwards','1',
+  (select count(*)::text from reviews));
+
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'delete from reviews where booking_id = ''0a000001-0000-4000-8000-000000000001''',
+  'the author can take it back','ok');
+select pg_temp.act_as_nobody();
+select pg_temp.record('reviews','and then it is gone','0',
+  (select count(*)::text from reviews));
+
+-- The public reader: a signed-out visitor sees the review and the name of who
+-- wrote it, without profiles being readable to them.
+select pg_temp.act_as_nobody();
+insert into reviews (booking_id, mentor_id, seeker_id, rating, body) values
+ ('0a000001-0000-4000-8000-000000000001','cccccccc-0000-4000-8000-000000000003','aaaaaaaa-0000-4000-8000-000000000001',4,'توضیح‌هایش دقیق بود و مسیر را روشن کرد.');
+
+select pg_temp.read_as(null,'anon',
+  'select count(*)::text from mentor_reviews(''cccccccc-0000-4000-8000-000000000003'')',
+  'reviews','a visitor can read the reviews of a specialist','1');
+select pg_temp.read_as(null,'anon',
+  'select seeker_name from mentor_reviews(''cccccccc-0000-4000-8000-000000000003'') limit 1',
+  'reviews','and the name of whoever wrote it','Seeker A');
+select pg_temp.read_as(null,'anon',
+  'select count(*)::text from profiles where id=''aaaaaaaa-0000-4000-8000-000000000001''',
+  'reviews','while that seeker profile stays unreadable','0');
+
+select 'Only somebody who was there can review' as section, check_name, expected, actual,
+       (actual like expected || '%') as pass
+  from results order by 2;
+rollback;
