@@ -1,53 +1,76 @@
 @import "tailwindcss";
 
 :root {
-  /* Ink Teal + Coral, on a light ground. The page is white and the header
-     keeps the deep teal the brand started in, so the page has a lid and the
-     coral logo has something to sit against.
+  /* Two greens and a cyan, on an ivory ground -- the palette of the logo,
+     which is a tree in deep green and black drawn on ivory.
+
+     The ground is ivory rather than white because #fffff0 is within a hair of
+     the #fdfbef the logo was drawn on. A white page put a faint rectangle
+     around the mark wherever it appeared.
+
+     Cards go the other way, to white. They have to be LIGHTER than the page
+     to read as lifted, and the old #f7faf9 was both darker than ivory and
+     cooler than it, so it sat on the warm page looking grey.
 
      Every pairing below is measured. Nothing here is chosen by eye. */
-  --background: #ffffff;
-  --card: #f7faf9;
-  --card-border: #e4ecea;
-  --foreground: #101d1c;
-  --muted: #5b6b68;
+  --background: #fffff0;
+  --card: #ffffff;
+  --card-border: #e0ebe7;
+  --foreground: #16302b;
+  --muted: #476059;
 
   /* The header is its own small dark theme, so it needs its own tokens --
-     the page ones all invert against it. */
-  --header: #0f1818;
-  --header-foreground: #f5f1ea;
-  --header-muted: #a8b3ae;
-  --header-border: #2c3a38;
+     the page ones all invert against it. It is the deep green itself, which
+     is what the logo's leaves are nearly made of (#14413c in the artwork). */
+  --header: #1a4740;
+  --header-foreground: #f4f1e6;
+  --header-muted: #a9c4bd;
+  --header-border: #2c5f56;
 
-  /* Coral is rationed: primary CTAs, the selected state, and accents that
-     genuinely need to pull the eye. Spreading it further would spend the one
-     colour that is meant to mean "act here".
+  /* The mid green is rationed: primary CTAs, the selected state, and accents
+     that genuinely need to pull the eye. Spreading it further would spend the
+     one colour that is meant to mean "act here".
 
-     It takes two values on a light ground, because no single coral can do
-     both jobs. This one is a FILL. As text on white it manages only 2.88:1
+     It takes two values on a light ground, because no single green can do
+     both jobs. This one is a FILL. As text on ivory it manages only 3.85:1
      and fails. */
-  --color-brand: #ff6657;
+  --color-brand: #20917e;
 
-  /* Hover darkens now. On a dark page a brighter coral read as lit; on white
-     it reads as washed out. */
-  --color-brand-hover: #f2503f;
+  /* Hover darkens. A lighter green on a light page reads as washed out. */
+  --color-brand-hover: #1a7a6a;
 
-  /* The label that sits on a coral fill: dark, at 6.56:1. White would give
-     2.88:1 -- which is what most sites in this category ship, and it is not
-     good enough. */
-  --color-brand-on: #14100f;
+  /* The label that sits on a mid-green fill: near-black, at 4.54:1. White
+     would give 3.88:1 -- which is what most sites in this category ship, and
+     it is not good enough. */
+  --color-brand-on: #0a1c19;
 
-  /* Coral as TEXT or an icon on a light ground, at 5.02:1. Same hue family,
-     deep enough to read. */
-  --color-brand-deep: #c93d2b;
+  /* The brand as TEXT or an icon on a light ground, at 10.31:1. This is the
+     deep green, so headings, chips and icons all land on the same colour the
+     header is -- one green doing the reading, one doing the acting. */
+  --color-brand-deep: #1a4740;
 
-  /* Coral mixed into white, for the selected chip. The deep coral still
-     clears AA on it at 4.56:1. */
-  --color-brand-light: #fff1ef;
+  /* The mid green mixed into white, for the selected chip. The deep green
+     clears AA on it easily at 9.23:1. */
+  --color-brand-light: #e8f4f1;
 
-  /* Status colours stay off the brand. Coral IS a red, so an approved chip
-     borrowing it would read as an alert and sit indistinguishable next to
-     one. Green carries approval instead. */
+  /* The booking button, and nothing else. It is the one place a third colour
+     earns its keep: the moment the whole site exists for. Spending it
+     anywhere else would make it stop meaning "book".
+
+     Too light to carry white -- 2.30:1 -- so the label is the same near-black
+     the mid-green fill uses, at 7.66:1. */
+  --color-booking: #5ab9c1;
+  --color-booking-hover: #4aa8b0;
+  --color-booking-on: #0a1c19;
+
+  /* Approval stays green, because green is what approval means everywhere,
+     and this green is a long way from the brand's -- 87 apart in plain RGB.
+
+     The pale tints are the ones that touch: success-light and brand-light sit
+     5 apart and are, honestly, the same colour. That was already true when the
+     brand was coral and danger was red, and it is survivable for the same
+     reason it was then -- these two chips never appear side by side, and both
+     carry a word. Do not read the pairing as deliberate contrast; it isn't. */
   --color-success: #0f7a4f;
   --color-success-light: #eaf6f0;
 
@@ -76,6 +99,9 @@
   --color-brand-hover: var(--color-brand-hover);
   --color-brand-on: var(--color-brand-on);
   --color-brand-deep: var(--color-brand-deep);
+  --color-booking: var(--color-booking);
+  --color-booking-hover: var(--color-booking-hover);
+  --color-booking-on: var(--color-booking-on);
   --color-success: var(--color-success);
   --color-success-light: var(--color-success-light);
   --color-danger: var(--color-danger);
