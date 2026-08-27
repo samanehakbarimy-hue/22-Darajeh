@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "تماس با ما — ۲۲ درجه",
+  title: "تماس با ما — جاب‌آموز",
   description: "سؤال، پیشنهاد، یا مشکلی در سایت؟ بهمون بگو.",
 };
 

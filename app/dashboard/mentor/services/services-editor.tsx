@@ -193,7 +193,7 @@ export default function ServicesEditor({
 
                   {suggestion && (
                     <p className="text-xs leading-6 text-muted">
-                      پیشنهاد ۲۲ درجه برای این مدت و این سابقه:{" "}
+                      پیشنهاد جاب‌آموز برای این مدت و این سابقه:{" "}
                       <span className="font-medium text-foreground">
                         {formatRange(suggestion, usdRate)}
                       </span>
@@ -256,7 +256,7 @@ export default function ServicesEditor({
 
           {projectSuggestion && (
             <p className="text-xs leading-6 text-muted">
-              پیشنهاد ۲۲ درجه برای یک ساعت کار با این سابقه:{" "}
+              پیشنهاد جاب‌آموز برای یک ساعت کار با این سابقه:{" "}
               <span className="font-medium text-foreground">
                 {formatRange(projectSuggestion, usdRate)}
               </span>

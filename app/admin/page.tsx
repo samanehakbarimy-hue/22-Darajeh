@@ -324,7 +324,7 @@ function SpecialistList({
                 htmlFor={`summary-${member.id}`}
                 className="mb-1.5 block text-sm font-medium"
               >
-                معرفی ۲۲ درجه
+                معرفی جاب‌آموز
                 <span className="mr-1 text-xs font-normal text-muted">
                   (روی پروفایل عمومی دیده می‌شود)
                 </span>
@@ -411,7 +411,7 @@ export default async function AdminPage() {
     <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">مدیریت</h1>
       <p className="mt-2 text-muted">
-        همه کسانی که در ۲۲ درجه ثبت‌نام کرده‌اند.
+        همه کسانی که در جاب‌آموز ثبت‌نام کرده‌اند.
       </p>
 
       <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "۲۲ درجه — به‌زودی",
+  title: "جاب‌آموز — به‌زودی",
   robots: { index: false, follow: false },
 };
 

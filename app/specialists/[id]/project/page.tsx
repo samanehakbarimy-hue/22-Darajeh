@@ -5,7 +5,7 @@ import { formatServicePrice } from "@/lib/services";
 import BriefForm from "./brief-form";
 import { getCurrentUser } from "@/lib/auth";
 
-export const metadata = { title: "درخواست همکاری پروژه‌ای — ۲۲ درجه" };
+export const metadata = { title: "درخواست همکاری پروژه‌ای — جاب‌آموز" };
 
 export default async function ProjectBriefPage({
   params,

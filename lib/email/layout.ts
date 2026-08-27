@@ -29,12 +29,12 @@ export function emailLayout({
 <html lang="fa" dir="rtl">
 <body dir="rtl" style="margin:0;padding:24px 12px;background:#f6f4f2;font-family:Tahoma,Arial,sans-serif;color:${INK}">
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%;max-width:520px;margin:0 auto;background:#ffffff;border-radius:16px;padding:32px">
-    <tr><td style="font-size:20px;font-weight:bold;padding-bottom:4px">۲۲ درجه</td></tr>
+    <tr><td style="font-size:20px;font-weight:bold;padding-bottom:4px">جاب‌آموز</td></tr>
     <tr><td style="font-size:17px;font-weight:bold;padding:16px 0 8px">${heading}</td></tr>
     <tr><td style="font-size:15px;line-height:1.9;color:${INK};padding-bottom:16px">${body}</td></tr>
     ${button}
     <tr><td style="font-size:12px;line-height:1.8;color:${MUTED};padding-top:24px;border-top:1px solid #eee;margin-top:16px">
-      این پیام از طرف ۲۲ درجه فرستاده شده چون در سایت حساب داری.
+      این پیام از طرف جاب‌آموز فرستاده شده چون در سایت حساب داری.
     </td></tr>
   </table>
 </body>

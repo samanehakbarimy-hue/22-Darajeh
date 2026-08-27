@@ -2,7 +2,7 @@ import Link from "next/link";
 import ResetPasswordForm from "./reset-password-form";
 import { getCurrentUser } from "@/lib/auth";
 
-export const metadata = { title: "رمز تازه — ۲۲ درجه" };
+export const metadata = { title: "رمز تازه — جاب‌آموز" };
 
 export default async function ResetPasswordPage() {
   const user = await getCurrentUser();

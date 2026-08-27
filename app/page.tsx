@@ -158,7 +158,7 @@ export default async function Home({
           <section className="mt-28 sm:mt-32">
             <div className="mb-7 flex items-end justify-between gap-6">
               <div>
-                <h2 className="text-2xl font-bold">کارشناس‌های ۲۲ درجه</h2>
+                <h2 className="text-2xl font-bold">کارشناس‌های جاب‌آموز</h2>
                 <p className="mt-2 text-sm text-muted">
                   کسی را انتخاب کن که توی حوزه سؤال تو کار می‌کنه.
                 </p>

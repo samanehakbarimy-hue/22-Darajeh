@@ -187,7 +187,7 @@ export default async function SpecialistsPage({
           who is actually here instead. */}
       {foundNothing && approved.length > 0 && (
         <section className="mt-12">
-          <h2 className="text-lg font-bold">کارشناس‌های ۲۲ درجه</h2>
+          <h2 className="text-lg font-bold">کارشناس‌های جاب‌آموز</h2>
           <p className="mt-1 text-sm text-muted">
             شاید یکی از این‌ها به سؤالت نزدیک باشه.
           </p>

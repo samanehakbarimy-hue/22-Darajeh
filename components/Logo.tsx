@@ -1,35 +1,19 @@
-import Image from "next/image";
 import Link from "next/link";
-import mark from "@/public/logo-22.webp";
 
 /**
- * The mark: "22" in white on the brand red, square and edge to edge.
+ * The name, set as type.
  *
- * It is the brand's own artwork rather than anything reconstructed in CSS,
- * and it carries its own ground, which is why it only ever sits on the dark
- * chrome -- a red tile on the white page would be shouting.
+ * There was a mark: "22" in white on the brand red, which the header put
+ * beside the word «درجه» so the two together read as the name. That trick
+ * cannot survive a rename — the artwork says 22 and the name no longer does —
+ * so until there is a new mark, the wordmark is the whole logo. Type on its
+ * own is a respectable answer to that, and better than a tile spelling the
+ * old brand.
  */
-export function LogoMark({ size = 30 }: { size?: number }) {
-  return (
-    <Image
-      src={mark}
-      alt=""
-      aria-hidden
-      width={size}
-      height={size}
-      priority
-      className="shrink-0"
-    />
-  );
-}
-
-/** The mark plus the name, as used in the header. */
-export default function Logo({ size = 30 }: { size?: number }) {
+export default function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2">
-      <LogoMark size={size} />
-      {/* The mark already says "22", so the word alone completes the name. */}
-      <span className="text-lg font-bold">درجه</span>
+      <span className="text-lg font-bold">جاب‌آموز</span>
     </Link>
   );
 }

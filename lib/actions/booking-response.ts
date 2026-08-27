@@ -89,11 +89,11 @@ async function attachMeetLink(bookingId: string): Promise<LinkResult> {
 
   const link = await createMeetLink({
     refreshToken,
-    summary: `۲۲ درجه — گفتگو با ${seekerName}`,
+    summary: `جاب‌آموز — گفتگو با ${seekerName}`,
     // The question they asked, so the specialist opens the calendar entry and
     // already knows what the call is about.
     description: [
-      `گفتگوی ۲۲ دقیقه‌ای از طریق ۲۲ درجه.`,
+      `گفتگوی ۲۲ دقیقه‌ای از طریق جاب‌آموز.`,
       booking?.message ? `\nسؤال: ${booking.message}` : "",
       `\nزمان: ${dateFormats.full.format(new Date(slot.start_time))} (به وقت تهران)`,
     ].join(""),

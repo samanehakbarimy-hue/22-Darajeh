@@ -1,4 +1,4 @@
-# ۲۲ درجه (22 Darajeh)
+# جاب‌آموز (22 Darajeh)
 
 Ask a career question of someone already doing the job. Specialists offer free
 22-minute calls; people browse them, pick an open slot, and write a short note

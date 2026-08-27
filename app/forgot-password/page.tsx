@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ForgotPasswordForm from "./forgot-password-form";
 
-export const metadata = { title: "فراموشی رمز عبور — ۲۲ درجه" };
+export const metadata = { title: "فراموشی رمز عبور — جاب‌آموز" };
 
 export default function ForgotPasswordPage() {
   return (

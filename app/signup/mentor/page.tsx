@@ -121,7 +121,7 @@ function MentorSignupPageForm() {
 
         <aside className="md:col-span-2">
           <div className="rounded-2xl border border-card-border bg-card px-5 py-5">
-            <h2 className="text-sm font-bold">چرا کارشناس ۲۲ درجه بشوی؟</h2>
+            <h2 className="text-sm font-bold">چرا کارشناس جاب‌آموز بشوی؟</h2>
             <ul className="mt-4 flex flex-col gap-3">
               {WHY.map((line) => (
                 <li key={line} className="flex items-start gap-2.5">

@@ -119,7 +119,7 @@ export default async function SpecialistPage({
     <div className="mx-auto w-full max-w-7xl flex-1 px-6 py-10">
       <nav className="flex flex-wrap items-center gap-2 text-sm text-muted">
         <Link href="/" className="hover:text-foreground">
-          ۲۲ درجه
+          جاب‌آموز
         </Link>
         <span aria-hidden>‹</span>
         <Link href="/specialists" className="hover:text-foreground">
@@ -207,7 +207,7 @@ export default async function SpecialistPage({
 
           {specialist.admin_summary && (
             <div className="rounded-2xl border border-card-border bg-card p-6 shadow-sm sm:p-8">
-              <h2 className="text-xl font-bold">معرفی ۲۲ درجه</h2>
+              <h2 className="text-xl font-bold">معرفی جاب‌آموز</h2>
               <p className="mt-4 whitespace-pre-line leading-8 text-muted">
                 {specialist.admin_summary}
               </p>

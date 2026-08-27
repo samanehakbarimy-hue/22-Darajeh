@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { LogoMark } from "@/components/Logo";
 
 /**
  * Whether anyone is signed in, from the cookie rather than a round trip.
@@ -18,7 +17,7 @@ async function hasSession(): Promise<boolean> {
 
 const GROUPS = (signedIn: boolean) => [
   {
-    title: "۲۲ درجه",
+    title: "جاب‌آموز",
     links: [
       { href: "/specialists", label: "پیدا کردن کارشناس" },
       // Inviting someone who is already a member to sign up, and someone
@@ -73,16 +72,17 @@ export default async function SiteFooter() {
           ))}
         </div>
 
-        {/* The mark and its tagline, kept together the way the logo sets them. */}
+        {/* The name and its tagline. The old mark spelled the old brand, so
+            it is gone until there is a new one. */}
         <div className="mt-10 flex flex-col gap-3 border-t border-header-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <LogoMark size={32} />
+            <span className="text-base font-bold">جاب‌آموز</span>
             <span className="text-sm font-semibold text-header-muted">
               فرصت‌ها از زاویه‌ای تازه
             </span>
           </div>
           <p className="text-xs text-header-muted">
-            ۲۲ درجه — با کسی حرف بزن که همان کار را می‌کند.
+            جاب‌آموز — با کسی حرف بزن که همان کار را می‌کند.
           </p>
         </div>
       </div>

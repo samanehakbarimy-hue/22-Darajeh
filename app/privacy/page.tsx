@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "حریم خصوصی — ۲۲ درجه",
+  title: "حریم خصوصی — جاب‌آموز",
   description: "چه اطلاعاتی جمع می‌کنیم، چه کسی می‌بینه، و چطور حذفشون کنی.",
 };
 

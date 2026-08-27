@@ -23,8 +23,8 @@ export const metadata: Metadata = {
   // the tagline in the tab of those pages hands the idea to anyone who looks,
   // which is the one thing the curtain is for.
   title: IS_PRIVATE
-    ? "۲۲ درجه"
-    : "۲۲ درجه — هر سؤال شغلی داری، از کسی بپرس که همان کار را می‌کنه",
+    ? "جاب‌آموز"
+    : "جاب‌آموز — هر سؤال شغلی داری، از کسی بپرس که همان کار را می‌کنه",
   description: IS_PRIVATE
     ? undefined
     : "برای انتخاب مسیر شغلی، تغییر حوزه، مهاجرت کاری یا آمادگی مصاحبه، ۲۲ دقیقه رایگان با کارشناسی حرف بزن که همین حالا سرِ همان کاره.",
