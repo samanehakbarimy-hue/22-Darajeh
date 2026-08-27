@@ -47,8 +47,8 @@ export async function sendEmail({
       body: JSON.stringify({
         from: process.env.EMAIL_FROM ??
           // The verified sending domain is the mail. subdomain, not the bare
-          // one — sending as no-reply@22darajeh.com would be rejected.
-          "جاب‌آموز <no-reply@mail.22darajeh.com>",
+          // one — sending as no-reply@jobamooz.com would be rejected.
+          "جاب‌آموز <no-reply@mail.jobamooz.com>",
         to: [to],
         subject,
         html,
