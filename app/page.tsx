@@ -183,12 +183,13 @@ export default async function Home({
                 return (
                   <div
                     key={specialist.id}
-                    // Capped at 240 rather than 300 because of what these
-                    // photos are: LinkedIn hands us its 100x100 avatar, so a
-                    // 300px card was upscaling it 2.7x and every artefact
-                    // showed. Smaller is the only lever we have until someone
-                    // uploads a photo of their own.
-                    className="w-[calc(50%-10px)] max-w-[240px] sm:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)]"
+                    // 192 to match the photo on the specialist's own page,
+                    // which is h-48. These photos are LinkedIn's 100x100
+                    // avatar and nothing larger can be had -- every bigger
+                    // size on their CDN answers 403, because the signature
+                    // covers the size in the path. So the lever is here:
+                    // the less it is stretched, the less of that shows.
+                    className="w-[calc(50%-10px)] max-w-[192px] sm:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)]"
                   >
                     <SpecialistCard
                       maxTags={2}
