@@ -26,12 +26,30 @@ const PUBLIC_PATHS = [
   "/contact",
 ];
 
+/**
+ * Pages that are the same words for everybody and read nothing from the
+ * database. Refreshing a session before serving them is a round trip to
+ * Ireland for a page that does not care who is asking: /faq measured 199ms
+ * before the region move and every millisecond of it was this.
+ *
+ * They still go through the curtain below when it is drawn — skipping the
+ * refresh is not the same as skipping the gate, and only the refresh is
+ * skipped, and only when the site is already open to everyone.
+ */
+const NO_SESSION_NEEDED = ["/faq", "/terms"];
+
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const isOpen = process.env.SITE_PRIVATE !== "true";
+
+  if (isOpen && NO_SESSION_NEEDED.includes(pathname)) {
+    return NextResponse.next();
+  }
+
   const { response, user } = await updateSession(request);
 
-  if (process.env.SITE_PRIVATE !== "true") return response;
+  if (isOpen) return response;
 
-  const { pathname } = request.nextUrl;
   const isPublic = PUBLIC_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
