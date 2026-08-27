@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { siteUrl } from "@/lib/site";
 
 /**
  * Crawlers are allowed in even while the site is private — deliberately.
@@ -21,7 +22,7 @@ export default function robots(): MetadataRoute.Robots {
   return allowIndexing
     ? {
         rules: { userAgent: "*", allow: "/" },
-        sitemap: "https://22darajeh.com/sitemap.xml",
+        sitemap: `${siteUrl()}/sitemap.xml`,
       }
     : { rules: { userAgent: "*", allow: "/" } };
 }

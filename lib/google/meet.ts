@@ -12,7 +12,7 @@
  *
  *   GOOGLE_CLIENT_ID
  *   GOOGLE_CLIENT_SECRET
- *   NEXT_PUBLIC_SITE_URL      (e.g. https://22darajeh.com)
+ *   NEXT_PUBLIC_SITE_URL      (e.g. https://jobamooz.com)
  *
  * The redirect URI registered with Google must be exactly:
  *   {NEXT_PUBLIC_SITE_URL}/api/google/callback

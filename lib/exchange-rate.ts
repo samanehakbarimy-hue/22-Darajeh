@@ -52,7 +52,7 @@ export async function getUsdToToman(): Promise<number | null> {
       // Six hours: the rate moves daily at most, and a stale figure of a few
       // hours is far cheaper than hammering someone else's endpoint.
       next: { revalidate: 21_600 },
-      headers: { "user-agent": "22darajeh.com" },
+      headers: { "user-agent": "jobamooz.com" },
     });
     if (!response.ok) return null;
 
