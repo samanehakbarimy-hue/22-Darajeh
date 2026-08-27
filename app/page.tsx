@@ -183,7 +183,12 @@ export default async function Home({
                 return (
                   <div
                     key={specialist.id}
-                    className="w-[calc(50%-10px)] max-w-[300px] sm:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)]"
+                    // Capped at 240 rather than 300 because of what these
+                    // photos are: LinkedIn hands us its 100x100 avatar, so a
+                    // 300px card was upscaling it 2.7x and every artefact
+                    // showed. Smaller is the only lever we have until someone
+                    // uploads a photo of their own.
+                    className="w-[calc(50%-10px)] max-w-[240px] sm:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)]"
                   >
                     <SpecialistCard
                       maxTags={2}
