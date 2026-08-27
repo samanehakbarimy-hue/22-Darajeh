@@ -166,10 +166,7 @@ export async function notifyCancelled(
  * should not cost a day of being invisible.
  */
 export async function notifyProfileForReview(mentorId: string): Promise<void> {
-  // Still the old domain, deliberately: 22darajeh.com has mail routing and
-  // jobamooz.com has no MX record yet, so this fallback names the address that
-  // can actually receive. ADMIN_NOTIFY_EMAIL is set in production regardless.
-  const to = process.env.ADMIN_NOTIFY_EMAIL ?? "info@22darajeh.com";
+  const to = process.env.ADMIN_NOTIFY_EMAIL ?? "info@jobamooz.com";
 
   try {
     const supabase = await createClient();

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 // One place to change the address, rather than three.
-const CONTACT_EMAIL = "info@22darajeh.com";
+const CONTACT_EMAIL = "info@jobamooz.com";
 
 export default function ContactPage() {
   return (
