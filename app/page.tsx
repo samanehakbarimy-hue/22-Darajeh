@@ -74,19 +74,30 @@ export default async function Home({
             reach across, which is why the paragraph starts so far down. */}
         <section className="mx-auto max-w-3xl pt-8 text-center sm:pt-14">
           <h1 className="text-4xl font-bold leading-[1.25] tracking-tight sm:text-5xl">
-            هر سؤال شغلی داری، از کسی بپرس که همان کار را می‌کنه.
+            هر سؤال شغلی داری، از کسی بپرس که واقعاً اون کار رو انجام می‌ده.
           </h1>
 
-          <p className="mx-auto mt-[clamp(11rem,16.5vw,26rem)] max-w-xl text-lg leading-8 text-muted">
-            می‌خوای وارد یک حوزه بشی، مسیرت را عوض کنی، برای مهاجرت کاری آماده
-            بشی یا بدونی یک شغل واقعاً چه شکلیه؟ با کارشناسی حرف بزن که همین حالا
-            سرِ همان کاره.
+          {/* Tighter on a phone, where this wraps to two lines and the second
+              one would otherwise sit exactly on the height the fingertips meet
+              at. A few pixels, but they are the few that decide whether a
+              sentence is above the hands or between them. */}
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted sm:mt-5 sm:text-lg sm:leading-8">
+            قبل از یک تصمیم شغلی مهم، با کسی حرف بزن که خودش داخل همون حرفه کار
+            می‌کنه.
           </p>
+
+          {/* The band the hands reach across, and the reason the next thing
+              starts so far down. Nothing belongs in here: the whole point of
+              the picture is two hands not quite touching, and anything set
+              between them fills the gap they exist to hold open. */}
+          <div className="mt-[clamp(11rem,16.5vw,26rem)]">
+            <TypingRoles />
+          </div>
 
           {/* A plain GET form, so search works without JavaScript. */}
           <form
             action="/specialists"
-            className="mx-auto mt-9 flex max-w-xl items-center gap-2 rounded-full border border-card-border bg-card p-2 focus-within:border-brand-deep"
+            className="mx-auto mt-7 flex max-w-xl items-center gap-2 rounded-full border border-card-border bg-card p-2 focus-within:border-brand-deep"
           >
             <label htmlFor="q" className="sr-only">
               جستجوی کارشناس
@@ -97,22 +108,18 @@ export default async function Home({
               type="search"
               // Names are searchable too, but with this few specialists
               // suggesting them promises more than the list can answer.
-              placeholder="دنبال چه حوزه‌ای می‌گردی؟"
+              placeholder="درباره چه شغلی سؤال داری؟"
               className="min-w-0 flex-1 bg-transparent px-4 py-2 text-sm outline-none placeholder:text-muted"
             />
             <button
               type="submit"
               className="shrink-0 rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
             >
-              پیدا کردن
+              کارشناس پیدا کن
             </button>
           </form>
 
-          <p className="mt-4 text-sm text-muted">
-            ۲۲ دقیقه گفتگوی رایگان
-          </p>
-
-          <TypingRoles />
+          <p className="mt-4 text-sm text-muted">۲۲ دقیقه گفت‌وگوی رایگان</p>
         </section>
 
 

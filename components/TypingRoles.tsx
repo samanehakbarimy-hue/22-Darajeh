@@ -74,7 +74,7 @@ export default function TypingRoles() {
     : SPECIALIST_ROLES[0];
 
   return (
-    <p className="mt-10 text-center text-lg leading-8 sm:text-xl">
+    <p className="text-center text-lg leading-8 sm:text-xl">
       <span aria-hidden className="inline-flex items-baseline gap-2">
         <span className="text-muted">کارشناس</span>
 
