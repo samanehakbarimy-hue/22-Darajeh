@@ -111,6 +111,18 @@
   --font-sans: var(--font-vazirmatn);
 }
 
+/* How far below the line under the headline the next thing has to start, so
+   it lands clear of the hands rather than on top of them.
+
+   The lowest visible pixel of a hand works out at roughly --hero-hands-meet
+   plus a tenth of the viewport width -- the hands scale with the page, the
+   meeting point does not -- and 44px of air under that is what stops the
+   typewriter looking wedged against them. Hence 10vw + 182px. Move the
+   meeting point and this has to move with it. */
+:root {
+  --hero-hands-clearance: clamp(13rem, calc(10vw + 182px), 44rem);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -204,8 +216,19 @@ button:disabled {
   /* Distance from the top of <main> down to the point where the fingertips
      touch. Anchoring the meeting point rather than the top edge keeps the
      hands landing in the same place while the box itself grows with the
-     viewport. */
-  --hero-hands-meet: 296px;
+     viewport.
+
+     Was 296px, which put the topmost visible pixel of a hand at y=203..280
+     depending on the viewport -- measured off the images' own alpha channel,
+     column by column, inside the width the centred text actually occupies.
+     The line under the headline sits at 246..290. They were in each other's
+     way at every size.
+
+     416 clears it everywhere, by 33px at the tightest width and 81px at the
+     loosest. Anything below the hands has to follow them down by the same
+     120px: that is --hero-hands-clearance, and the two numbers only make
+     sense together. */
+  --hero-hands-meet: 416px;
 
   /* How far the reader scrolls to pull the hands fully apart. */
   --hero-hands-travel: 420px;

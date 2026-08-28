@@ -90,7 +90,7 @@ export default async function Home({
               starts so far down. Nothing belongs in here: the whole point of
               the picture is two hands not quite touching, and anything set
               between them fills the gap they exist to hold open. */}
-          <div className="mt-[clamp(11rem,16.5vw,26rem)]">
+          <div className="mt-[var(--hero-hands-clearance)]">
             <TypingRoles />
           </div>
 
