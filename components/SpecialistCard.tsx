@@ -25,9 +25,15 @@ export default function SpecialistCard({
   return (
     <Link
       href={`/specialists/${id}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-card-border bg-card text-right transition hover:border-brand focus-visible:border-brand"
+      className="group flex flex-col rounded-2xl border border-card-border bg-card p-3 text-right transition hover:border-brand focus-visible:border-brand"
     >
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-brand-light">
+      {/* Inset on every side rather than bleeding off the top three edges.
+          A photo that runs to the card's corners makes the card look like a
+          window onto the photo; framed, it looks like a card with a photo on
+          it, and the name below reads as belonging to the same object. The
+          padding is on the card, so the text lines up with the photo's edges
+          without having to repeat the number. */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-brand-light">
         {photoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -50,7 +56,7 @@ export default function SpecialistCard({
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col pt-3">
         <h3 className="font-bold">{name}</h3>
         {headline && (
           <p className="mt-1 line-clamp-2 text-sm text-muted">{headline}</p>
