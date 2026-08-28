@@ -3,10 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SpecialistCard from "@/components/SpecialistCard";
 import HeroHands from "@/components/HeroHands";
-
-// The most-carried expertise tags, most popular first. Eight was the most a
-// row held before it wrapped badly.
-const MAX_FIELDS = 8;
+import TypingRoles from "@/components/TypingRoles";
 
 const BENEFITS = [
   {
@@ -49,25 +46,6 @@ export default async function Home({
   }
 
   const supabase = await createClient();
-  // Chips come from the tags approved کارشناس‌ها actually carry, not a hand
-  // written list. The list said it matched reality and had stopped: it offered
-  // eight fields when one of them had anybody in it, so seven of eight chips
-  // led to an empty page. Deriving it means that cannot drift again.
-  const { data: tagRows } = await supabase
-    .from("mentor_profiles")
-    .select("expertise_tags")
-    .eq("status", "approved");
-
-  const tagCounts = new Map<string, number>();
-  for (const row of tagRows ?? []) {
-    for (const tag of row.expertise_tags ?? []) {
-      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
-    }
-  }
-  const fields = [...tagCounts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, MAX_FIELDS)
-    .map(([tag]) => tag);
 
   const { data: specialists } = await supabase
     .from("mentor_profiles")
@@ -133,25 +111,10 @@ export default async function Home({
           <p className="mt-4 text-sm text-muted">
             ۲۲ دقیقه گفتگوی رایگان
           </p>
+
+          <TypingRoles />
         </section>
 
-        {/* CATEGORIES. Hidden below two, because a single chip is not a choice
-            and the list of everyone is directly underneath it anyway. */}
-        {fields.length > 1 && (
-        <section className="mt-12">
-          <div className="flex flex-wrap justify-center gap-2.5">
-            {fields.map((field) => (
-              <Link
-                key={field}
-                href={`/specialists?tag=${encodeURIComponent(field)}`}
-                className="rounded-full border border-card-border bg-card px-4 py-2 text-sm text-muted transition hover:border-brand hover:text-brand-deep"
-              >
-                {field}
-              </Link>
-            ))}
-          </div>
-        </section>
-        )}
 
         {/* SPECIALISTS */}
         {specialists && specialists.length > 0 && (

@@ -361,3 +361,31 @@ button:disabled {
     display: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   The caret on the hero's typing line.
+
+   Sits after the text in the markup, so in a right-to-left line it lands to
+   the left of the last letter typed, which is where a caret belongs. The
+   margin is on its inline-start -- the side facing the text -- so it flips
+   with the direction rather than against it.
+
+   `steps(1)` on purpose: a caret snaps between on and off. Fading one in and
+   out reads as a pulse, not a cursor. The global reduced-motion rule already
+   collapses this to nothing for anybody who asked for that.
+--------------------------------------------------------------------------- */
+.typing-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-inline-start: 4px;
+  vertical-align: -0.16em;
+  background: currentColor;
+  animation: typing-caret-blink 1s steps(1) infinite;
+}
+
+@keyframes typing-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
