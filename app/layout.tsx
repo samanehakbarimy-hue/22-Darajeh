@@ -38,7 +38,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f1818",
+  // The header's own colour, so a phone's browser chrome continues the page
+  // rather than sitting on top of it in a different shade. This is the one
+  // place the palette is repeated as a literal -- a meta tag cannot read a CSS
+  // variable -- so it has to be changed by hand when --header changes.
+  themeColor: "#1a4740",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
