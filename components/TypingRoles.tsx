@@ -9,21 +9,26 @@ const HOLD_MS = 1500;
 const BETWEEN_MS = 350;
 
 /**
- * «کارشناس» stays put and the field types itself in beside it, holds, erases,
- * and the next one follows — in the order the list is written, looping from
- * the top after the last.
+ * «کارشناس» and the field that types itself in beside it, held together as one
+ * phrase and centred as one phrase — in the order the list is written, looping
+ * from the top after the last.
  *
- * The width never moves. Every field is rendered invisibly stacked in the same
- * grid cell as the live one, so the box is always as wide as the longest
- * entry and a short field leaves empty space rather than dragging the line
- * around. Sizing it from the real rendered text rather than a character count
- * matters here: "DevOps" and "طراحی UI/UX" mix scripts, and their widths have
- * nothing to do with how many characters they have.
+ * The wrapper is shrink-to-fit and the centring is on its parent, so the pair
+ * is measured together and «کارشناس» slides along with the field rather than
+ * standing still while the text grows away from it. Nothing here is positioned
+ * or given a width: both halves sit in normal flow and the line is only ever
+ * as wide as what is currently in it.
+ *
+ * That means the phrase moves as it types, which is the deliberate trade. An
+ * earlier version pinned the field's box to the width of the longest entry so
+ * nothing ever shifted, and the cost was that the pair sat off-centre by
+ * however much the current word fell short. Centred and moving was the answer
+ * wanted; if it ever reads as restless, that older approach is the other end
+ * of the same choice.
  *
  * Decorative, so the whole thing is hidden from screen readers and a plain
  * sentence is left in its place. Somebody listening wants to know what the
- * site does, not to sit through seventeen fields being spelled out and
- * deleted.
+ * site does, not to sit through sixteen fields being spelled out and deleted.
  */
 export default function TypingRoles() {
   const [index, setIndex] = useState(0);
@@ -74,38 +79,24 @@ export default function TypingRoles() {
     : SPECIALIST_ROLES[0];
 
   return (
-    <p className="text-center text-lg leading-8 sm:text-xl">
-      <span aria-hidden className="inline-flex items-baseline gap-2">
+    <p className="flex justify-center text-lg leading-8 sm:text-xl">
+      {/* One wrapper, shrink-to-fit, centred by the parent. The two halves are
+          flex items in normal flow, so the pair is measured and centred as a
+          single phrase. */}
+      <span
+        aria-hidden
+        className="inline-flex w-fit items-baseline gap-2 whitespace-nowrap"
+      >
         <span className="text-muted">کارشناس</span>
 
-        {/* text-start, not the inherited centre: the box is as wide as the
-            longest field, so centring inside it would float a short one away
-            from «کارشناس» and leave a gap that changes with every word. Held
-            to the start, the reserved space all falls after the text. */}
-        <span className="inline-grid text-start">
-          {/* Each sizer carries the caret too. Without it the live cell is
-              text-plus-caret while the sizers are text alone, so the box grew
-              by the caret's width at the moment the longest field finished
-              typing -- six pixels, once every seventeen words, which is
-              exactly the kind of twitch this whole arrangement exists to
-              prevent. */}
-          {SPECIALIST_ROLES.map((role, i) => (
-            <span
-              key={`${role}-${i}`}
-              className="invisible col-start-1 row-start-1 whitespace-nowrap font-bold"
-            >
-              {role}
-              <span className="typing-caret" />
-            </span>
-          ))}
-
-          <span className="col-start-1 row-start-1 whitespace-nowrap font-bold text-brand-deep">
-            {text}
-            <span className="typing-caret" />
-          </span>
+        <span className="font-bold text-brand-deep">
+          {text}
+          <span className="typing-caret" />
         </span>
       </span>
 
+      {/* sr-only is positioned out of flow, so it cannot pull the centring
+          off. It is here rather than beside the animation for that reason. */}
       <span className="sr-only">
         کارشناس‌هایی در حوزه‌هایی مثل {SPECIALIST_ROLES.join("، ")}.
       </span>
