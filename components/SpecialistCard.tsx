@@ -3,24 +3,18 @@ import Link from "next/link";
 export type SpecialistCardData = {
   id: string;
   headline?: string | null;
+  company?: string | null;
   country?: string | null;
-  expertise_tags?: string[] | null;
   name: string;
   photoUrl?: string | null;
 };
 
 export default function SpecialistCard({
   specialist,
-  maxTags = 3,
 }: {
   specialist: SpecialistCardData;
-  maxTags?: number;
 }) {
-  const { id, headline, country, name, photoUrl } = specialist;
-  // The rest are simply not shown. A "+۱" beside them counted something the
-  // reader cannot see and would not have a name for — it asked a question
-  // instead of answering one.
-  const tags = (specialist.expertise_tags ?? []).slice(0, maxTags);
+  const { id, headline, company, country, name, photoUrl } = specialist;
 
   return (
     <Link
@@ -56,23 +50,21 @@ export default function SpecialistCard({
         )}
       </div>
 
+      {/* A name and what they do, and nothing else.
+          The expertise chips used to sit under this. They were the same three
+          or four words on every card, so they told a reader looking down a
+          list nothing that would help them choose — and they are already the
+          filters at the top of the page, where they do some work. What
+          actually separates one person from another is the job and the place,
+          so that is what is left. */}
       <div className="flex flex-1 flex-col pt-3">
         <h3 className="font-bold">{name}</h3>
-        {headline && (
-          <p className="mt-1 line-clamp-2 text-sm text-muted">{headline}</p>
-        )}
-
-        {tags.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-brand-light px-2.5 py-1 text-xs text-brand-deep"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+        {(headline || company) && (
+          <p className="mt-1 line-clamp-2 text-sm text-muted">
+            {headline}
+            {headline && company && " در "}
+            {company}
+          </p>
         )}
       </div>
     </Link>

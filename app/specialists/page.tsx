@@ -5,6 +5,7 @@ import SpecialistCard from "@/components/SpecialistCard";
 type Row = {
   id: string;
   headline: string | null;
+  company: string | null;
   country: string | null;
   bio: string | null;
   expertise_tags: string[] | null;
@@ -39,8 +40,8 @@ function CardGrid({ rows }: { rows: Row[] }) {
               specialist={{
                 id: row.id,
                 headline: row.headline,
+                company: row.company,
                 country: row.country,
-                expertise_tags: row.expertise_tags,
                 name: profile?.full_name ?? "",
                 photoUrl: profile?.photo_url,
               }}
@@ -67,7 +68,7 @@ export default async function SpecialistsPage({
   const { data } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, country, bio, expertise_tags, profiles!mentor_profiles_id_fkey(full_name, photo_url)",
+      "id, headline, company, country, bio, expertise_tags, profiles!mentor_profiles_id_fkey(full_name, photo_url)",
     )
     .eq("status", "approved")
     .order("created_at", { ascending: false });

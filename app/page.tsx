@@ -50,7 +50,7 @@ export default async function Home({
   const { data: specialists } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, country, bio, expertise_tags, profiles!mentor_profiles_id_fkey(full_name, photo_url)",
+      "id, headline, company, country, profiles!mentor_profiles_id_fkey(full_name, photo_url)",
     )
     .eq("status", "approved")
     .order("created_at", { ascending: false })
@@ -162,12 +162,11 @@ export default async function Home({
                     className="w-[calc(50%-10px)] max-w-[192px] sm:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)]"
                   >
                     <SpecialistCard
-                      maxTags={2}
                       specialist={{
                         id: specialist.id,
                         headline: specialist.headline,
+                        company: specialist.company,
                         country: specialist.country,
-                        expertise_tags: specialist.expertise_tags,
                         name: profile?.full_name ?? "",
                         photoUrl: profile?.photo_url,
                       }}
