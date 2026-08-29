@@ -1,12 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isProviderAvatarUrl, storeRemoteAvatar } from "@/lib/avatar";
+import { safeNext } from "@/lib/next-path";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const role = searchParams.get("role");
-  const next = searchParams.get("next") ?? "/dashboard";
+  // Through safeNext: this is pasted together with the origin below, and
+  // "@example.invalid" makes `https://jobamooz.com@example.invalid`, which a
+  // browser reads as our name being the username and theirs being the host.
+  // Worse here than on the confirm route -- by the time this redirects, the
+  // session cookie is already set, so it hands somebody a signed-in visitor.
+  const next = safeNext(searchParams.get("next")) || "/dashboard";
 
   if (code) {
     const supabase = await createClient();

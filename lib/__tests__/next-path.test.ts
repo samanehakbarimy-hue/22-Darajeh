@@ -30,3 +30,27 @@ test("nothing at all is not a destination", () => {
   assert.equal(safeNext(null), "");
   assert.equal(safeNext(undefined), "");
 });
+
+/**
+ * The auth callbacks paste this straight onto the origin — `${origin}${next}`
+ * — and that is a different trap from the one above. "@example.invalid" does
+ * not start with a slash, so it never looks like a path, but glued to the
+ * origin it makes `https://jobamooz.com@example.invalid`, where our name is
+ * the username and the host is theirs. Both callbacks shipped without this
+ * for a while; the check below is what says they cannot again.
+ */
+test("a destination glued onto the origin cannot change the host", () => {
+  const origin = "https://jobamooz.com";
+  const hostOf = (value: string) =>
+    new URL(origin + (safeNext(value) || "/dashboard")).host;
+
+  assert.equal(hostOf("@evil.example"), "jobamooz.com");
+  assert.equal(hostOf(".evil.example"), "jobamooz.com");
+  assert.equal(hostOf("https://evil.example"), "jobamooz.com");
+  assert.equal(hostOf("//evil.example"), "jobamooz.com");
+  assert.equal(hostOf("/\evil.example"), "jobamooz.com");
+
+  // And a real destination still survives the trip.
+  assert.equal(origin + (safeNext("/dashboard/sessions") || "/dashboard"),
+    "https://jobamooz.com/dashboard/sessions");
+});
