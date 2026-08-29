@@ -125,18 +125,12 @@ export async function respondToBrief(
   return undefined;
 }
 
-/** Taking back a brief nobody has answered yet. */
-export async function withdrawBrief(
-  _prev: BriefState,
-  formData: FormData,
-): Promise<BriefState> {
-  const briefId = String(formData.get("brief_id") ?? "");
-  if (!briefId) return { error: "این درخواست پیدا نشد." };
-
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("withdraw_brief", { brief_id: briefId });
-
-  revalidatePath("/dashboard/requests");
-  if (error) return { error: "پس گرفتن انجام نشد. شاید جواب داده شده باشد." };
-  return undefined;
-}
+/*
+ * There was a withdrawBrief here, wired to the `withdraw_brief` database
+ * function. Nothing ever called it — no button, no form, no route — so a
+ * seeker could not take back a brief however the database felt about it.
+ *
+ * The database function is still there and still works. If taking a brief
+ * back should be possible, this is four lines and a button, not a feature to
+ * build from nothing.
+ */

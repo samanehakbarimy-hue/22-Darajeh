@@ -1,5 +1,3 @@
-import { formatMoney } from "@/lib/rates";
-
 /**
  * What a specialist offers.
  *
@@ -120,12 +118,6 @@ export function formatDuration(service: MentorService): string {
   const session = sessionType(service.session_key);
   if (session) return `${session.minutes.toLocaleString("fa-IR")} دقیقه`;
   return `حداقل ${(service.min_hours ?? 1).toLocaleString("fa-IR")} ساعت`;
-}
-
-/** Currency display lives in lib/rates.ts, so amounts appear one way. */
-export function formatPrice(price: number | null, rate: number | null): string {
-  if (price === null) return "به‌زودی";
-  return formatMoney(price, rate);
 }
 
 /** Hourly work is priced per hour, and the label has to say so. */

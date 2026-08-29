@@ -21,3 +21,21 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
   } = await supabase.auth.getUser();
   return user;
 });
+
+/**
+ * Whether the caller is an admin, asked of the database rather than worked out
+ * here.
+ *
+ * `public.is_admin()` is the same function every admin-only policy is written
+ * against, so this cannot drift from what the database will actually allow —
+ * which is the entire point of asking it rather than reading `profiles.role`
+ * a second way. It answers false for a signed-out caller on its own.
+ *
+ * Cached per render like getCurrentUser, so guarding several actions or
+ * reading it in a page costs one round trip, not several.
+ */
+export const isAdmin = cache(async (): Promise<boolean> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("is_admin");
+  return !error && data === true;
+});

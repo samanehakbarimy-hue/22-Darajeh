@@ -6,11 +6,6 @@
 
 const ENDPOINT = "https://api.resend.com/emails";
 
-/** Whether mail can actually go out. False on any environment without a key. */
-export function isEmailConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY);
-}
-
 /**
  * Never throws, and never returns a rejected promise.
  *

@@ -2,6 +2,27 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { isAdmin } from "@/lib/auth";
+
+/**
+ * Refuses anyone who is not an admin, before anything below is attempted.
+ *
+ * The database already refuses them: every write here is against a policy of
+ * `id = auth.uid() OR is_admin()`, and the access-rules suite proves it. But
+ * an UPDATE that row-level security filters out is not an error — PostgREST
+ * reports success over nothing — so without this the actions could not tell a
+ * blocked attempt from a real one, and neither could anybody reading the
+ * logs. Two ways in already shipped once and sat unnoticed; this is the layer
+ * that makes the next one loud.
+ *
+ * Not a substitute for the policies. If these two ever disagree, the database
+ * wins and should.
+ */
+async function requireAdmin() {
+  if (!(await isAdmin())) {
+    throw new Error("این کار فقط از ادمین برمی‌آید.");
+  }
+}
 
 async function setMentorStatus(
   mentorId: string,
@@ -22,6 +43,8 @@ async function setMentorStatus(
 }
 
 export async function approveMentor(formData: FormData) {
+  await requireAdmin();
+
   const id = String(formData.get("mentor_id") ?? "");
   if (!id) return;
 
@@ -63,6 +86,8 @@ export async function approveMentor(formData: FormData) {
  * The note is shown to them verbatim, so it is written for them to read.
  */
 export async function requestMentorChanges(formData: FormData) {
+  await requireAdmin();
+
   const id = String(formData.get("mentor_id") ?? "");
   const note = String(formData.get("review_note") ?? "").trim();
   if (!id || !note) return;
@@ -78,12 +103,16 @@ export async function requestMentorChanges(formData: FormData) {
  * someone's account and only hand-written SQL could bring it back.
  */
 export async function reopenMentorReview(formData: FormData) {
+  await requireAdmin();
+
   const id = String(formData.get("mentor_id") ?? "");
   if (!id) return;
   await setMentorStatus(id, "pending", null);
 }
 
 export async function rejectMentor(formData: FormData) {
+  await requireAdmin();
+
   const id = String(formData.get("mentor_id") ?? "");
   if (!id) return;
   await setMentorStatus(id, "rejected");
@@ -96,6 +125,8 @@ export async function rejectMentor(formData: FormData) {
  * so this action does not have to be the only thing standing there.
  */
 export async function saveAdminSummary(formData: FormData) {
+  await requireAdmin();
+
   const id = String(formData.get("mentor_id") ?? "");
   if (!id) return;
 
