@@ -18,9 +18,6 @@ async function hasSession(): Promise<boolean> {
 const GROUPS = (signedIn: boolean) => [
   {
     title: "جاب‌آموز",
-    // The licence badges will sit under this column, so the room is kept here
-    // rather than found later.
-    reservesBadges: true,
     links: [
       { href: "/specialists", label: "پیدا کردن کارشناس" },
       // Inviting someone who is already a member to sign up, and someone
@@ -67,7 +64,7 @@ function ElderlyMark() {
   return (
     <span
       aria-hidden
-      className="block h-[52px] w-[52px] bg-current"
+      className="block h-[68px] w-[68px] shrink-0 bg-current"
       style={{
         maskImage: "url(/elder-icon.png)",
         WebkitMaskImage: "url(/elder-icon.png)",
@@ -107,13 +104,11 @@ export default async function SiteFooter() {
                 ))}
               </ul>
 
-              {group.reservesBadges && (
-                /* Enamad and whatever else is granted go here. Empty on
-                   purpose: an outlined box saying "logo goes here" is worse
-                   than a gap nobody notices, and this way the column does not
-                   jump when the real badge arrives. */
-                <div aria-hidden className="mt-3 h-6" />
-              )}
+              {/* Enamad and whatever else is granted belong under this
+                  column. Kept as a place in the markup and nothing more —
+                  reserving height for a badge that does not exist yet just
+                  makes the footer taller for no one. Put the badge here and
+                  give it its own margin when there is one. */}
             </div>
           ))}
 
@@ -122,11 +117,19 @@ export default async function SiteFooter() {
               heading of its own — but quiet is not the same as illegible, so
               the text keeps the muted colour at full strength rather than
               being dimmed on top of it. */}
-          <div className="col-span-2">
+          <div className="col-span-2 flex items-start gap-3">
             <ElderlyMark />
-            <p className="mt-2 text-xs leading-5 text-header-muted">
-              بخشی از درآمد جاب‌آموز صرف حمایت از سالمندان می‌شود. گزارش
-              حمایت‌ها سالانه منتشر می‌شود.
+            {/* The three lines are broken by hand rather than left to wrap:
+                each one is a whole clause, and where the wrap falls decides
+                whether it reads as a sentence or as text that ran out of
+                room. 13px against the links' 14 — smaller, but not the
+                whisper it was at 11. */}
+            <p className="text-[13px] leading-6 text-header-muted">
+              بخشی از درآمد جاب‌آموز
+              <br />
+              صرف حمایت از سالمندان می‌شود.
+              <br />
+              گزارش حمایت‌ها سالانه منتشر می‌شود.
             </p>
           </div>
         </div>
