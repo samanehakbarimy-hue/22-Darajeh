@@ -67,7 +67,7 @@ function ElderlyMark() {
   return (
     <span
       aria-hidden
-      className="block h-12 w-12 bg-current"
+      className="block h-[52px] w-[52px] bg-current"
       style={{
         maskImage: "url(/elder-icon.png)",
         WebkitMaskImage: "url(/elder-icon.png)",
@@ -86,7 +86,11 @@ export default async function SiteFooter() {
   return (
     <footer className="mt-auto bg-header px-6 py-6 text-header-foreground">
       <div className="mx-auto w-full max-w-5xl">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-6 text-right sm:grid-cols-4">
+        {/* Five units, not four: the three link columns take one each and the
+            elderly note takes two. It needs the width to say what it says in
+            two lines instead of four, and a column of its own width left it
+            looking like an afterthought wedged in at the end. */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-5 text-right sm:grid-cols-5">
           {GROUPS(signedIn).map((group) => (
             <div key={group.title}>
               <h3 className="text-sm font-bold">{group.title}</h3>
@@ -114,29 +118,17 @@ export default async function SiteFooter() {
           ))}
 
           {/* Quiet on purpose. It is a thing the site does, not a thing the
-              site sells, so it gets a mark and one small sentence rather than
-              a heading of its own. */}
-          <div>
+              site sells, so it gets a mark and one sentence rather than a
+              heading of its own — but quiet is not the same as illegible, so
+              the text keeps the muted colour at full strength rather than
+              being dimmed on top of it. */}
+          <div className="col-span-2">
             <ElderlyMark />
-            <p className="mt-2 max-w-[16rem] text-[11px] leading-5 text-header-muted opacity-70">
+            <p className="mt-2 text-xs leading-5 text-header-muted">
               بخشی از درآمد جاب‌آموز صرف حمایت از سالمندان می‌شود. گزارش
               حمایت‌ها سالانه منتشر می‌شود.
             </p>
           </div>
-        </div>
-
-        {/* The name and its tagline. The old mark spelled the old brand, so
-            it is gone until there is a new one. */}
-        <div className="mt-6 flex flex-col gap-2 border-t border-header-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-base font-bold">جاب‌آموز</span>
-            <span className="text-sm font-semibold text-header-muted">
-              فرصت‌ها از زاویه‌ای تازه
-            </span>
-          </div>
-          <p className="text-xs text-header-muted">
-            جاب‌آموز — با کسی حرف بزن که همان کار را می‌کند.
-          </p>
         </div>
       </div>
     </footer>
