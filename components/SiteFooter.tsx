@@ -58,7 +58,7 @@ const GROUPS = (signedIn: boolean) => [
  * `<img>` — it takes the footer's cream from the text around it and follows
  * the palette if that ever changes, instead of carrying a colour of its own.
  *
- * The lines are hairlines. Scaled straight down to 44px they thinned out to
+ * The lines are hairlines. Scaled straight down they thinned out to
  * almost nothing against the green, so partial coverage is lifted on the way
  * down: a stroke landing on 30% of a pixel comes back at about 55%. Checked
  * at actual size, not guessed.
@@ -67,7 +67,7 @@ function ElderlyMark() {
   return (
     <span
       aria-hidden
-      className="block h-11 w-11 bg-current"
+      className="block h-12 w-12 bg-current"
       style={{
         maskImage: "url(/elder-icon.png)",
         WebkitMaskImage: "url(/elder-icon.png)",
