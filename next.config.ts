@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
         // their names contain a hash, so Next already marks them immutable
         // and refuses to let this override it.
         source:
-          "/:file(hero-hand-seeker\\.webp|hero-hand-specialist\\.webp|logo-mark\\.png|logo-22\\.webp|icon\\.png)",
+          "/:file(hero-hand-seeker\\.webp|hero-hand-specialist\\.webp|logo-mark\\.png|logo-22\\.webp|elder-icon\\.png|icon\\.png)",
         headers: [
           {
             key: "Cache-Control",

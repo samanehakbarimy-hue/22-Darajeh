@@ -50,39 +50,33 @@ const GROUPS = (signedIn: boolean) => [
 ];
 
 /**
- * Two figures held above a pair of cupped hands, drawn rather than fetched so
- * it costs nothing and takes the colour of the text around it.
+ * The elderly mark, from `elder icon.jpg` in the repository root.
  *
- * Deliberately simplified: at 44px the arms, fingers and feet of the original
- * turn to mud, so what is left is the part that still reads — two people, and
- * hands underneath them.
+ * It arrives as grey lines on white paper, which is no use on a dark footer,
+ * so what ships is the alpha channel of it: the paper thrown away, the ink
+ * kept, painted with `currentColor`. That is why it is a mask and not an
+ * `<img>` — it takes the footer's cream from the text around it and follows
+ * the palette if that ever changes, instead of carrying a colour of its own.
+ *
+ * The lines are hairlines. Scaled straight down to 44px they thinned out to
+ * almost nothing against the green, so partial coverage is lifted on the way
+ * down: a stroke landing on 30% of a pixel comes back at about 55%. Checked
+ * at actual size, not guessed.
  */
 function ElderlyMark() {
   return (
-    <svg
+    <span
       aria-hidden
-      viewBox="0 0 74 74"
-      className="h-11 w-11 shrink-0"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.1"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="29" cy="13.5" r="4.3" />
-      <path d="M25.2 21.8c-1.8 1.3-2.8 3.2-2.8 5.5V38" />
-      <path d="M32.8 21.8c1.8 1.3 2.8 3.2 2.8 5.5V38" />
-      <path d="M37.2 26.5V38" />
-
-      <circle cx="46.5" cy="14.5" r="4.3" />
-      <path d="M44.5 9.3a2.5 2.5 0 1 1 3.6 0" />
-      <path d="M43 22.8c-1.8 1.4-2.8 3.4-2.8 5.6V32h12.6v-3.6c0-2.2-1-4.2-2.8-5.6" />
-
-      <path d="M33 67c-2.6-3.7-6-7-9.9-9.5-2.2-1.5-3.4-3.9-3.4-6.5V32.5c0-1.7 1.4-3.1 3.1-3.1s3.1 1.4 3.1 3.1v11" />
-      <path d="M19.7 47.5c-1.5-3.3-3.3-6-5.5-8.2-1.3-1.3-3.3-1.3-4.6 0-1.3 1.3-1.3 3.3 0 4.6l8.4 8.8" />
-      <path d="M41 67c2.6-3.7 6-7 9.9-9.5 2.2-1.5 3.4-3.9 3.4-6.5V32.5c0-1.7-1.4-3.1-3.1-3.1s-3.1 1.4-3.1 3.1v11" />
-      <path d="M54.3 47.5c1.5-3.3 3.3-6 5.5-8.2 1.3-1.3 3.3-1.3 4.6 0 1.3 1.3 1.3 3.3 0 4.6l-8.4 8.8" />
-    </svg>
+      className="block h-11 w-11 bg-current"
+      style={{
+        maskImage: "url(/elder-icon.png)",
+        WebkitMaskImage: "url(/elder-icon.png)",
+        maskSize: "contain",
+        WebkitMaskSize: "contain",
+        maskRepeat: "no-repeat",
+        WebkitMaskRepeat: "no-repeat",
+      }}
+    />
   );
 }
 
