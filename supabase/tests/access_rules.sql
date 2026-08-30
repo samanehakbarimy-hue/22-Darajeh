@@ -1979,12 +1979,16 @@ insert into mentor_profiles (id, bio, status, seniority) values
   ('cccccccc-0000-4000-8000-000000000003','approved mentor','approved','senior'),
   ('dddddddd-0000-4000-8000-000000000004','another','approved','senior');
 
+-- The comparison converts the dollar price at the stored rate, so the
+-- fixture needs one.
+update price_settings set usd_rate = 206010 where id;
+
 -- The band applies to a specialist's own price.
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
-  'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_toman, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''resume-review'','''','''',30, 9000000, true)',
+  'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_usd, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''resume-review'','''','''',30, 45, true)',
   'a price above the band is refused','refused: PRICE_ABOVE_BAND');
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
-  'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_toman, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''resume-review'','''','''',30, 600000, true)',
+  'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_usd, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''resume-review'','''','''',30, 2.9, true)',
   'a price inside it is kept','ok');
 
 -- Asking is the specialist's own, and only about themselves.
@@ -2010,10 +2014,10 @@ select pg_temp.try_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4',
 select pg_temp.record('price asks','and the ceiling moves to what was granted','2000000',
   allowed_price_ceiling('cccccccc-0000-4000-8000-000000000003','resume-review')::text);
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
-  'update mentor_services set price_toman = 2000000 where mentor_id=''cccccccc-0000-4000-8000-000000000003''',
+  'update mentor_services set price_usd = 9.7 where mentor_id=''cccccccc-0000-4000-8000-000000000003''',
   'so the granted price now saves','ok');
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
-  'update mentor_services set price_toman = 9000000 where mentor_id=''cccccccc-0000-4000-8000-000000000003''',
+  'update mentor_services set price_usd = 45 where mentor_id=''cccccccc-0000-4000-8000-000000000003''',
   'and the one they asked for still does not','refused: PRICE_ABOVE_BAND');
 
 -- Setting the band is the admin's alone.
