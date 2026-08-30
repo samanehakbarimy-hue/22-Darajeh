@@ -1,7 +1,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { displayToman } from "../rates.ts";
+import {
+  ceilToman,
+  displayToman,
+  floorToman,
+  formatUsdApprox,
+  roundToman,
+} from "../rates.ts";
 
 /**
  * The toman figure is a rendering of a dollar price, recomputed daily. The
@@ -67,4 +73,67 @@ test("nothing is ever priced below one step", () => {
 test("no rate means no toman figure, rather than a made-up one", () => {
   assert.equal(displayToman(4.25, null), null);
   assert.equal(displayToman(4.25, 0), null);
+});
+
+/**
+ * What a person reads is not what is stored.
+ *
+ * price_usd keeps its cents and the conversion is done at full precision;
+ * everything below is about the sentence that comes out the other end, which
+ * is allowed to be — and has to be — coarser than the arithmetic behind it.
+ */
+
+test("dollars are shown whole, never to the cent", () => {
+  // $33.98 is a conversion artefact: somebody typed 7,000,000 toman and this
+  // fell out of dividing by a rate that will be different next week.
+  assert.equal(formatUsdApprox(33.98), "حدود ۳۴ دلار");
+  assert.equal(formatUsdApprox(4.25), "حدود ۴ دلار");
+  assert.equal(formatUsdApprox(9.71), "حدود ۱۰ دلار");
+});
+
+test("a price never rounds away to nothing", () => {
+  // Rounding 0.4 to zero would publish a free session, which is a different
+  // product and belongs to the 22-minute call.
+  assert.equal(formatUsdApprox(0.4), "حدود ۱ دلار");
+});
+
+test("the price a seeker reads is the one the job would have written", () => {
+  // Not a second rounding rule. A price rendered on the profile goes through
+  // display_toman, the same arithmetic the nightly job stores with, so what a
+  // specialist confirms on save is what their public page shows.
+  assert.equal(displayToman(33.98, 206_010), 7_000_000);
+  assert.equal(displayToman(4.25, 206_010), 900_000);
+  assert.equal(displayToman(9.71, 206_010), 2_000_000);
+});
+
+test("toman is rounded to something a person would say", () => {
+  // roundToman is for figures with no stored counterpart to contradict --
+  // suggestions, and the amount somebody asked for.
+  assert.equal(roundToman(7_000_219.8), 7_000_000);
+  assert.equal(roundToman(1_048_730), 1_000_000); // .. hundred thousands above a million
+  assert.equal(roundToman(875_543), 900_000); // .. fifty thousands below it
+  assert.equal(roundToman(47_300), 50_000); // .. ten thousands below that
+});
+
+/**
+ * A limit is not a price. It is a number somebody has to type a figure inside
+ * of, so it may only ever be rounded inward — a ceiling quoted higher than it
+ * really is sends people straight back into the error that quoted it.
+ */
+test("a quoted limit is always one the rule would accept", () => {
+  const ceiling = 2.67 * 206_010; // 550,046.7 — the resume-review band, senior
+  assert.ok(floorToman(ceiling) <= ceiling);
+  assert.equal(floorToman(ceiling), 550_000);
+
+  const floor = 2.04 * 206_010; // 420,260.4
+  assert.ok(ceilToman(floor) >= floor);
+  assert.equal(ceilToman(floor), 450_000);
+});
+
+test("a price already round is left where it is", () => {
+  for (const amount of [50_000, 900_000, 1_100_000, 7_000_000]) {
+    assert.equal(roundToman(amount), amount);
+    assert.equal(floorToman(amount), amount);
+    assert.equal(ceilToman(amount), amount);
+  }
 });

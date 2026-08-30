@@ -34,13 +34,13 @@ export default async function MentorServicesPage() {
   // The band that applies to them, which depends on their seniority.
   const { data: bandRows } = await supabase
     .from("price_bands")
-    .select("session_key, min_toman, max_toman")
+    .select("session_key, min_usd, max_usd")
     .eq("seniority", mentorProfile?.seniority ?? "");
 
   // Their own asks. Newest first so the latest answer for a service wins.
   const { data: askRows } = await supabase
     .from("price_requests")
-    .select("session_key, status, asked_toman, granted_toman, admin_note")
+    .select("session_key, status, asked_usd, granted_usd, admin_note")
     .eq("mentor_id", user.id)
     .order("created_at", { ascending: false });
 

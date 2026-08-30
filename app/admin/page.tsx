@@ -19,6 +19,7 @@ import PriceRequestDecision from "@/components/PriceRequestDecision";
 import { SESSION_TYPES } from "@/lib/services";
 import { getCurrentUser } from "@/lib/auth";
 import { getUsdToToman } from "@/lib/exchange-rate";
+import { formatTomanApprox, formatUsdApprox } from "@/lib/rates";
 
 type Member = {
   id: string;
@@ -43,6 +44,19 @@ const STATUS_LABEL: Record<string, string> = {
   rejected: "رد‌شده",
   changes_requested: "نیاز به اصلاح",
 };
+
+/**
+ * What a specialist asked for, in both currencies.
+ *
+ * Dollars are what is stored and what the band is judged in; the toman figure
+ * is today's arithmetic on it, and is here because an admin deciding whether a
+ * price is reasonable is thinking about what an Iranian seeker will pay.
+ */
+function askedInBoth(usd: number, rate: number | null): string {
+  const dollars = formatUsdApprox(usd);
+  if (!rate) return dollars;
+  return `${formatTomanApprox(usd * rate)} (${dollars})`;
+}
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
@@ -415,13 +429,13 @@ export default async function AdminPage() {
 
   const { data: bandRows } = await supabase
     .from("price_bands")
-    .select("session_key, seniority, min_toman, max_toman");
+    .select("session_key, seniority, min_usd, max_usd");
   const bands = (bandRows ?? []) as Band[];
 
   // Open asks first: this is a queue, and an answered one is history.
   const { data: askRows } = await supabase
     .from("price_requests")
-    .select("id, mentor_id, session_key, asked_toman, reason, created_at, profiles!price_requests_mentor_id_fkey(full_name)")
+    .select("id, mentor_id, session_key, asked_usd, reason, created_at, profiles!price_requests_mentor_id_fkey(full_name)")
     .eq("status", "pending")
     .order("created_at", { ascending: true });
   const asks = askRows ?? [];
@@ -622,7 +636,7 @@ export default async function AdminPage() {
                     <span className="text-sm text-muted">
                       {SESSION_TITLE[ask.session_key as string] ?? ask.session_key as string}
                       {" — "}
-                      {Number(ask.asked_toman).toLocaleString("fa-IR")} تومان
+                      {askedInBoth(Number(ask.asked_usd), usdRate)}
                     </span>
                   </div>
                   {ask.reason ? (
@@ -630,7 +644,8 @@ export default async function AdminPage() {
                   ) : null}
                   <PriceRequestDecision
                     requestId={ask.id as string}
-                    asked={Number(ask.asked_toman)}
+                    askedUsd={Number(ask.asked_usd)}
+                    usdRate={usdRate}
                   />
                 </li>
               ))}
@@ -644,7 +659,7 @@ export default async function AdminPage() {
           قیمتی که کارشناس می‌تواند بدون اجازه بگذارد. بیرون از این بازه ذخیره
           نمی‌شود و باید درخواست بدهد.
         </p>
-        <PriceBandTable bands={bands} />
+        <PriceBandTable bands={bands} usdRate={usdRate} />
 
         <h2 className="mt-10 text-lg font-bold">اعضا</h2>
 

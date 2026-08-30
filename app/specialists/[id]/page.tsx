@@ -7,6 +7,7 @@ import type { MentorService } from "@/lib/services";
 import { seniorityBadge } from "@/lib/seniority";
 import SaveSpecialist from "@/components/SaveSpecialist";
 import { getCurrentUser } from "@/lib/auth";
+import { getUsdToToman } from "@/lib/exchange-rate";
 
 export default async function SpecialistPage({
   params,
@@ -72,8 +73,10 @@ export default async function SpecialistPage({
     .order("sort_order")
     .order("created_at");
 
-  // Fetched here, not in the client component: it is a network call, and
-  // Next caches it for six hours across every render.
+  // Read here, not in the client component: it is a database column, and the
+  // card is a client component that has no business querying for one. This is
+  // a read of what the daily job left, not a fetch — see lib/exchange-rate.ts.
+  const usdRate = await getUsdToToman();
 
   // The one claim on this page the specialist cannot write themselves.
   const { data: heldSessions } = await supabase.rpc("held_session_count", {
@@ -294,6 +297,7 @@ export default async function SpecialistPage({
             // Formatted here rather than in the client component: the server
             // pins Tehran, and a device in another zone would print its own.
             services={(serviceRows ?? []) as MentorService[]}
+            usdRate={usdRate}
             nearestSlotLabel={
               nextSlot ? timeFormatter.format(new Date(nextSlot)) : null
             }

@@ -30,21 +30,64 @@ export function tomanToUsd(toman: number, rate: number | null): number | null {
   return toman / rate;
 }
 
-/** Suggested amounts are rounded hard: they are a hint, not an invoice. */
+/**
+ * How coarse a toman figure should be at a given size.
+ *
+ * Bigger numbers get bigger steps because the eye reads them by their leading
+ * digits: 7,050,000 and 7,000,000 are the same amount of money to anybody
+ * deciding whether to book, and only one of them looks like a decision.
+ */
+function tomanStep(amount: number): number {
+  if (amount >= 1_000_000) return 100_000;
+  if (amount >= 300_000) return 50_000;
+  return 10_000;
+}
+
+/** Rounded hard, for display. A price is read, not audited. */
 export function roundToman(amount: number): number {
-  if (amount >= 1_000_000) return Math.round(amount / 100_000) * 100_000;
-  if (amount >= 300_000) return Math.round(amount / 50_000) * 50_000;
-  return Math.round(amount / 10_000) * 10_000;
+  return Math.round(amount / tomanStep(amount)) * tomanStep(amount);
+}
+
+/**
+ * The same, but never past the number it came from.
+ *
+ * A limit is not a price: it is something somebody has to type a figure inside
+ * of. Rounding a ceiling of 550,047 up to 600,000 invites a specialist to
+ * enter 600,000 and be refused by the very rule that just quoted it, so
+ * ceilings round down and floors round up.
+ */
+export function floorToman(amount: number): number {
+  return Math.floor(amount / tomanStep(amount)) * tomanStep(amount);
+}
+
+export function ceilToman(amount: number): number {
+  return Math.ceil(amount / tomanStep(amount)) * tomanStep(amount);
 }
 
 function faToman(toman: number): string {
   return `${Math.round(toman).toLocaleString("fa-IR")} تومان`;
 }
 
-/** Dollars are a rough guide here, so halves are as precise as it gets. */
+/**
+ * Whole dollars, never cents.
+ *
+ * $33.98 is a conversion artefact, not a price anybody set — the specialist
+ * typed a toman figure and this is what fell out of dividing it by a rate that
+ * will be different tomorrow. Printing the cents claims a precision that
+ * nothing behind the number has, so they go.
+ */
 function usdNumber(usd: number): string {
-  const rounded = usd < 10 ? Math.round(usd * 2) / 2 : Math.round(usd);
-  return rounded.toLocaleString("fa-IR");
+  return Math.max(1, Math.round(usd)).toLocaleString("fa-IR");
+}
+
+/** «حدود ۳۴ دلار» — the reference figure, said as the estimate it is. */
+export function formatUsdApprox(usd: number): string {
+  return `حدود ${usdNumber(usd)} دلار`;
+}
+
+/** «۷٬۰۰۰٬۰۰۰ تومان», rounded to something a person would actually say. */
+export function formatTomanApprox(toman: number): string {
+  return faToman(roundToman(toman));
 }
 
 /**

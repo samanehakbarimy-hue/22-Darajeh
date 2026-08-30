@@ -16,6 +16,8 @@
  * no price, and every specialist has it.
  */
 
+import { displayToman, formatUsdApprox } from "@/lib/rates";
+
 export type ServiceKind = "consultation" | "hourly_project";
 
 /** The two tabs on a profile. The free call sits inside sessions. */
@@ -122,29 +124,49 @@ export function formatDuration(service: MentorService): string {
 }
 
 /**
- * The price, with toman leading and the dollar figure after it.
+ * The price, as two lines rather than one string.
  *
- * This used to be toman only, on the reasoning that a seeker pays in toman and
- * has no use for dollars. That is still true of the payment — but the dollar
- * figure is now the price itself, and the toman number is a rendering of it
- * that moves when the market does. Showing only the derived number means a
- * price that changes overnight with nothing on the page to explain why.
+ * Two, because they are not the same kind of statement. The toman figure is
+ * what a seeker pays; the dollar figure is what the specialist actually set,
+ * and it is here so that a number changing overnight has something on the page
+ * to explain itself by. Returning them separately lets the card give each its
+ * own weight — the first bold, the second quiet underneath — instead of
+ * running them together into one line that has to wrap somewhere.
  *
- * Parenthesised and second, so it reads as the reference it is rather than as a
- * second price to weigh against the first. Hourly work still says so, and the
- * suffix stays outside the brackets where it belongs.
+ * Both are rounded, and only here. price_usd keeps its cents in the database
+ * and the conversion is done at full precision; what gets rounded is the
+ * sentence, not the money.
  */
-export function formatServicePrice(service: MentorService): string {
-  if (service.price_toman === null) return "به‌زودی";
+export type ServicePrice = { toman: string; usd: string | null };
 
-  const toman = `${service.price_toman.toLocaleString("fa-IR")} تومان`;
-  const usd =
-    typeof service.price_usd === "number" && service.price_usd > 0
-      ? ` ($${Number(service.price_usd).toLocaleString("en-US", {
-          maximumFractionDigits: 2,
-        })})`
-      : "";
+export function servicePrice(
+  service: MentorService,
+  rate: number | null,
+): ServicePrice | null {
+  const usd = typeof service.price_usd === "number" ? service.price_usd : null;
 
-  const amount = `${toman}${usd}`;
-  return service.kind === "hourly_project" ? `${amount} در ساعت` : amount;
+  // Rendered through the very function the daily job writes with, rather than
+  // rounded again here. Two rounding rules for one number is how the figure a
+  // specialist confirmed on save turns into a different figure on their public
+  // profile — so there is one rule, and this is a call to it.
+  //
+  // The stored column is the fallback for when no rate is on file at all. It
+  // is the same arithmetic, done on the day the job last ran.
+  const toman =
+    usd !== null && usd > 0 && rate
+      ? displayToman(usd, rate)
+      : service.price_toman;
+  if (toman === null || toman <= 0) return null;
+
+  const amount = `${toman.toLocaleString("fa-IR")} تومان`;
+  return {
+    toman: service.kind === "hourly_project" ? `${amount} در ساعت` : amount,
+    // Derived from toman when the price predates price_usd entirely.
+    usd:
+      usd !== null && usd > 0
+        ? formatUsdApprox(usd)
+        : rate
+          ? formatUsdApprox(toman / rate)
+          : null,
+  };
 }

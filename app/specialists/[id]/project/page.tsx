@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { formatServicePrice } from "@/lib/services";
+import { servicePrice } from "@/lib/services";
+import { getUsdToToman } from "@/lib/exchange-rate";
 import BriefForm from "./brief-form";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -31,10 +32,17 @@ export default async function ProjectBriefPage({
 
   const { data: rate } = await supabase
     .from("mentor_services")
-    .select("price_toman, is_negotiable, is_active")
+    .select("price_toman, price_usd, is_negotiable, is_active")
     .eq("mentor_id", id)
     .eq("kind", "hourly_project")
     .maybeSingle();
+
+  const hourly = rate
+    ? servicePrice(
+        { ...rate, kind: "hourly_project" } as never,
+        await getUsdToToman(),
+      )
+    : null;
 
   // No rate published means no project work offered — the insert policy would
   // refuse anyway, so say so here rather than after they have written it out.
@@ -100,13 +108,11 @@ export default async function ProjectBriefPage({
       <p className="mt-4 rounded-xl border border-card-border bg-card px-4 py-3 text-sm leading-7 text-muted">
         نرخ اعلام‌شده‌اش:{" "}
         <span className="font-medium text-foreground">
-          {rate.is_negotiable
-            ? "قابل مذاکره"
-            : formatServicePrice({
-                price_toman: rate.price_toman,
-                kind: "hourly_project",
-              } as never)}
-        </span>{" "}
+          {rate.is_negotiable ? "قابل مذاکره" : (hourly?.toman ?? "به‌زودی")}
+        </span>
+        {!rate.is_negotiable && hourly?.usd ? (
+          <span className="text-muted"> ({hourly.usd})</span>
+        ) : null}{" "}
         — برای کار تو ممکن است فرق کند.
       </p>
 

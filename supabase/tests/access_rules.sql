@@ -1979,8 +1979,10 @@ insert into mentor_profiles (id, bio, status, seniority) values
   ('cccccccc-0000-4000-8000-000000000003','approved mentor','approved','senior'),
   ('dddddddd-0000-4000-8000-000000000004','another','approved','senior');
 
--- The comparison converts the dollar price at the stored rate, so the
--- fixture needs one.
+-- The band is a dollar range since 0055, so the trigger no longer needs a
+-- rate to do its comparison. The rate stays because the site maximum below is
+-- read from the same row, and a fixture that leaves it null would be testing
+-- a state the site never runs in.
 update price_settings set usd_rate = 206010 where id;
 
 -- The band applies to a specialist's own price.
@@ -1991,27 +1993,28 @@ select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
   'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_usd, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''resume-review'','''','''',30, 2.9, true)',
   'a price inside it is kept','ok');
 
--- Asking is the specialist's own, and only about themselves.
+-- Asking is the specialist's own, and only about themselves. In dollars, like
+-- the band it is asking to step outside of.
 select pg_temp.try_as('dddddddd-0000-4000-8000-000000000004',
-  'insert into price_requests (mentor_id, session_key, asked_toman, reason) values (''cccccccc-0000-4000-8000-000000000003'',''resume-review'',9000000,''not mine to ask'')',
+  'insert into price_requests (mentor_id, session_key, asked_usd, reason) values (''cccccccc-0000-4000-8000-000000000003'',''resume-review'',45,''not mine to ask'')',
   'nobody can ask on somebody else''s behalf','refused');
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
-  'insert into price_requests (mentor_id, session_key, asked_toman, reason) values (''cccccccc-0000-4000-8000-000000000003'',''resume-review'',9000000,''کار من تخصصی‌تر است'')',
+  'insert into price_requests (mentor_id, session_key, asked_usd, reason) values (''cccccccc-0000-4000-8000-000000000003'',''resume-review'',45,''کار من تخصصی‌تر است'')',
   'a specialist can ask about their own','ok');
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
-  'insert into price_requests (mentor_id, session_key, asked_toman, reason) values (''cccccccc-0000-4000-8000-000000000003'',''resume-review'',9500000,''again'')',
+  'insert into price_requests (mentor_id, session_key, asked_usd, reason) values (''cccccccc-0000-4000-8000-000000000003'',''resume-review'',46,''again'')',
   'but not twice for one service','refused');
 
 -- Deciding is the admin's.
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
-  'select admin_decide_price_request((select id from price_requests limit 1), ''approved'', 9000000, null)',
+  'select admin_decide_price_request((select id from price_requests limit 1), ''approved'', 45, null)',
   'a specialist cannot answer their own ask','refused');
 
 -- An approval opens exactly the number the admin allowed, not the one asked.
 select pg_temp.try_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4',
-  'select admin_decide_price_request((select id from price_requests limit 1), ''approved'', 2000000, ''تا این عدد باشه'')',
+  'select admin_decide_price_request((select id from price_requests limit 1), ''approved'', 9.7, ''تا این عدد باشه'')',
   'the admin can meet them partway','ok');
-select pg_temp.record('price asks','and the ceiling moves to what was granted','2000000',
+select pg_temp.record('price asks','and the ceiling moves to what was granted','9.70',
   allowed_price_ceiling('cccccccc-0000-4000-8000-000000000003','resume-review')::text);
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
   'update mentor_services set price_usd = 9.7 where mentor_id=''cccccccc-0000-4000-8000-000000000003''',
@@ -2020,10 +2023,22 @@ select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
   'update mentor_services set price_usd = 45 where mentor_id=''cccccccc-0000-4000-8000-000000000003''',
   'and the one they asked for still does not','refused: PRICE_ABOVE_BAND');
 
--- Setting the band is the admin's alone.
+-- Not even an admin can grant past the site maximum, which is the one number
+-- in this whole arrangement that is not negotiable.
+select pg_temp.try_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4',
+  'select admin_decide_price_request((select id from price_requests limit 1), ''approved'', 500, null)',
+  'an approval cannot pass the site maximum','refused');
+
+-- Setting the band is the admin's alone, and it is bounded too.
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
-  'select admin_set_price_band(''resume-review'',''senior'',1,99999999)',
+  'select admin_set_price_band(''resume-review'',''senior'',1,50)',
   'a specialist cannot set the band','refused');
+select pg_temp.try_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4',
+  'select admin_set_price_band(''resume-review'',''senior'',1,50)',
+  'the admin can set the band','ok');
+select pg_temp.try_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4',
+  'select admin_set_price_band(''resume-review'',''senior'',1,500)',
+  'but not one that reaches above the site maximum','refused');
 
 select 'Asking for a price outside the band' as section, check_name, expected, actual,
        (actual like expected || '%') as pass

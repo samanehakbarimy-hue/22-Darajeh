@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { decidePriceRequest } from "@/lib/actions/pricing";
+import { roundToman } from "@/lib/rates";
 
 /**
  * Answering a specialist who asked to charge above their band.
@@ -13,12 +14,21 @@ import { decidePriceRequest } from "@/lib/actions/pricing";
  */
 export default function PriceRequestDecision({
   requestId,
-  asked,
+  askedUsd,
+  usdRate,
 }: {
   requestId: string;
-  asked: number;
+  /** What they asked for, in dollars — the currency the band is written in. */
+  askedUsd: number;
+  /** Toman per dollar, for the reminder under the field. */
+  usdRate: number | null;
 }) {
   const [state, action, pending] = useActionState(decidePriceRequest, undefined);
+  const [granted, setGranted] = useState(String(askedUsd));
+
+  const asToman = Number(granted) > 0 && usdRate
+    ? `${roundToman(Number(granted) * usdRate).toLocaleString("fa-IR")} تومان امروز`
+    : null;
 
   if (state?.saved) {
     return <p className="mt-2 text-xs text-success">جواب ثبت شد.</p>;
@@ -33,15 +43,21 @@ export default function PriceRequestDecision({
           htmlFor={`grant-${requestId}`}
           className="block text-xs text-muted"
         >
-          قیمت مجاز (تومان)
+          قیمت مجاز (دلار)
         </label>
         <input
           id={`grant-${requestId}`}
-          name="granted_toman"
-          inputMode="numeric"
-          defaultValue={asked}
+          name="granted_usd"
+          inputMode="decimal"
+          value={granted}
+          onChange={(event) => setGranted(event.target.value)}
           className="mt-1 w-36 rounded-lg border border-card-border bg-background px-3 py-1.5 text-sm outline-none focus:border-brand-deep"
         />
+        {/* Shown, not stored — the allowance is kept in dollars and this line
+            is only what it comes to at today's rate. */}
+        {asToman && (
+          <p className="mt-1 text-[11px] leading-5 text-muted">{asToman}</p>
+        )}
       </div>
 
       <div className="min-w-[12rem] flex-1">

@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import SubmitButton from "@/components/SubmitButton";
 import { deleteService, saveService } from "@/lib/actions/services";
 import { formatRange, suggestedRange } from "@/lib/seniority";
+import { ceilToman, floorToman, formatUsdApprox } from "@/lib/rates";
 import AskHigherPrice from "@/components/AskHigherPrice";
 import {
   SESSION_TYPES,
@@ -36,13 +37,13 @@ export default function ServicesEditor({
   /** Toman per dollar, or null when the live rate was unavailable. */
   usdRate: number | null;
   /** What the house allows for this specialist, per session type. */
-  bands: { session_key: string; min_toman: number; max_toman: number }[];
+  bands: { session_key: string; min_usd: number; max_usd: number }[];
   /** Their own asks for something outside it, latest first. */
   asks: {
     session_key: string;
     status: "pending" | "approved" | "declined";
-    asked_toman: number;
-    granted_toman: number | null;
+    asked_usd: number;
+    granted_usd: number | null;
     admin_note: string | null;
   }[];
 }) {
@@ -222,8 +223,19 @@ export default function ServicesEditor({
                           <p className="text-xs leading-6 text-muted">
                             بازه جاب‌آموز برای این جلسه:{" "}
                             <span className="font-medium text-foreground">
-                              {band.min_toman.toLocaleString("fa-IR")} تا{" "}
-                              {band.max_toman.toLocaleString("fa-IR")} تومان
+                              {/* The band is kept in dollars and said here in
+                                  toman, at today's rate. The floor rounds up
+                                  and the ceiling down, so both ends of what is
+                                  printed are prices the rule would accept. */}
+                              {usdRate
+                                ? `${ceilToman(
+                                    band.min_usd * usdRate,
+                                  ).toLocaleString("fa-IR")} تا ${floorToman(
+                                    band.max_usd * usdRate,
+                                  ).toLocaleString("fa-IR")} تومان`
+                                : `${formatUsdApprox(
+                                    band.min_usd,
+                                  )} تا ${formatUsdApprox(band.max_usd)}`}
                             </span>
                           </p>
                         ) : (
@@ -240,7 +252,8 @@ export default function ServicesEditor({
                         <AskHigherPrice
                           sessionKey={session.key}
                           title={session.title}
-                          ceiling={band?.max_toman ?? null}
+                          ceilingUsd={band?.max_usd ?? null}
+                          usdRate={usdRate}
                           existing={ask}
                         />
                       </>

@@ -3,7 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { SESSION_TYPES } from "@/lib/services";
-import { MAX_PRICE_TOMAN, roundEnteredPrice, displayToman } from "@/lib/rates";
+import {
+  MAX_PRICE_TOMAN,
+  roundEnteredPrice,
+  displayToman,
+  ceilToman,
+  floorToman,
+  formatUsdApprox,
+} from "@/lib/rates";
 import { getUsdToToman } from "@/lib/exchange-rate";
 
 export type ServiceState = { error?: string; success?: boolean } | undefined;
@@ -127,17 +134,28 @@ export async function saveService(
       return { error: "جدول خدمات هنوز ساخته نشده. مهاجرت ۰۰۱۹ را اجرا کن." };
     }
 
-    // The band trigger raises PRICE_ABOVE_BAND:<n> / PRICE_BELOW_BAND:<n>,
+    // The band trigger raises PRICE_ABOVE_BAND:<usd> / PRICE_BELOW_BAND:<usd>,
     // carrying the limit it broke. Saying "outside the range" without saying
     // what the range is leaves somebody guessing at a number.
-    const band = /PRICE_(ABOVE|BELOW)_BAND:(\d+)/.exec(error.message ?? "");
+    //
+    // The limit arrives in dollars, because that is what the band is written
+    // in since 0055, and is said back in toman, because that is what they just
+    // typed. A ceiling rounds down and a floor rounds up, so the figure quoted
+    // is always one this same rule would accept — quoting a ceiling of
+    // 550,047 as 600,000 would send somebody straight back into the error.
+    const band = /PRICE_(ABOVE|BELOW)_BAND:([\d.]+)/.exec(error.message ?? "");
     if (band) {
-      const limit = Number(band[2]).toLocaleString("fa-IR");
+      const above = band[1] === "ABOVE";
+      const limitUsd = Number(band[2]);
+      const limit =
+        rate !== null && Number.isFinite(limitUsd)
+          ? `${(above ? floorToman(limitUsd * rate) : ceilToman(limitUsd * rate)).toLocaleString("fa-IR")} تومان (${formatUsdApprox(limitUsd)})`
+          : formatUsdApprox(limitUsd);
+
       return {
-        error:
-          band[1] === "ABOVE"
-            ? `این قیمت بالاتر از بازه جاب‌آموز است. بیشترین قیمت مجاز ${limit} تومان است. برای قیمت بالاتر، از همین صفحه درخواست بررسی ثبت کن.`
-            : `این قیمت پایین‌تر از بازه جاب‌آموز است. کمترین قیمت مجاز ${limit} تومان است.`,
+        error: above
+          ? `این قیمت بالاتر از بازه جاب‌آموز است. بیشترین قیمت مجاز ${limit} است. برای قیمت بالاتر، از همین صفحه درخواست بررسی ثبت کن.`
+          : `این قیمت پایین‌تر از بازه جاب‌آموز است. کمترین قیمت مجاز ${limit} است.`,
       };
     }
 

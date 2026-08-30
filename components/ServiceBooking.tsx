@@ -6,10 +6,11 @@ import {
   FREE_CALL,
   TABS,
   formatDuration,
-  formatServicePrice,
+  servicePrice,
   serviceDescription,
   serviceTitle,
   type MentorService,
+  type ServicePrice,
   type ServiceTab,
 } from "@/lib/services";
 import { fa } from "@/lib/persian";
@@ -47,7 +48,21 @@ function Assurance({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** One paid offer: what it is, what it costs, and how long it runs. */
+/**
+ * One paid offer: what it is, what it costs, and how long it runs.
+ *
+ * Two columns, not a wrapping flex row. The old layout let the price wrap
+ * under the title once it got long enough, which put the duration and the
+ * amount in different places on different rows — «بررسی رزومه» at seven
+ * million toman broke where «مسیر شغلی» at nine hundred thousand did not, so
+ * the three sessions never lined up with each other.
+ *
+ * A grid fixes the columns instead: everything the eye reads down the right
+ * edge is what the session is, everything down the left is what it costs.
+ * The price column takes the width it needs and refuses to break inside a
+ * number; the description gets the rest and wraps there, which is the only
+ * place wrapping does no harm.
+ */
 function ServiceRow({
   title,
   description,
@@ -58,21 +73,37 @@ function ServiceRow({
   title: string;
   description: string;
   meta?: string;
-  price: string;
+  price: ServicePrice | null;
   action?: React.ReactNode;
 }) {
   return (
     <li className="border-b border-card-border py-4 last:border-0">
-      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-        <div className="min-w-[55%] flex-1">
-          <h4 className="text-sm font-bold">{title}</h4>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4">
+        <div className="min-w-0">
+          <h4 className="text-sm font-bold leading-6">{title}</h4>
           {description && (
-            <p className="mt-1 text-xs leading-6 text-muted">{description}</p>
+            <p className="mt-0.5 text-xs leading-6 text-muted">{description}</p>
           )}
+          {meta && <p className="mt-1 text-xs leading-5 text-muted">{meta}</p>}
         </div>
-        <div className="text-left">
-          {meta && <div className="text-xs text-muted">{meta}</div>}
-          <div className="mt-0.5 text-sm font-bold">{price}</div>
+
+        {/* Left edge on an RTL page, so the amounts stack against the card
+            border and can be compared down the column at a glance. */}
+        <div className="shrink-0 text-left">
+          {price ? (
+            <>
+              <div className="whitespace-nowrap text-sm font-bold leading-6">
+                {price.toman}
+              </div>
+              {price.usd && (
+                <div className="mt-0.5 whitespace-nowrap text-xs leading-5 text-muted">
+                  {price.usd}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="whitespace-nowrap text-sm text-muted">به‌زودی</div>
+          )}
         </div>
       </div>
       {action && <div className="mt-3">{action}</div>}
@@ -94,11 +125,18 @@ export default function ServiceBooking({
   hasSlots,
   nearestSlotLabel,
   services,
+  usdRate,
 }: {
   specialistId: string;
   hasSlots: boolean;
   nearestSlotLabel: string | null;
   services: MentorService[];
+  /**
+   * Toman per dollar, as the daily job last recorded it. Null when it has
+   * never run — the card then shows toman alone rather than inventing a
+   * dollar figure from a guess.
+   */
+  usdRate: number | null;
 }) {
   const [active, setActive] = useState<ServiceTab>("intro");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -202,7 +240,7 @@ export default function ServiceBooking({
                       title={serviceTitle(service)}
                       description={serviceDescription(service)}
                       meta={formatDuration(service)}
-                      price={formatServicePrice(service)}
+                      price={servicePrice(service, usdRate)}
                     />
                   ))}
                 </ul>
@@ -213,11 +251,30 @@ export default function ServiceBooking({
               <>
                 {projectRate ? (
                   <>
-                    <div className="text-lg font-bold">
-                      {projectRate.is_negotiable
-                        ? "قابل مذاکره"
-                        : formatServicePrice(projectRate)}
-                    </div>
+                    {(() => {
+                      const hourly = servicePrice(projectRate, usdRate);
+                      if (projectRate.is_negotiable || !hourly) {
+                        return (
+                          <div className="text-lg font-bold">
+                            {projectRate.is_negotiable
+                              ? "قابل مذاکره"
+                              : "به‌زودی"}
+                          </div>
+                        );
+                      }
+                      return (
+                        <div>
+                          <div className="text-lg font-bold leading-7">
+                            {hourly.toman}
+                          </div>
+                          {hourly.usd && (
+                            <div className="mt-0.5 text-xs text-muted">
+                              {hourly.usd}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                     <p className="mt-2 text-sm leading-6 text-muted">
                       کارَت را توضیح بده و فایل‌هایش را بفرست؛ کارشناس می‌بیند و
                       می‌گوید قبول می‌کند یا نه.

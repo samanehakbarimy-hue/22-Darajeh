@@ -1,14 +1,15 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { savePriceBand } from "@/lib/actions/pricing";
 import { SENIORITY_LEVELS } from "@/lib/seniority";
+import { ceilToman, floorToman } from "@/lib/rates";
 
 export type Band = {
   session_key: string;
   seniority: string;
-  min_toman: number;
-  max_toman: number;
+  min_usd: number;
+  max_usd: number;
 };
 
 const SERVICES: { key: string; title: string; minutes: number }[] = [
@@ -17,16 +18,40 @@ const SERVICES: { key: string; title: string; minutes: number }[] = [
   { key: "interview-prep", title: "آمادگی مصاحبه", minutes: 60 },
 ];
 
+/** What a dollar band is worth today, for an admin who thinks in toman. */
+function tomanHint(
+  min: string,
+  max: string,
+  rate: number | null,
+): string | null {
+  const lo = Number(min);
+  const hi = Number(max);
+  if (!rate || !Number.isFinite(lo) || !Number.isFinite(hi)) return null;
+  if (lo <= 0 || hi <= 0) return null;
+
+  // The floor rounds up and the ceiling down, so the toman figures quoted here
+  // are always inside the dollar band rather than a hair outside it.
+  return `${ceilToman(lo * rate).toLocaleString("fa-IR")} تا ${floorToman(
+    hi * rate,
+  ).toLocaleString("fa-IR")} تومان`;
+}
+
 function Cell({
   sessionKey,
   seniority,
   band,
+  usdRate,
 }: {
   sessionKey: string;
   seniority: string;
   band: Band | undefined;
+  usdRate: number | null;
 }) {
   const [state, action, pending] = useActionState(savePriceBand, undefined);
+  const [min, setMin] = useState(String(band?.min_usd ?? ""));
+  const [max, setMax] = useState(String(band?.max_usd ?? ""));
+
+  const hint = tomanHint(min, max, usdRate);
 
   return (
     <form action={action} className="flex flex-col gap-1.5">
@@ -34,22 +59,34 @@ function Cell({
       <input type="hidden" name="seniority" value={seniority} />
 
       <div className="flex items-center gap-1.5">
-        <input
-          name="min_toman"
-          inputMode="numeric"
-          defaultValue={band?.min_toman ?? ""}
-          aria-label="کمینه"
-          className="w-24 rounded-lg border border-card-border bg-background px-2 py-1.5 text-xs outline-none focus:border-brand-deep"
-        />
+        <span className="flex items-center gap-1">
+          <span className="text-xs text-muted">$</span>
+          <input
+            name="min_usd"
+            inputMode="decimal"
+            value={min}
+            onChange={(event) => setMin(event.target.value)}
+            aria-label="کمترین قیمت به دلار"
+            className="w-16 rounded-lg border border-card-border bg-background px-2 py-1.5 text-xs outline-none focus:border-brand-deep"
+          />
+        </span>
         <span className="text-xs text-muted">تا</span>
-        <input
-          name="max_toman"
-          inputMode="numeric"
-          defaultValue={band?.max_toman ?? ""}
-          aria-label="بیشینه"
-          className="w-24 rounded-lg border border-card-border bg-background px-2 py-1.5 text-xs outline-none focus:border-brand-deep"
-        />
+        <span className="flex items-center gap-1">
+          <span className="text-xs text-muted">$</span>
+          <input
+            name="max_usd"
+            inputMode="decimal"
+            value={max}
+            onChange={(event) => setMax(event.target.value)}
+            aria-label="بیشترین قیمت به دلار"
+            className="w-16 rounded-lg border border-card-border bg-background px-2 py-1.5 text-xs outline-none focus:border-brand-deep"
+          />
+        </span>
       </div>
+
+      {/* Shown, never stored. The rate moves and this line moves with it; the
+          only number kept anywhere is the dollar one above. */}
+      {hint && <p className="text-[11px] leading-5 text-muted">{hint}</p>}
 
       <div className="flex items-center gap-2">
         <button
@@ -70,15 +107,26 @@ function Cell({
 
 /**
  * The nine numbers the site will publish without being asked: three session
- * types against three experience bands, in toman.
+ * types against three experience bands, in dollars.
  *
- * They were a formula in lib/seniority.ts -- a base dollar rate times a
- * seniority factor times the length of the session -- which meant that
- * deciding a resume review is worth more took a deploy. Each cell saves on its
- * own, because changing one number should not mean re-submitting eight others
- * that were already right.
+ * Dollars because that is what a session is worth. They were toman until 0055,
+ * which meant the range and the price it judges were quoted in different
+ * currencies and the rule drifted every time the market moved — nine numbers
+ * an admin would have had to re-type to undo a change they never made. The
+ * toman figure under each cell is the same band at today's rate, printed for
+ * somebody who thinks in toman and stored nowhere.
+ *
+ * Each cell saves on its own, because changing one number should not mean
+ * re-submitting eight others that were already right.
  */
-export default function PriceBandTable({ bands }: { bands: Band[] }) {
+export default function PriceBandTable({
+  bands,
+  usdRate,
+}: {
+  bands: Band[];
+  /** Toman per dollar, for the hint under each cell. */
+  usdRate: number | null;
+}) {
   const find = (k: string, s: string) =>
     bands.find((b) => b.session_key === k && b.seniority === s);
 
@@ -110,6 +158,7 @@ export default function PriceBandTable({ bands }: { bands: Band[] }) {
                     sessionKey={service.key}
                     seniority={level.value}
                     band={find(service.key, level.value)}
+                    usdRate={usdRate}
                   />
                 </td>
               ))}
