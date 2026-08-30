@@ -1818,3 +1818,115 @@ select 'An account can be suspended' as section, check_name, expected, actual,
        (actual like expected || '%') as pass
   from results order by 2;
 rollback;
+
+-- ---------------------------------------------------------------------------
+-- A session is held when somebody says so.
+--
+-- The count on a specialist's public page used to mean "accepted, and the
+-- clock ran out". Two people who never met produced a claim to strangers that
+-- they had. What is proved here is that nothing counts until one of the two
+-- says it happened, that only those two can say, and that "missed" and
+-- "nobody answered yet" both stay out of the number.
+-- ---------------------------------------------------------------------------
+begin;
+create temp table if not exists results(
+  flow text, check_name text, expected text, actual text
+) on commit drop;
+grant all on results to authenticated;
+
+create or replace function pg_temp.act_as(u uuid) returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', u, 'role', 'authenticated')::text, true);
+end $$;
+
+create or replace function pg_temp.act_as_nobody() returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims', '', true);
+end $$;
+
+create or replace function pg_temp.record(f text, c text, e text, a text)
+returns void language plpgsql security definer as $$
+begin
+  insert into results values (f, c, e, a);
+end $$;
+
+create or replace function pg_temp.try_as(
+  actor uuid, stmt text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  if actor is null then perform pg_temp.act_as_nobody();
+  else perform pg_temp.act_as(actor); end if;
+  begin
+    execute 'set local role ' || case when actor is null then 'anon' else 'authenticated' end;
+    execute stmt;
+    outcome := 'ok';
+  exception when others then outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.act_as_nobody();
+  perform pg_temp.record('held sessions', chk, expected, outcome);
+end $$;
+
+select set_config('request.jwt.claims', '', true);
+
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('aaaaaaaa-0000-4000-8000-000000000001','a@example.invalid','{"role":"seeker","full_name":"Seeker A"}'),
+  ('bbbbbbbb-0000-4000-8000-000000000002','b@example.invalid','{"role":"seeker","full_name":"Outsider B"}'),
+  ('cccccccc-0000-4000-8000-000000000003','m@example.invalid','{"role":"mentor","full_name":"Mentor M"}');
+
+insert into mentor_profiles (id, bio, status) values
+  ('cccccccc-0000-4000-8000-000000000003','approved mentor','approved');
+
+-- One slot already in the past, and one still to come.
+insert into availability_slots (id, mentor_id, start_time, end_time, is_booked) values
+  ('11111111-0000-4000-8000-000000000009','cccccccc-0000-4000-8000-000000000003', now()-interval '2 day', now()-interval '2 day' + interval '22 min', true),
+  ('11111111-0000-4000-8000-000000000001','cccccccc-0000-4000-8000-000000000003', now()+interval '2 day', now()+interval '2 day' + interval '22 min', true);
+
+insert into bookings (id, mentor_id, seeker_id, slot_id, message, status) values
+  ('99999999-0000-4000-8000-000000000001','cccccccc-0000-4000-8000-000000000003','aaaaaaaa-0000-4000-8000-000000000001','11111111-0000-4000-8000-000000000009','جلسه گذشته','confirmed'),
+  ('99999999-0000-4000-8000-000000000002','cccccccc-0000-4000-8000-000000000003','aaaaaaaa-0000-4000-8000-000000000001','11111111-0000-4000-8000-000000000001','جلسه آینده','confirmed');
+
+-- The bug, stated as a check: time passing is not attendance.
+select pg_temp.record('held sessions','a session nobody answered for is not counted','0',
+  held_session_count('cccccccc-0000-4000-8000-000000000003')::text);
+
+-- Only the two people in it may answer.
+select pg_temp.try_as('bbbbbbbb-0000-4000-8000-000000000002',
+  'select set_booking_outcome(''99999999-0000-4000-8000-000000000001'', ''held'')',
+  'an outsider cannot say it happened','refused');
+select pg_temp.try_as(null,
+  'select set_booking_outcome(''99999999-0000-4000-8000-000000000001'', ''held'')',
+  'nor a signed-out visitor','refused');
+
+-- Not before it has happened.
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'select set_booking_outcome(''99999999-0000-4000-8000-000000000002'', ''held'')',
+  'and not about a session still to come','refused');
+
+-- Saying it was missed keeps it out of the count.
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'select set_booking_outcome(''99999999-0000-4000-8000-000000000001'', ''missed'')',
+  'the seeker can say it did not happen','ok');
+select pg_temp.record('held sessions','and a missed session is still not counted','0',
+  held_session_count('cccccccc-0000-4000-8000-000000000003')::text);
+
+-- And saying it was held puts it in.
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'select set_booking_outcome(''99999999-0000-4000-8000-000000000001'', ''held'')',
+  'the specialist can say it did','ok');
+select pg_temp.record('held sessions','and then it counts, once','1',
+  held_session_count('cccccccc-0000-4000-8000-000000000003')::text);
+
+-- Nothing else is a valid answer.
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'select set_booking_outcome(''99999999-0000-4000-8000-000000000001'', ''brilliant'')',
+  'and there is no third answer','refused');
+
+select 'A session is held when somebody says so' as section, check_name, expected, actual,
+       (actual like expected || '%') as pass
+  from results order by 2;
+rollback;

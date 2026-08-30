@@ -6,6 +6,7 @@ import SubmitButton from "@/components/SubmitButton";
 import ConfirmedSessionLink from "./confirmed-session-link";
 import CancelBooking from "@/components/CancelBooking";
 import { dateFormats, sessionTiming } from "@/lib/persian";
+import SessionOutcome from "@/components/SessionOutcome";
 import BriefReply from "@/components/BriefReply";
 import { signAttachment } from "@/lib/briefs";
 import { markInquiryAnswered } from "@/lib/actions/inquiries";
@@ -35,7 +36,7 @@ export default async function MySessionsPage() {
   const { data } = await supabase
     .from("bookings")
     .select(
-      "id, message, status, edited_at, meeting_link, cancelled_by, cancel_reason, availability_slots(start_time, end_time), profiles!bookings_seeker_id_fkey(full_name, photo_url)",
+      "id, message, status, outcome, edited_at, meeting_link, cancelled_by, cancel_reason, availability_slots(start_time, end_time), profiles!bookings_seeker_id_fkey(full_name, photo_url)",
     )
     .eq("mentor_id", user.id)
     .order("created_at", { ascending: false });
@@ -105,6 +106,7 @@ export default async function MySessionsPage() {
     id: b.id,
     message: b.message,
     status: b.status as string,
+    outcome: (b.outcome as "held" | "missed" | null) ?? null,
     editedAt: b.edited_at as string | null,
     meetingLink: (b.meeting_link as string | null) ?? null,
     cancelledBy: (b.cancelled_by as string | null) ?? null,
@@ -441,7 +443,9 @@ export default async function MySessionsPage() {
 
       {held.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-lg font-bold text-muted">برگزار شده</h2>
+          {/* "Past", not "held". Whether it happened is the question below,
+              and until somebody answers it nothing here claims either way. */}
+          <h2 className="text-lg font-bold text-muted">جلسه‌های گذشته</h2>
           <ul className="mt-4 flex flex-col gap-2">
             {held.map((b) => (
               <li
@@ -449,11 +453,22 @@ export default async function MySessionsPage() {
                 className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-card-border px-4 py-3 text-sm"
               >
                 <span className="text-muted">{b.seeker?.full_name}</span>
-                {b.slot && (
-                  <span className="text-xs text-muted/70">
-                    {timeFormatter.format(new Date(b.slot.start_time))}
-                  </span>
-                )}
+
+                <div className="flex flex-wrap items-center gap-3">
+                  {b.outcome === "held" && (
+                    <span className="text-xs text-success">برگزار شد</span>
+                  )}
+                  {b.outcome === "missed" && (
+                    <span className="text-xs text-muted">برگزار نشد</span>
+                  )}
+                  {!b.outcome && <SessionOutcome bookingId={b.id} />}
+
+                  {b.slot && (
+                    <span className="text-xs text-muted/70">
+                      {timeFormatter.format(new Date(b.slot.start_time))}
+                    </span>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
