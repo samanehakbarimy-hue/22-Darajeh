@@ -40,8 +40,8 @@ export default function AskHigherPrice({
   if (existing?.status === "pending" && !state?.sent) {
     return (
       <p className="mt-2 text-xs text-muted">
-        درخواست {existing.asked_toman.toLocaleString("fa-IR")} تومانی‌ات ثبت شده
-        و منتظر جواب است.
+        درخواست {existing.asked_toman.toLocaleString("fa-IR")} تومانی ثبت شده و در
+        حال بررسی است.
       </p>
     );
   }
@@ -49,8 +49,8 @@ export default function AskHigherPrice({
   if (existing?.status === "approved" && existing.granted_toman) {
     return (
       <p className="mt-2 text-xs text-success">
-        تا {existing.granted_toman.toLocaleString("fa-IR")} تومان برای این جلسه
-        برایت باز شده.
+        سقف قیمت این جلسه {existing.granted_toman.toLocaleString("fa-IR")} تومان
+        تعیین شد.
         {existing.admin_note ? ` ${existing.admin_note}` : ""}
       </p>
     );
@@ -59,7 +59,7 @@ export default function AskHigherPrice({
   if (state?.sent) {
     return (
       <p className="mt-2 text-xs text-success">
-        درخواستت فرستاده شد. جواب که آمد همین‌جا می‌بینی.
+        درخواست ثبت شد. نتیجه بررسی همین‌جا نمایش داده می‌شود.
       </p>
     );
   }
@@ -69,7 +69,7 @@ export default function AskHigherPrice({
       <div className="mt-2">
         {existing?.status === "declined" && (
           <p className="mb-1 text-xs text-muted">
-            درخواست قبلی‌ات پذیرفته نشد.
+            درخواست قبلی تأیید نشد.
             {existing.admin_note ? ` ${existing.admin_note}` : ""}
           </p>
         )}
@@ -78,7 +78,7 @@ export default function AskHigherPrice({
           onClick={() => setOpen(true)}
           className="text-xs text-brand-deep underline-offset-4 hover:underline"
         >
-          می‌خواهم بیشتر از این بازه بگیرم
+          درخواست بررسی قیمت
         </button>
       </div>
     );
@@ -96,7 +96,7 @@ export default function AskHigherPrice({
       </p>
 
       <label className="mt-2 block text-xs text-muted" htmlFor={`ask-${sessionKey}`}>
-        قیمتی که می‌خواهی (تومان)
+        قیمت پیشنهادی (تومان)
       </label>
       <input
         id={`ask-${sessionKey}`}
@@ -107,7 +107,7 @@ export default function AskHigherPrice({
       />
 
       <label className="mt-2.5 block text-xs text-muted" htmlFor={`why-${sessionKey}`}>
-        چرا؟
+        دلیل درخواست
       </label>
       <textarea
         id={`why-${sessionKey}`}
@@ -115,7 +115,7 @@ export default function AskHigherPrice({
         rows={3}
         required
         maxLength={600}
-        placeholder="چه چیزی در این جلسه هست که این قیمت را توجیه می‌کند؟"
+        placeholder="تجربه یا تخصصی که این جلسه را متفاوت می‌کند."
         className="mt-1 w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm leading-6 outline-none focus:border-brand-deep"
       />
 
@@ -127,14 +127,14 @@ export default function AskHigherPrice({
           disabled={pending}
           className="rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-brand-on hover:bg-brand-hover disabled:opacity-60"
         >
-          فرستادن درخواست
+          ثبت درخواست
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="text-xs text-muted hover:text-foreground"
         >
-          بی‌خیال
+          انصراف
         </button>
       </div>
     </form>

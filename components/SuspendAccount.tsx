@@ -76,7 +76,7 @@ export default function SuspendAccount({
           onClick={() => setConfirming(false)}
           className="text-xs text-muted hover:text-foreground"
         >
-          بی‌خیال
+          انصراف
         </button>
       </div>
     </form>
