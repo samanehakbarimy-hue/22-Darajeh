@@ -13,6 +13,7 @@ import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
 import SendBackForReview from "@/components/SendBackForReview";
 import AdminPhoto from "@/components/AdminPhoto";
+import SuspendAccount from "@/components/SuspendAccount";
 import { getCurrentUser } from "@/lib/auth";
 import { getUsdToToman } from "@/lib/exchange-rate";
 
@@ -25,6 +26,7 @@ type Member = {
   status: "pending" | "approved" | "rejected" | "changes_requested" | null;
   phone: string | null;
   has_google: boolean;
+  suspended_at: string | null;
   created_at: string;
 };
 
@@ -82,6 +84,7 @@ function MemberGroup({
                 <th className="px-4 py-3 font-medium">ایمیل</th>
                 <th className="px-4 py-3 font-medium">موبایل</th>
                 <th className="px-4 py-3 font-medium">تاریخ عضویت</th>
+                <th className="px-4 py-3 font-medium">حساب</th>
               </tr>
             </thead>
             <tbody>
@@ -108,6 +111,22 @@ function MemberGroup({
                   </td>
                   <td className="px-4 py-3 text-muted">
                     {dateFormatter.format(new Date(member.created_at))}
+                  </td>
+                  <td className="px-4 py-3">
+                    {member.suspended_at && (
+                      <span className="text-xs text-danger">معلق</span>
+                    )}
+                    {/* An admin is not suspendable from here. The database
+                        refuses one suspending themselves, but the rest of them
+                        are each other's only way back in — that is a decision
+                        for the database, not a button in a list. */}
+                    {member.role !== "admin" && (
+                      <SuspendAccount
+                        memberId={member.id}
+                        name={member.full_name}
+                        suspended={Boolean(member.suspended_at)}
+                      />
+                    )}
                   </td>
                 </tr>
               ))}
@@ -237,6 +256,12 @@ function SpecialistList({
                     size the profile shows it. Until this, the only person who
                     could improve it was them. */}
                 <AdminPhoto mentorId={member.id} name={member.full_name} />
+
+                <SuspendAccount
+                  memberId={member.id}
+                  name={member.full_name}
+                  suspended={Boolean(member.suspended_at)}
+                />
               </div>
             </div>
 

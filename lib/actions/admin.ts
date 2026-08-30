@@ -222,3 +222,43 @@ export async function setSpecialistPhoto(
   revalidatePath("/");
   return { saved: true };
 }
+
+/**
+ * Suspends an account, or lifts it.
+ *
+ * Not the same as rejecting a specialist, and kept apart on purpose.
+ * Rejection is the answer to an application, and the person reads that word on
+ * their own page; suspension stops an account that was already in good
+ * standing. Seekers had no equivalent at all — they could book, ask, send
+ * briefs and write reviews, and nothing anywhere had an opinion about it.
+ *
+ * What it does is enforced in the database, not here: a suspended account
+ * fails the row-level checks on all four of those, and a suspended specialist
+ * drops out of the public profile and slot policies, which is what stops new
+ * bookings. This action is the button, and the loud refusal if a non-admin
+ * ever reaches it.
+ *
+ * It does not touch existing bookings. Cancelling somebody's confirmed session
+ * as a side-effect of suspending the other party would be a decision made by
+ * accident; if a session has to be called off, it should be called off.
+ */
+export async function setAccountSuspended(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("member_id") ?? "");
+  const suspend = String(formData.get("suspend") ?? "") === "true";
+  if (!id) return;
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_set_suspended", {
+    target: id,
+    suspend,
+  });
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin");
+  revalidatePath(`/specialists/${id}`);
+  revalidatePath("/specialists");
+  revalidatePath("/");
+}
