@@ -31,6 +31,7 @@ export type MentorService = {
   minutes: number | null;
   min_hours: number | null;
   price_toman: number | null;
+  price_usd?: number | null;
   is_active: boolean;
   /** Project work only: a rate deliberately left open. */
   is_negotiable: boolean;
@@ -120,17 +121,30 @@ export function formatDuration(service: MentorService): string {
   return `حداقل ${(service.min_hours ?? 1).toLocaleString("fa-IR")} ساعت`;
 }
 
-/** Hourly work is priced per hour, and the label has to say so. */
 /**
- * The price a seeker sees. Toman only.
+ * The price, with toman leading and the dollar figure after it.
  *
- * The dollar figure exists to help a specialist judge what to charge against a
- * currency that holds its value. A seeker is paying in Toman and has no use
- * for it — and it doubled the length of every price, which is what crushed the
- * project row until the title wrapped one word per line.
+ * This used to be toman only, on the reasoning that a seeker pays in toman and
+ * has no use for dollars. That is still true of the payment — but the dollar
+ * figure is now the price itself, and the toman number is a rendering of it
+ * that moves when the market does. Showing only the derived number means a
+ * price that changes overnight with nothing on the page to explain why.
+ *
+ * Parenthesised and second, so it reads as the reference it is rather than as a
+ * second price to weigh against the first. Hourly work still says so, and the
+ * suffix stays outside the brackets where it belongs.
  */
 export function formatServicePrice(service: MentorService): string {
   if (service.price_toman === null) return "به‌زودی";
-  const amount = `${service.price_toman.toLocaleString("fa-IR")} تومان`;
+
+  const toman = `${service.price_toman.toLocaleString("fa-IR")} تومان`;
+  const usd =
+    typeof service.price_usd === "number" && service.price_usd > 0
+      ? ` ($${Number(service.price_usd).toLocaleString("en-US", {
+          maximumFractionDigits: 2,
+        })})`
+      : "";
+
+  const amount = `${toman}${usd}`;
   return service.kind === "hourly_project" ? `${amount} در ساعت` : amount;
 }

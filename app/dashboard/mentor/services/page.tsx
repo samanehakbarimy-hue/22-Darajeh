@@ -46,7 +46,7 @@ export default async function MentorServicesPage() {
 
   const { data, error } = await supabase
     .from("mentor_services")
-    .select("id, kind, session_key, title, description, minutes, min_hours, price_toman, is_active")
+    .select("id, kind, session_key, title, description, minutes, min_hours, price_toman, price_usd, is_active")
     .eq("mentor_id", user.id)
     .order("kind")
     .order("sort_order")

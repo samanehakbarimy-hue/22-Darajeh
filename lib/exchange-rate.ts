@@ -6,9 +6,13 @@
  * The live USD → Toman rate.
  *
  * Iran's free-market rate moves weekly and often daily, so it cannot live in a
- * source file. This fetches it and lets Next's data cache hold it for six
- * hours, which means one request per six hours per deployment rather than one
- * per page view, and no cron job, no table and no service-role key.
+ * source file.
+ *
+ * This is the fetch itself, and the daily job is the only thing that calls it.
+ * It used to run during page renders behind a six-hour cache, which meant a
+ * page could be the unlucky one that paid for a network round trip to somebody
+ * else's server — and meant every deployment region fetched separately. The
+ * rate now lives in price_settings, written once a day, and pages read that.
  *
  * ── Why this source ───────────────────────────────────────────────────────
  * It must be an Iranian one. International FX APIs report Iran's OFFICIAL
@@ -46,12 +50,12 @@ type Feed = {
  * Null is a real answer: callers show Toman alone rather than a made-up
  * dollar figure, so a bad fetch costs a line of display, not a wrong price.
  */
-export async function getUsdToToman(): Promise<number | null> {
+export async function fetchUsdToToman(): Promise<number | null> {
   try {
     const response = await fetch(TGJU_FEED, {
-      // Six hours: the rate moves daily at most, and a stale figure of a few
-      // hours is far cheaper than hammering someone else's endpoint.
-      next: { revalidate: 21_600 },
+      // No caching here at all. The caller is a once-a-day job, so a cache
+      // between it and the source would only serve it yesterday's answer.
+      cache: "no-store",
       headers: { "user-agent": "jobamooz.com" },
     });
     if (!response.ok) return null;
@@ -74,4 +78,22 @@ export async function getUsdToToman(): Promise<number | null> {
     // the same thing to a caller, and none of them should break a page.
     return null;
   }
+}
+
+/**
+ * Toman per dollar, as the daily job last recorded it.
+ *
+ * A read, not a fetch. Null when the job has never run or its source was
+ * unreachable — callers show toman alone rather than inventing a dollar figure
+ * from a guess.
+ */
+export async function getUsdToToman(): Promise<number | null> {
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("price_settings")
+    .select("usd_rate")
+    .maybeSingle();
+  const rate = data?.usd_rate as number | null | undefined;
+  return typeof rate === "number" && rate > 0 ? rate : null;
 }

@@ -132,3 +132,20 @@ export function roundEnteredPrice(amount: number): number {
  * public profile, which is what happens when a hand rests on a key.
  */
 export const MAX_PRICE_TOMAN = 100_000_000;
+
+/**
+ * The toman figure shown for a dollar price: rounded to the nearest 50,000.
+ *
+ * Must agree with display_toman() in the database, which is what the daily job
+ * uses. If the two ever disagree, a price saved here would be rewritten by the
+ * job the same night for no visible reason — so the arithmetic is deliberately
+ * the same shape in both places rather than merely equivalent.
+ *
+ * 50,000 toman is roughly a quarter of a dollar. Small enough that nobody feels
+ * short-changed, large enough that a percent or two of market movement lands
+ * inside one step and changes nothing.
+ */
+export function displayToman(usd: number, rate: number | null): number | null {
+  if (!rate || rate <= 0) return null;
+  return Math.max(50_000, Math.round((usd * rate) / 50_000) * 50_000);
+}

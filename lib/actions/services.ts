@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { SESSION_TYPES } from "@/lib/services";
-import { MAX_PRICE_TOMAN, roundEnteredPrice } from "@/lib/rates";
+import { MAX_PRICE_TOMAN, roundEnteredPrice, displayToman } from "@/lib/rates";
+import { getUsdToToman } from "@/lib/exchange-rate";
 
 export type ServiceState = { error?: string; success?: boolean } | undefined;
 
@@ -79,6 +80,15 @@ export async function saveService(
   }
 
   const price = parsed === null ? null : roundEnteredPrice(parsed);
+  // The rate the job last recorded. Null means it has never run or its source
+  // was unreachable, in which case the toman figure is stored as typed and the
+  // job will fill the dollars in when it can.
+  const rate = await getUsdToToman();
+  const priceUsd =
+    price !== null && price > 0 && rate !== null
+      ? Math.round((price / rate) * 100) / 100
+      : null;
+
   const row = {
     mentor_id: user.id,
     kind,
@@ -88,7 +98,15 @@ export async function saveService(
     // Length is the catalogue's for a session, and irrelevant to a project.
     minutes: null,
     min_hours: minHours,
-    price_toman: price,
+    // Toman is what they typed; dollars is what gets kept. The daily job
+    // re-renders price_toman from price_usd, so storing only the toman figure
+    // would mean the next run overwrote it with a conversion of nothing.
+    //
+    // Rounded on the way in as well, so what they see after saving is the same
+    // number the job would have produced — otherwise a price looks fine today
+    // and shifts by itself overnight for no reason anybody can see.
+    price_usd: priceUsd,
+    price_toman: priceUsd === null ? price : displayToman(priceUsd, rate),
     is_negotiable: negotiable,
     is_active: formData.get("is_active") !== null,
   };
