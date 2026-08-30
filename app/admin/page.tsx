@@ -14,6 +14,7 @@ import { dateFormats } from "@/lib/persian";
 import SendBackForReview from "@/components/SendBackForReview";
 import AdminPhoto from "@/components/AdminPhoto";
 import SuspendAccount from "@/components/SuspendAccount";
+import PriceBandTable, { type Band } from "@/components/PriceBandTable";
 import { getCurrentUser } from "@/lib/auth";
 import { getUsdToToman } from "@/lib/exchange-rate";
 
@@ -406,6 +407,11 @@ export default async function AdminPage() {
     await supabase.rpc("admin_list_members");
   const members = (membersData ?? []) as Member[];
 
+  const { data: bandRows } = await supabase
+    .from("price_bands")
+    .select("session_key, seniority, min_toman, max_toman");
+  const bands = (bandRows ?? []) as Band[];
+
   const { data: pendingMentors } = await supabase
     .from("mentor_profiles")
     .select(
@@ -586,7 +592,15 @@ export default async function AdminPage() {
       )}
 
       <section className="mt-12">
-        <h2 className="text-lg font-bold">اعضا</h2>
+        {/* What a session may cost, before anybody has to ask. */}
+        <h2 className="text-lg font-bold">بازه قیمت‌ها</h2>
+        <p className="mt-1.5 text-sm text-muted">
+          قیمتی که کارشناس می‌تواند بدون اجازه بگذارد. بیرون از این بازه ذخیره
+          نمی‌شود و باید درخواست بدهد.
+        </p>
+        <PriceBandTable bands={bands} />
+
+        <h2 className="mt-10 text-lg font-bold">اعضا</h2>
 
         {membersError && (
           <p className="mt-4 text-sm text-danger">

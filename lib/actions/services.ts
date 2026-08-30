@@ -108,6 +108,21 @@ export async function saveService(
     if (error.code === "42P01") {
       return { error: "جدول خدمات هنوز ساخته نشده. مهاجرت ۰۰۱۹ را اجرا کن." };
     }
+
+    // The band trigger raises PRICE_ABOVE_BAND:<n> / PRICE_BELOW_BAND:<n>,
+    // carrying the limit it broke. Saying "outside the range" without saying
+    // what the range is leaves somebody guessing at a number.
+    const band = /PRICE_(ABOVE|BELOW)_BAND:(\d+)/.exec(error.message ?? "");
+    if (band) {
+      const limit = Number(band[2]).toLocaleString("fa-IR");
+      return {
+        error:
+          band[1] === "ABOVE"
+            ? `این قیمت از بازه جاب‌آموز بالاتر است. بیشترین قیمتی که می‌تونی بذاری ${limit} تومان است. اگر فکر می‌کنی کارت بیشتر می‌ارزد، از همین صفحه درخواست بده.`
+            : `این قیمت از بازه جاب‌آموز پایین‌تر است. کمترین قیمت ${limit} تومان است.`,
+      };
+    }
+
     return { error: "ذخیره نشد. یک بار دیگر امتحان کن." };
   }
 
