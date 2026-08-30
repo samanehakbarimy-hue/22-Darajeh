@@ -81,7 +81,11 @@ export default function CancelBooking({
           onClick={() => setOpen(false)}
           className="text-sm text-muted hover:text-foreground"
         >
-          بی‌خیال
+          {/* Not «انصراف» here, though that is what the other forms say. The
+              link that opens this one is «انصراف از درخواست» — withdrawing is
+              the action itself, so the button that backs out of it needs a
+              different word or the two read the same. */}
+          بستن
         </button>
       </div>
 

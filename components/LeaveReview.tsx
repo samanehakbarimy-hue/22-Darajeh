@@ -93,7 +93,7 @@ export default function LeaveReview({ bookingId }: { bookingId: string }) {
           onClick={() => setOpen(false)}
           className="text-sm text-muted hover:text-foreground"
         >
-          بی‌خیال
+          انصراف
         </button>
       </div>
     </form>

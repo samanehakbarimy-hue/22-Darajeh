@@ -74,7 +74,7 @@ export default function BriefReply({ briefId }: { briefId: string }) {
               onClick={() => setOpen(false)}
               className="py-1 text-sm text-muted hover:text-foreground"
             >
-              بی‌خیال
+              انصراف
             </button>
           </div>
         </div>
