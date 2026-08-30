@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import SubmitButton from "@/components/SubmitButton";
 import { deleteService, saveService } from "@/lib/actions/services";
 import { formatRange, suggestedRange } from "@/lib/seniority";
+import AskHigherPrice from "@/components/AskHigherPrice";
 import {
   SESSION_TYPES,
   type MentorService,
@@ -26,17 +27,31 @@ export default function ServicesEditor({
   tableMissing,
   seniority,
   usdRate,
+  bands,
+  asks,
 }: {
   services: MentorService[];
   tableMissing: boolean;
   seniority: string | null;
   /** Toman per dollar, or null when the live rate was unavailable. */
   usdRate: number | null;
+  /** What the house allows for this specialist, per session type. */
+  bands: { session_key: string; min_toman: number; max_toman: number }[];
+  /** Their own asks for something outside it, latest first. */
+  asks: {
+    session_key: string;
+    status: "pending" | "approved" | "declined";
+    asked_toman: number;
+    granted_toman: number | null;
+    admin_note: string | null;
+  }[];
 }) {
   const [saveState, saveAction] = useActionState(saveService, undefined);
-  // A price far outside the suggestion is usually a slip, occasionally a
-  // considered choice, and never the admin's business. So it asks once rather
-  // than refusing: nobody has to seek permission to be expensive.
+  // This used to say that a price far outside the suggestion was "never the
+  // admin's business", and asked once rather than refusing. It is the admin's
+  // business now: the range is set in the admin page and the database turns
+  // away anything outside it. The confirm below survives for the prices that
+  // are still inside the band but look like a slipped zero.
   const [needsConfirm, setNeedsConfirm] = useState<string | null>(null);
   const [deleteState, deleteAction] = useActionState(deleteService, undefined);
 
@@ -191,14 +206,46 @@ export default function ServicesEditor({
                     </p>
                   )}
 
-                  {suggestion && (
-                    <p className="text-xs leading-6 text-muted">
-                      پیشنهاد جاب‌آموز برای این مدت و این سابقه:{" "}
-                      <span className="font-medium text-foreground">
-                        {formatRange(suggestion, usdRate)}
-                      </span>
-                    </p>
-                  )}
+                  {(() => {
+                    const band = bands.find(
+                      (b) => b.session_key === session.key,
+                    );
+                    const ask =
+                      asks.find((a) => a.session_key === session.key) ?? null;
+
+                    // The band is the rule, so it is what gets shown. The old
+                    // formula stays as the fallback for a session type nobody
+                    // has set a band for yet.
+                    return (
+                      <>
+                        {band ? (
+                          <p className="text-xs leading-6 text-muted">
+                            بازه جاب‌آموز برای این جلسه:{" "}
+                            <span className="font-medium text-foreground">
+                              {band.min_toman.toLocaleString("fa-IR")} تا{" "}
+                              {band.max_toman.toLocaleString("fa-IR")} تومان
+                            </span>
+                          </p>
+                        ) : (
+                          suggestion && (
+                            <p className="text-xs leading-6 text-muted">
+                              پیشنهاد جاب‌آموز برای این مدت و این سابقه:{" "}
+                              <span className="font-medium text-foreground">
+                                {formatRange(suggestion, usdRate)}
+                              </span>
+                            </p>
+                          )
+                        )}
+
+                        <AskHigherPrice
+                          sessionKey={session.key}
+                          title={session.title}
+                          ceiling={band?.max_toman ?? null}
+                          existing={ask}
+                        />
+                      </>
+                    );
+                  })()}
                 </form>
               </li>
             );

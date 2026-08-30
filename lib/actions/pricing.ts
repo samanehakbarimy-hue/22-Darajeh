@@ -95,3 +95,52 @@ export async function decidePriceRequest(
   revalidatePath("/dashboard/mentor/services");
   return { saved: true };
 }
+
+export type AskState = { error?: string; sent?: boolean } | undefined;
+
+/**
+ * A specialist asking to charge more than their band allows.
+ *
+ * Without this the band is just a wall, and a wall only stops the people who
+ * were filling the form in honestly. One open ask per service at a time — a
+ * unique index sees to that — so this cannot become a way to nag.
+ */
+export async function requestPriceException(
+  _prev: AskState,
+  formData: FormData,
+): Promise<AskState> {
+  const sessionKey = String(formData.get("session_key") ?? "");
+  const asked = Number(
+    String(formData.get("asked_toman") ?? "").replace(/[^\d]/g, ""),
+  );
+  const reason = String(formData.get("reason") ?? "").trim().slice(0, 600);
+
+  if (!sessionKey) return { error: "این جلسه شناخته نشد." };
+  if (!asked || asked <= 0) return { error: "قیمتی که می‌خواهی را بنویس." };
+  if (!reason) return { error: "بنویس چرا این قیمت را می‌خواهی." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "لطفاً دوباره وارد شو." };
+
+  const { error } = await supabase.from("price_requests").insert({
+    mentor_id: user.id,
+    session_key: sessionKey,
+    asked_toman: asked,
+    reason,
+  });
+
+  if (error) {
+    // The partial unique index is the one refusal worth explaining.
+    if (error.code === "23505") {
+      return { error: "برای این جلسه یک درخواست باز داری. تا جواب نیامده، دوباره نمی‌شود." };
+    }
+    return { error: "فرستاده نشد. یک بار دیگر امتحان کن." };
+  }
+
+  revalidatePath("/dashboard/mentor/services");
+  revalidatePath("/admin");
+  return { sent: true };
+}

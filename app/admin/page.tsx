@@ -15,6 +15,8 @@ import SendBackForReview from "@/components/SendBackForReview";
 import AdminPhoto from "@/components/AdminPhoto";
 import SuspendAccount from "@/components/SuspendAccount";
 import PriceBandTable, { type Band } from "@/components/PriceBandTable";
+import PriceRequestDecision from "@/components/PriceRequestDecision";
+import { SESSION_TYPES } from "@/lib/services";
 import { getCurrentUser } from "@/lib/auth";
 import { getUsdToToman } from "@/lib/exchange-rate";
 
@@ -30,6 +32,10 @@ type Member = {
   suspended_at: string | null;
   created_at: string;
 };
+
+const SESSION_TITLE: Record<string, string> = Object.fromEntries(
+  SESSION_TYPES.map((s) => [s.key, s.title]),
+);
 
 const STATUS_LABEL: Record<string, string> = {
   pending: "در انتظار تأیید",
@@ -412,6 +418,14 @@ export default async function AdminPage() {
     .select("session_key, seniority, min_toman, max_toman");
   const bands = (bandRows ?? []) as Band[];
 
+  // Open asks first: this is a queue, and an answered one is history.
+  const { data: askRows } = await supabase
+    .from("price_requests")
+    .select("id, mentor_id, session_key, asked_toman, reason, created_at, profiles!price_requests_mentor_id_fkey(full_name)")
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+  const asks = askRows ?? [];
+
   const { data: pendingMentors } = await supabase
     .from("mentor_profiles")
     .select(
@@ -592,6 +606,38 @@ export default async function AdminPage() {
       )}
 
       <section className="mt-12">
+        {asks.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-lg font-bold">درخواست‌های قیمت</h2>
+            <p className="mt-1.5 text-sm text-muted">
+              کارشناسانی که قیمتی بیرون از بازه خواسته‌اند.
+            </p>
+            <ul className="mt-3 flex flex-col gap-3">
+              {asks.map((ask) => (
+                <li key={ask.id as string} className="rounded-xl border border-card-border bg-card p-5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <span className="font-medium">
+                      {(ask.profiles as unknown as { full_name: string } | null)?.full_name ?? "کارشناس"}
+                    </span>
+                    <span className="text-sm text-muted">
+                      {SESSION_TITLE[ask.session_key as string] ?? ask.session_key as string}
+                      {" — "}
+                      {Number(ask.asked_toman).toLocaleString("fa-IR")} تومان
+                    </span>
+                  </div>
+                  {ask.reason ? (
+                    <p className="mt-2 text-sm leading-7 text-muted">{ask.reason as string}</p>
+                  ) : null}
+                  <PriceRequestDecision
+                    requestId={ask.id as string}
+                    asked={Number(ask.asked_toman)}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {/* What a session may cost, before anybody has to ask. */}
         <h2 className="text-lg font-bold">بازه قیمت‌ها</h2>
         <p className="mt-1.5 text-sm text-muted">

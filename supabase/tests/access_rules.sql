@@ -1930,3 +1930,98 @@ select 'A session is held when somebody says so' as section, check_name, expecte
        (actual like expected || '%') as pass
   from results order by 2;
 rollback;
+
+-- ---------------------------------------------------------------------------
+-- Asking for a price outside the band, and being answered.
+-- ---------------------------------------------------------------------------
+begin;
+create temp table if not exists results(
+  flow text, check_name text, expected text, actual text
+) on commit drop;
+grant all on results to authenticated;
+
+create or replace function pg_temp.act_as(u uuid) returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', u, 'role', 'authenticated')::text, true);
+end $$;
+create or replace function pg_temp.act_as_nobody() returns void
+language plpgsql security definer as $$
+begin perform set_config('request.jwt.claims', '', true); end $$;
+create or replace function pg_temp.record(f text, c text, e text, a text)
+returns void language plpgsql security definer as $$
+begin insert into results values (f, c, e, a); end $$;
+create or replace function pg_temp.try_as(
+  actor uuid, stmt text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  if actor is null then perform pg_temp.act_as_nobody();
+  else perform pg_temp.act_as(actor); end if;
+  begin
+    execute 'set local role ' || case when actor is null then 'anon' else 'authenticated' end;
+    execute stmt;
+    outcome := 'ok';
+  exception when others then outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.act_as_nobody();
+  perform pg_temp.record('price asks', chk, expected, outcome);
+end $$;
+
+select set_config('request.jwt.claims', '', true);
+
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('cccccccc-0000-4000-8000-000000000003','m@example.invalid','{"role":"mentor","full_name":"Mentor M"}'),
+  ('dddddddd-0000-4000-8000-000000000004','u@example.invalid','{"role":"mentor","full_name":"Mentor U"}');
+insert into mentor_profiles (id, bio, status, seniority) values
+  ('cccccccc-0000-4000-8000-000000000003','approved mentor','approved','senior'),
+  ('dddddddd-0000-4000-8000-000000000004','another','approved','senior');
+
+-- The band applies to a specialist's own price.
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_toman, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''resume-review'','''','''',30, 9000000, true)',
+  'a price above the band is refused','refused: PRICE_ABOVE_BAND');
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_toman, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''resume-review'','''','''',30, 600000, true)',
+  'a price inside it is kept','ok');
+
+-- Asking is the specialist's own, and only about themselves.
+select pg_temp.try_as('dddddddd-0000-4000-8000-000000000004',
+  'insert into price_requests (mentor_id, session_key, asked_toman, reason) values (''cccccccc-0000-4000-8000-000000000003'',''resume-review'',9000000,''not mine to ask'')',
+  'nobody can ask on somebody else''s behalf','refused');
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'insert into price_requests (mentor_id, session_key, asked_toman, reason) values (''cccccccc-0000-4000-8000-000000000003'',''resume-review'',9000000,''کار من تخصصی‌تر است'')',
+  'a specialist can ask about their own','ok');
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'insert into price_requests (mentor_id, session_key, asked_toman, reason) values (''cccccccc-0000-4000-8000-000000000003'',''resume-review'',9500000,''again'')',
+  'but not twice for one service','refused');
+
+-- Deciding is the admin's.
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'select admin_decide_price_request((select id from price_requests limit 1), ''approved'', 9000000, null)',
+  'a specialist cannot answer their own ask','refused');
+
+-- An approval opens exactly the number the admin allowed, not the one asked.
+select pg_temp.try_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4',
+  'select admin_decide_price_request((select id from price_requests limit 1), ''approved'', 2000000, ''تا این عدد باشه'')',
+  'the admin can meet them partway','ok');
+select pg_temp.record('price asks','and the ceiling moves to what was granted','2000000',
+  allowed_price_ceiling('cccccccc-0000-4000-8000-000000000003','resume-review')::text);
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'update mentor_services set price_toman = 2000000 where mentor_id=''cccccccc-0000-4000-8000-000000000003''',
+  'so the granted price now saves','ok');
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'update mentor_services set price_toman = 9000000 where mentor_id=''cccccccc-0000-4000-8000-000000000003''',
+  'and the one they asked for still does not','refused: PRICE_ABOVE_BAND');
+
+-- Setting the band is the admin's alone.
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'select admin_set_price_band(''resume-review'',''senior'',1,99999999)',
+  'a specialist cannot set the band','refused');
+
+select 'Asking for a price outside the band' as section, check_name, expected, actual,
+       (actual like expected || '%') as pass
+  from results order by 2;
+rollback;

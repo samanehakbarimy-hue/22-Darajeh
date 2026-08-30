@@ -31,6 +31,19 @@ export default async function MentorServicesPage() {
     .eq("id", user.id)
     .maybeSingle();
 
+  // The band that applies to them, which depends on their seniority.
+  const { data: bandRows } = await supabase
+    .from("price_bands")
+    .select("session_key, min_toman, max_toman")
+    .eq("seniority", mentorProfile?.seniority ?? "");
+
+  // Their own asks. Newest first so the latest answer for a service wins.
+  const { data: askRows } = await supabase
+    .from("price_requests")
+    .select("session_key, status, asked_toman, granted_toman, admin_note")
+    .eq("mentor_id", user.id)
+    .order("created_at", { ascending: false });
+
   const { data, error } = await supabase
     .from("mentor_services")
     .select("id, kind, session_key, title, description, minutes, min_hours, price_toman, is_active")
@@ -55,6 +68,8 @@ export default async function MentorServicesPage() {
       <ServicesEditor
         seniority={mentorProfile?.seniority ?? null}
         usdRate={usdRate}
+        bands={bandRows ?? []}
+        asks={(askRows ?? []) as never}
         services={(data ?? []) as MentorService[]}
         tableMissing={tableMissing}
       />
