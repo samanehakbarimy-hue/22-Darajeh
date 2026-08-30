@@ -46,10 +46,15 @@ const nextConfig: NextConfig = {
         destination: "https://jobamooz.com/:path*",
         permanent: true,
       },
+      // Straight to the new name, not via the old bare domain. This used to
+      // send www.22darajeh.com to 22darajeh.com, which the rule below then
+      // sent on to jobamooz.com — two permanent redirects for one hop, both
+      // cached forever by anybody who followed them, and the first one still
+      // naming a brand that no longer exists.
       {
         source: "/:path*",
         has: [{ type: "host", value: "www.22darajeh.com" }],
-        destination: "https://22darajeh.com/:path*",
+        destination: "https://jobamooz.com/:path*",
         permanent: true,
       },
       // The old name still answers, and sends everyone to the new one. Safe to
