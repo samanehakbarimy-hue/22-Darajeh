@@ -1579,3 +1579,108 @@ select 'A first message is a request' as section, check_name, expected, actual,
        (actual like expected || '%') as pass
   from results order by 2;
 rollback;
+
+-- ---------------------------------------------------------------------------
+-- The admin can fix a photo, and nobody else can touch one that is not theirs.
+--
+-- The capability is a function rather than a widened policy, so what has to be
+-- proved is the function: that it refuses everyone except an admin, that it
+-- actually writes when an admin calls it, and -- the part that would be easy
+-- to get wrong -- that an admin using it does not send an approved specialist
+-- back into the review queue. That trigger fires on `new.id = auth.uid()`, and
+-- a SECURITY DEFINER function does not change auth.uid(), so it must not fire
+-- here. This is the check that says so out loud.
+-- ---------------------------------------------------------------------------
+begin;
+create temp table if not exists results(
+  flow text, check_name text, expected text, actual text
+) on commit drop;
+grant all on results to authenticated;
+
+create or replace function pg_temp.act_as(u uuid) returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', u, 'role', 'authenticated')::text, true);
+end $$;
+
+create or replace function pg_temp.act_as_nobody() returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims', '', true);
+end $$;
+
+create or replace function pg_temp.record(f text, c text, e text, a text)
+returns void language plpgsql security definer as $$
+begin
+  insert into results values (f, c, e, a);
+end $$;
+
+create or replace function pg_temp.try_as(
+  actor uuid, stmt text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  if actor is null then perform pg_temp.act_as_nobody();
+  else perform pg_temp.act_as(actor); end if;
+  begin
+    execute 'set local role ' || case when actor is null then 'anon' else 'authenticated' end;
+    execute stmt;
+    outcome := 'ok';
+  exception when others then outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.act_as_nobody();
+  perform pg_temp.record('admin photo', chk, expected, outcome);
+end $$;
+
+select set_config('request.jwt.claims', '', true);
+
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('aaaaaaaa-0000-4000-8000-000000000001','a@example.invalid','{"role":"seeker","full_name":"Seeker A"}'),
+  ('cccccccc-0000-4000-8000-000000000003','m@example.invalid','{"role":"mentor","full_name":"Mentor M"}');
+
+insert into mentor_profiles (id, bio, status) values
+  ('cccccccc-0000-4000-8000-000000000003','approved mentor','approved');
+
+-- Nobody but an admin gets to touch it.
+select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
+  'select admin_set_photo(''cccccccc-0000-4000-8000-000000000003'', ''https://example.invalid/hijack.jpg'')',
+  'a seeker cannot change somebody''s photo','refused');
+
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'select admin_set_photo(''aaaaaaaa-0000-4000-8000-000000000001'', ''https://example.invalid/hijack.jpg'')',
+  'nor can a specialist, on somebody else','refused');
+
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'select admin_set_photo(''cccccccc-0000-4000-8000-000000000003'', ''https://example.invalid/self.jpg'')',
+  'nor a specialist on their own row, through this door','refused');
+
+select pg_temp.try_as(null,
+  'select admin_set_photo(''cccccccc-0000-4000-8000-000000000003'', ''https://example.invalid/hijack.jpg'')',
+  'nor a signed-out visitor','refused');
+
+-- None of that got through.
+select pg_temp.record('admin photo','and none of them changed anything','0',
+  (select count(*)::text from profiles
+    where id='cccccccc-0000-4000-8000-000000000003'
+      and photo_url like '%example.invalid%'));
+
+-- The admin can, and it lands.
+select pg_temp.try_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4',
+  'select admin_set_photo(''cccccccc-0000-4000-8000-000000000003'', ''https://example.invalid/fixed.jpg'')',
+  'the admin can','ok');
+
+select pg_temp.record('admin photo','and the photo is the new one','https://example.invalid/fixed.jpg',
+  (select coalesce(photo_url,'null') from profiles
+    where id='cccccccc-0000-4000-8000-000000000003'));
+
+-- And the person whose photo it is stays published.
+select pg_temp.record('admin photo','and they are still approved','approved',
+  (select status from mentor_profiles
+    where id='cccccccc-0000-4000-8000-000000000003'));
+
+select 'The admin can fix a photo' as section, check_name, expected, actual,
+       (actual like expected || '%') as pass
+  from results order by 2;
+rollback;

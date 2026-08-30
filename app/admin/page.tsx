@@ -12,6 +12,7 @@ import { seniorityBadge } from "@/lib/seniority";
 import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
 import SendBackForReview from "@/components/SendBackForReview";
+import AdminPhoto from "@/components/AdminPhoto";
 import { getCurrentUser } from "@/lib/auth";
 import { getUsdToToman } from "@/lib/exchange-rate";
 
@@ -230,6 +231,12 @@ function SpecialistList({
                     </button>
                   </form>
                 )}
+
+                {/* Most specialists arrive with LinkedIn's 100x100 thumbnail,
+                    which is all that scope offers and is visibly soft at the
+                    size the profile shows it. Until this, the only person who
+                    could improve it was them. */}
+                <AdminPhoto mentorId={member.id} name={member.full_name} />
               </div>
             </div>
 

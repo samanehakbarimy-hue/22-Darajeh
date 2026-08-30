@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isAdmin } from "@/lib/auth";
+import { processAvatar } from "@/lib/images";
 
 /**
  * Refuses anyone who is not an admin, before anything below is attempted.
@@ -146,4 +147,78 @@ export async function saveAdminSummary(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath(`/specialists/${id}`);
+}
+
+export type PhotoState = { error?: string; saved?: boolean } | undefined;
+
+/**
+ * Replaces a specialist's photo on their behalf.
+ *
+ * Most specialists arrive with LinkedIn's 100x100 thumbnail, which is the only
+ * size that scope offers, and at 192px it is visibly soft. Until now the only
+ * person who could improve it was the specialist, which meant asking them and
+ * waiting.
+ *
+ * Two things have to give way for this, and both are narrow. The bytes go into
+ * their folder in the avatars bucket, which an admin may now write to; the row
+ * is written through admin_set_photo(), which touches one column and refuses
+ * anybody who is not an admin. Neither the profiles policy nor anything else
+ * about that row was opened up.
+ *
+ * It deliberately does not send them back for review. That trigger fires when
+ * somebody edits their own photo, which is the case worth re-checking; an
+ * admin fixing a picture is not, and unpublishing a specialist as a
+ * side-effect of tidying their page would be a strange way to help.
+ */
+export async function setSpecialistPhoto(
+  _prev: PhotoState,
+  formData: FormData,
+): Promise<PhotoState> {
+  await requireAdmin();
+
+  const id = String(formData.get("mentor_id") ?? "");
+  const photo = formData.get("photo");
+
+  if (!id) return { error: "کارشناس پیدا نشد." };
+  if (!(photo instanceof File) || photo.size === 0) {
+    return { error: "یک فایل عکس انتخاب کن." };
+  }
+
+  // Same treatment a specialist's own upload gets: rotated by its EXIF flag,
+  // shrunk to 800px and re-encoded, so an admin cannot accidentally put a 4MB
+  // phone photo on the browse page.
+  const processed = await processAvatar(photo);
+  if (!processed.ok) return { error: processed.error };
+
+  const supabase = await createClient();
+  const path = `${id}/avatar.${processed.extension}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("avatars")
+    .upload(path, processed.data, {
+      upsert: true,
+      contentType: processed.contentType,
+    });
+
+  if (uploadError) return { error: uploadError.message };
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("avatars").getPublicUrl(path);
+
+  // Cache-bust, or the old photo sits in every browser that has seen it —
+  // including this admin's, which makes a change that worked look like one
+  // that did not.
+  const { error } = await supabase.rpc("admin_set_photo", {
+    target: id,
+    url: `${publicUrl}?t=${Date.now()}`,
+  });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin");
+  revalidatePath(`/specialists/${id}`);
+  revalidatePath("/specialists");
+  revalidatePath("/");
+  return { saved: true };
 }
