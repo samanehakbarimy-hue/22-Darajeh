@@ -326,11 +326,16 @@ export default function ServiceBooking({
             </p>
           )}
 
-          <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
-            <Assurance>بدون کارت بانکی</Assurance>
-            <Assurance>هر وقت خواستی لغو کن</Assurance>
-            <Assurance>بدون قرارداد</Assurance>
-          </ul>
+          {/* True only of the free conversation. The paid tabs take a bank
+              card and a scope, so «بدون کارت بانکی» and «بدون قرارداد» would
+              be a promise the site cannot keep there. */}
+          {active === "intro" && (
+            <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
+              <Assurance>بدون کارت بانکی</Assurance>
+              <Assurance>رزرو با امکان لغو</Assurance>
+              <Assurance>بدون قرارداد</Assurance>
+            </ul>
+          )}
         </div>
       </div>
 
