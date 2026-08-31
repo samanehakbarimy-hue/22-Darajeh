@@ -1,0 +1,224 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useId, useState } from "react";
+
+/**
+ * The browse page's filters.
+ *
+ * Written as a list of groups rather than one hard-coded control, because
+ * there is exactly one group today and there will be more: the taxonomy of
+ * fields and topics is not settled yet, and when it is, it arrives here as
+ * another entry in the array the page passes in — no change to this file.
+ *
+ * The current selection comes from the page rather than from useSearchParams:
+ * the page has already read it to do the filtering, and reading it twice is
+ * how the two drift apart. It also keeps this component out of the Suspense
+ * rules that hook carries.
+ */
+export type FilterOption = {
+  value: string;
+  label: string;
+  /** How many specialists this option would leave. Shown beside the label. */
+  count: number;
+};
+
+export type FilterGroup = {
+  /** The query parameter this group writes to. */
+  key: string;
+  title: string;
+  options: FilterOption[];
+};
+
+export default function SpecialistFilters({
+  groups,
+  selected,
+  query,
+  total,
+}: {
+  groups: FilterGroup[];
+  /** Ticked values, by group key. */
+  selected: Record<string, string[]>;
+  /** The search box's current text, kept when a filter changes. */
+  query: string;
+  /** How many specialists match right now — the count the drawer button shows. */
+  total: number;
+}) {
+  const router = useRouter();
+  const uid = useId();
+  const [open, setOpen] = useState(false);
+
+  const activeCount = groups.reduce(
+    (sum, group) => sum + (selected[group.key]?.length ?? 0),
+    0,
+  );
+
+  function toggle(groupKey: string, value: string, checked: boolean) {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+
+    for (const group of groups) {
+      const current = new Set(selected[group.key] ?? []);
+      if (group.key === groupKey) {
+        if (checked) current.add(value);
+        else current.delete(value);
+      }
+      for (const item of current) params.append(group.key, item);
+    }
+
+    const search = params.toString();
+    router.push(search ? `/specialists?${search}` : "/specialists", {
+      scroll: false,
+    });
+  }
+
+  function clearAll() {
+    router.push(
+      query ? `/specialists?q=${encodeURIComponent(query)}` : "/specialists",
+      {
+        scroll: false,
+      },
+    );
+  }
+
+  // The panel is rendered twice — once for the drawer, once for the sidebar —
+  // and only one is ever on screen. They still share a document, so the ids
+  // have to differ or every label points at whichever input came first, which
+  // is the hidden one half the time.
+  function panelFor(scope: string) {
+    return (
+      <div className="flex flex-col gap-6">
+        {groups.map((group) => (
+          <fieldset key={group.key} className="border-0 p-0">
+            <legend className="mb-3 text-sm font-bold">{group.title}</legend>
+            <div className="flex flex-col gap-1">
+              {group.options.map((option) => {
+                const checked = (selected[group.key] ?? []).includes(
+                  option.value,
+                );
+                const id = `${scope}-${group.key}-${option.value}`;
+                return (
+                  <label
+                    key={option.value}
+                    htmlFor={id}
+                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition hover:bg-brand-light/50"
+                  >
+                    <input
+                      id={id}
+                      type="checkbox"
+                      name={group.key}
+                      value={option.value}
+                      checked={checked}
+                      onChange={(event) =>
+                        toggle(group.key, option.value, event.target.checked)
+                      }
+                      className="peer sr-only"
+                    />
+                    {/* Drawn rather than native: a native checkbox keeps the
+                      browser's blue however the rest of the page is coloured. */}
+                    <span
+                      aria-hidden
+                      className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border transition peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-deep ${
+                        checked
+                          ? "border-brand bg-brand text-brand-on"
+                          : "border-card-border bg-card"
+                      }`}
+                    >
+                      {checked && (
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="h-3 w-3"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                      )}
+                    </span>
+                    <span
+                      className={
+                        checked ? "font-medium text-brand-deep" : "text-muted"
+                      }
+                    >
+                      {option.label}
+                    </span>
+                    <span className="ms-auto text-xs tabular-nums text-muted">
+                      {option.count.toLocaleString("fa-IR")}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        ))}
+
+        {activeCount > 0 && (
+          <button
+            type="button"
+            onClick={clearAll}
+            className="self-start text-sm text-brand-deep underline underline-offset-4 hover:no-underline"
+          >
+            پاک کردن فیلترها
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Phones get a button and a panel that unfolds under it. A sidebar at
+          this width would push the results themselves off the first screen. */}
+      <div className="lg:hidden">
+        <button
+          type="button"
+          onClick={() => setOpen((was) => !was)}
+          aria-expanded={open}
+          className="flex w-full items-center justify-between rounded-2xl border border-card-border bg-card px-4 py-3 text-sm font-medium transition hover:border-brand"
+        >
+          <span className="flex items-center gap-2">
+            <svg
+              aria-hidden
+              viewBox="0 0 24 24"
+              className="h-4 w-4 text-brand-deep"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 5h18M6 12h12M10 19h4" />
+            </svg>
+            فیلترها
+            {activeCount > 0 && (
+              <span className="rounded-full bg-brand-light px-2 py-0.5 text-xs font-bold text-brand-deep">
+                {activeCount.toLocaleString("fa-IR")}
+              </span>
+            )}
+          </span>
+          <span className="text-xs text-muted">
+            {total.toLocaleString("fa-IR")} کارشناس
+          </span>
+        </button>
+
+        {open && (
+          <div className="mt-3 rounded-2xl border border-card-border bg-card p-4">
+            {panelFor(`${uid}-drawer`)}
+          </div>
+        )}
+      </div>
+
+      <aside className="hidden lg:block">
+        <div className="sticky top-6 rounded-2xl border border-card-border bg-card p-5">
+          <h2 className="mb-4 text-xs font-bold uppercase tracking-wide text-muted">
+            فیلترها
+          </h2>
+          {panelFor(`${uid}-side`)}
+        </div>
+      </aside>
+    </>
+  );
+}
