@@ -42,6 +42,16 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isOpen = process.env.SITE_PRIVATE !== "true";
 
+  // The holding page renders bare — no navbar, no footer, nothing that names a
+  // part of the site or links into it. A server layout cannot read its own
+  // path, so it is told through a header, set here for a direct hit and again
+  // on the rewrite below. /soon reads nothing, so it needs no session refresh.
+  if (pathname === "/soon") {
+    const holding = new Headers(request.headers);
+    holding.set("x-holding-page", "1");
+    return NextResponse.next({ request: { headers: holding } });
+  }
+
   if (isOpen && NO_SESSION_NEEDED.includes(pathname)) {
     return NextResponse.next();
   }
@@ -58,7 +68,10 @@ export async function proxy(request: NextRequest) {
 
   // Rewritten, not redirected: the address stays whatever they typed, so a
   // link someone shares today still lands correctly once the site opens.
+  const holding = new Headers(request.headers);
+  holding.set("x-holding-page", "1");
   return NextResponse.rewrite(new URL("/soon", request.url), {
+    request: { headers: holding },
     headers: response.headers,
   });
 }

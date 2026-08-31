@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { Vazirmatn } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
@@ -45,7 +46,12 @@ export const viewport: Viewport = {
   themeColor: "#1a4740",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // The holding page stands alone: no navbar, no footer, nothing that names a
+  // section of the site or links into it. The proxy flags it in a header
+  // because a layout cannot otherwise tell which route it is wrapping.
+  const bare = (await headers()).get("x-holding-page") === "1";
+
   return (
     <html
       lang="fa"
@@ -53,9 +59,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${vazirmatn.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
+        {!bare && <Navbar />}
         {children}
-        <SiteFooter />
+        {!bare && <SiteFooter />}
       </body>
     </html>
   );
