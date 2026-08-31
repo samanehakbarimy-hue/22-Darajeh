@@ -297,9 +297,9 @@ export default function ServiceBooking({
           {active === "projects" && projectRate ? (
             <Link
               href={`/specialists/${specialistId}/project`}
-              className="block rounded-full bg-brand px-5 py-3 text-center text-sm font-semibold text-brand-on transition hover:bg-brand-hover"
+              className="block rounded-full bg-booking px-5 py-3 text-center text-sm font-semibold text-booking-on transition hover:bg-booking-hover"
             >
-              نوشتن درخواست
+              ثبت درخواست
             </Link>
           ) : hasSlots ? (
             <Link
