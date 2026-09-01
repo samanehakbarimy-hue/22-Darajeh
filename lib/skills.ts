@@ -112,7 +112,7 @@ const BY_TITLE: Record<string, string[]> = {
   "Talent Acquisition Specialist": ["LinkedIn Recruiter", "ATS", "Sourcing", "Employer Branding"],
   "HR Business Partner": ["Performance Review", "OKR", "Employee Relations", "Excel"],
 
-  // رهبری
+  // نقش‌های ارشد — زیر همان حوزه‌ای که رهبری می‌کنند
   "Tech Lead": ["System Design", "Code Review", "Git", "Agile", "Mentoring"],
   "Engineering Manager": ["Agile", "Jira", "OKR", "Hiring", "Performance Review"],
   "VP of Engineering": ["OKR", "Hiring", "System Design", "Budgeting", "Org Design"],
