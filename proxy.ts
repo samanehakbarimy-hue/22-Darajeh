@@ -42,6 +42,18 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isOpen = process.env.SITE_PRIVATE !== "true";
 
+  // The scheduled jobs carry their own credential and never a session cookie,
+  // so the curtain below would rewrite them to /soon — and return 200 while
+  // doing it, which Vercel Cron reads as success. The pricing job would then
+  // report a green tick every morning and never have run.
+  //
+  // Skipping the gate is not skipping authentication: /api/cron demands a
+  // bearer token matching CRON_SECRET and refuses everybody without one, which
+  // is a stricter door than the one being stepped around here.
+  if (pathname.startsWith("/api/cron")) {
+    return NextResponse.next();
+  }
+
   // The holding page renders bare — no navbar, no footer, nothing that names a
   // part of the site or links into it. A server layout cannot read its own
   // path, so it is told through a header, set here for a direct hit and again
