@@ -18,7 +18,7 @@
  *
  * Scoped to the fields this site is for, and to the shape ADPList and
  * MentorCruise use — software, data, product, design, marketing, business,
- * people, leadership — with oil, gas, heavy engineering and manufacturing
+ * people, leadership — with oil and gas, manufacturing and construction
  * added, which those sites do not cover and this one exists partly to serve.
  */
 export type JobField =
@@ -31,14 +31,18 @@ export type JobField =
   | "leadership"
   | "content"
   | "oil_gas"
-  | "manufacturing";
+  | "manufacturing"
+  | "civil";
 
 /** The Persian name of each field, in the order the filter should list them. */
 export const JOB_FIELDS: { key: JobField; label: string }[] = [
   { key: "software", label: "مهندسی نرم‌افزار" },
   { key: "data_ai", label: "هوش مصنوعی، داده و یادگیری ماشین" },
-  { key: "oil_gas", label: "نفت، گاز و مهندسی سنگین" },
+  // The industry calls itself this. «مهندسی سنگین» was a translation of
+  // "heavy engineering" that nobody in Iran actually says.
+  { key: "oil_gas", label: "نفت، گاز و پتروشیمی" },
   { key: "manufacturing", label: "تولید و ساخت" },
+  { key: "civil", label: "عمران و ساختمان" },
   { key: "product_design", label: "محصول و طراحی" },
   { key: "marketing_sales", label: "بازاریابی و فروش" },
   { key: "business_ops", label: "کسب‌وکار، مالی و عملیات" },
@@ -167,8 +171,6 @@ export const TITLES_BY_FIELD: Record<JobField, [string, string][]> = {
   oil_gas: [
     ["مهندس مکانیک", "Mechanical Engineer"],
     ["مهندس برق", "Electrical Engineer"],
-    ["مهندس عمران", "Civil Engineer"],
-    ["مهندس سازه", "Structural Engineer"],
     ["مهندس شیمی", "Chemical Engineer"],
     ["مهندس فرآیند", "Process Engineer"],
     ["مهندس تجهیزات ثابت", "Static Equipment Engineer"],
@@ -188,6 +190,11 @@ export const TITLES_BY_FIELD: Record<JobField, [string, string][]> = {
     ["مهندس برنامه‌ریزی و کنترل پروژه", "Planning Engineer"],
     ["مهندس مواد و متالورژی", "Materials Engineer"],
     ["مهندس HSE", "HSE Engineer"],
+  ],
+
+  civil: [
+    ["مهندس عمران", "Civil Engineer"],
+    ["مهندس سازه", "Structural Engineer"],
     ["معمار", "Architect"],
   ],
 

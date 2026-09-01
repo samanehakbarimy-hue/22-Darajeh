@@ -106,19 +106,18 @@ export default async function SpecialistsPage({
   // Counted against what the search left, not against everybody: the number
   // beside a checkbox should say what ticking it would actually give you.
   //
-  // A field with nobody in it is left out entirely rather than shown at zero.
-  // Ten empty checkboxes would be a longer sidebar than the results beside it,
-  // and each one a dead end; they appear as specialists in them do.
+  // Every field is listed, including the ones nobody is in yet. A count of
+  // zero is not a dead end here — it is the site saying which fields it is
+  // for, which is worth more to somebody deciding whether to come back than a
+  // short sidebar is.
   const fieldOptions = JOB_FIELDS.map(({ key, label }) => ({
     value: key as string,
     label,
     count: searched.filter((row) => fieldOfTitle(row.headline) === key).length,
-  })).filter((option) => option.count > 0 || fields.includes(option.value as JobField));
+  }));
 
   const groups: FilterGroup[] = [
-    ...(fieldOptions.length > 0
-      ? [{ key: "field", title: "حوزه کاری", options: fieldOptions }]
-      : []),
+    { key: "field", title: "حوزه کاری", options: fieldOptions },
     {
       key: "loc",
       title: "موقعیت کارشناس",
