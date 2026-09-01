@@ -19,8 +19,6 @@ import { useId, useState } from "react";
 export type FilterOption = {
   value: string;
   label: string;
-  /** How many specialists this option would leave. Shown beside the label. */
-  count: number;
 };
 
 export type FilterGroup = {
@@ -34,15 +32,12 @@ export default function SpecialistFilters({
   groups,
   selected,
   query,
-  total,
 }: {
   groups: FilterGroup[];
   /** Ticked values, by group key. */
   selected: Record<string, string[]>;
   /** The search box's current text, kept when a filter changes. */
   query: string;
-  /** How many specialists match right now — the count the drawer button shows. */
-  total: number;
 }) {
   const router = useRouter();
   const uid = useId();
@@ -87,11 +82,16 @@ export default function SpecialistFilters({
   // is the hidden one half the time.
   function panelFor(scope: string) {
     return (
-      <div className="flex flex-col gap-6">
+      // A box per group, not one box with headings in it. Two lists sharing a
+      // card read as one long list whose middle happens to be bold.
+      <div className="flex flex-col gap-4">
         {groups.map((group) => (
-          <fieldset key={group.key} className="border-0 p-0">
-            <legend className="mb-3 text-sm font-bold">{group.title}</legend>
-            <div className="flex flex-col gap-1">
+          <fieldset
+            key={group.key}
+            className="rounded-2xl border border-card-border bg-card p-5"
+          >
+            <legend className="px-1 text-sm font-bold">{group.title}</legend>
+            <div className="mt-3 flex flex-col gap-1">
               {group.options.map((option) => {
                 const checked = (selected[group.key] ?? []).includes(
                   option.value,
@@ -145,9 +145,6 @@ export default function SpecialistFilters({
                     >
                       {option.label}
                     </span>
-                    <span className="ms-auto text-xs tabular-nums text-muted">
-                      {option.count.toLocaleString("fa-IR")}
-                    </span>
                   </label>
                 );
               })}
@@ -199,25 +196,13 @@ export default function SpecialistFilters({
               </span>
             )}
           </span>
-          <span className="text-xs text-muted">
-            {total.toLocaleString("fa-IR")} کارشناس
-          </span>
         </button>
 
-        {open && (
-          <div className="mt-3 rounded-2xl border border-card-border bg-card p-4">
-            {panelFor(`${uid}-drawer`)}
-          </div>
-        )}
+        {open && <div className="mt-3">{panelFor(`${uid}-drawer`)}</div>}
       </div>
 
       <aside className="hidden lg:block">
-        <div className="sticky top-6 rounded-2xl border border-card-border bg-card p-5">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-wide text-muted">
-            فیلترها
-          </h2>
-          {panelFor(`${uid}-side`)}
-        </div>
+        <div className="sticky top-6">{panelFor(`${uid}-side`)}</div>
       </aside>
     </>
   );

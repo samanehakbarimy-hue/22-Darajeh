@@ -106,32 +106,27 @@ export default async function SpecialistsPage({
   // Counted against what the search left, not against everybody: the number
   // beside a checkbox should say what ticking it would actually give you.
   //
-  // Every field is listed, including the ones nobody is in yet. A count of
-  // zero is not a dead end here — it is the site saying which fields it is
-  // for, which is worth more to somebody deciding whether to come back than a
-  // short sidebar is.
-  const fieldOptions = JOB_FIELDS.map(({ key, label }) => ({
-    value: key as string,
-    label,
-    count: searched.filter((row) => fieldOfTitle(row.headline) === key).length,
-  }));
-
+  // Every field is listed, including the ones nobody is in yet: the list is
+  // the site saying which fields it is for.
+  //
+  // Without a count beside it, deliberately. A number here is a headcount by
+  // another route — «۰» beside ten fields and «۱» beside one says how new this
+  // is more plainly than the total ever did.
   const groups: FilterGroup[] = [
-    { key: "field", title: "حوزه کاری", options: fieldOptions },
+    {
+      key: "field",
+      title: "حوزه کاری",
+      options: JOB_FIELDS.map(({ key, label }) => ({
+        value: key as string,
+        label,
+      })),
+    },
     {
       key: "loc",
       title: "موقعیت کارشناس",
       options: [
-        {
-          value: "iran",
-          label: "ایران",
-          count: searched.filter((row) => locationOf(row) === "iran").length,
-        },
-        {
-          value: "abroad",
-          label: "خارج از کشور",
-          count: searched.filter((row) => locationOf(row) === "abroad").length,
-        },
+        { value: "iran", label: "ایران" },
+        { value: "abroad", label: "خارج از کشور" },
       ],
     },
   ];
@@ -328,27 +323,25 @@ export default async function SpecialistsPage({
             groups={groups}
             selected={{ loc: locations, field: fields }}
             query={q?.trim() ?? ""}
-            total={specialists.length}
           />
         </div>
 
         <div className="lg:order-1">
-          <div className="flex flex-wrap items-baseline justify-between gap-2 pb-4">
-            <p className="text-sm text-muted">
-              <span className="font-bold text-foreground">
-                {specialists.length.toLocaleString("fa-IR")} کارشناس
-              </span>{" "}
-              {isFiltered ? "با این جستجو پیدا شد" : "آماده گفت‌وگو"}
-            </p>
-            {isFiltered && (
+          {/* No count. How many specialists are here is the site's business,
+              not the visitor's — and at this stage saying it out loud only
+              tells somebody how early they are. The way back out of a search
+              still belongs here, so the row stays when there is one. */}
+          {isFiltered && (
+            <div className="flex flex-wrap items-baseline justify-between gap-2 pb-4">
+              <p className="text-sm text-muted">نتیجه جستجو</p>
               <Link
                 href="/specialists"
                 className="text-sm text-brand-deep underline underline-offset-4 hover:no-underline"
               >
                 پاک کردن جستجو
               </Link>
-            )}
-          </div>
+            </div>
+          )}
 
           {specialists.length > 0 ? (
             <div className="flex flex-col gap-4">
