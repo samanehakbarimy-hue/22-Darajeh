@@ -169,11 +169,15 @@ export default function SpecialistFilters({
                 hidden={!isOpen}
                 className="mt-3 flex flex-col gap-1"
               >
-                {options.map((option) => {
+                {options.map((option, index) => {
                   const checked = (selected[group.key] ?? []).includes(
                     option.value,
                   );
-                  const id = `${scope}-${group.key}-${option.value}`;
+                  // Numbered, not named. A company or a tool is whatever
+                  // somebody typed — «پتروپارس», "PV Elite" — and a space in
+                  // an id is invalid, which would quietly unhook the label
+                  // from its checkbox.
+                  const id = `${scope}-${group.key}-${index}`;
                   return (
                     <label
                       key={option.value}
