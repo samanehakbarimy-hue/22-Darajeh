@@ -101,6 +101,16 @@ export const SESSION_TYPES: SessionType[] = [
   },
 ];
 
+/**
+ * What the price band table files project work under.
+ *
+ * Project work has no session type — it is priced by the hour against a
+ * different conversation — so the band table, keyed by session type, needs
+ * some name for it. Must match band_key() in migration 0056; if the two ever
+ * disagree, an admin sets a range that nothing consults.
+ */
+export const HOURLY_BAND_KEY = "hourly_project";
+
 export function sessionType(key: string | null): SessionType | null {
   if (!key) return null;
   return SESSION_TYPES.find((s) => s.key === key) ?? null;

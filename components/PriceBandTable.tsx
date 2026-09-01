@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { savePriceBand } from "@/lib/actions/pricing";
 import { SENIORITY_LEVELS } from "@/lib/seniority";
+import { HOURLY_BAND_KEY, SESSION_TYPES } from "@/lib/services";
 import { ceilToman, floorToman } from "@/lib/rates";
 
 export type Band = {
@@ -12,10 +13,26 @@ export type Band = {
   max_usd: number;
 };
 
-const SERVICES: { key: string; title: string; minutes: number }[] = [
-  { key: "resume-review", title: "بررسی رزومه", minutes: 30 },
-  { key: "career-path", title: "مسیر شغلی", minutes: 45 },
-  { key: "interview-prep", title: "آمادگی مصاحبه", minutes: 60 },
+/**
+ * Every priced thing on the site, read from the catalogue rather than copied
+ * from it.
+ *
+ * This used to be a hand-written list of three, which is how پرسش و پاسخ came
+ * to have no range at all: it was added to SESSION_TYPES and nothing here
+ * noticed. A missing row is not a cosmetic gap — the trigger reads an absent
+ * band as "no rule yet" and publishes whatever it is given, so the one service
+ * nobody listed was the one service nobody capped.
+ *
+ * Project work is appended by hand because it genuinely is not a session: it
+ * has no session type and is priced by the hour.
+ */
+const ROWS: { key: string; title: string; meta: string }[] = [
+  ...SESSION_TYPES.map((session) => ({
+    key: session.key,
+    title: session.title,
+    meta: `${session.minutes.toLocaleString("fa-IR")} دقیقه`,
+  })),
+  { key: HOURLY_BAND_KEY, title: "کار پروژه‌ای", meta: "هر نفر-ساعت" },
 ];
 
 /** What a dollar band is worth today, for an admin who thinks in toman. */
@@ -106,8 +123,12 @@ function Cell({
 }
 
 /**
- * The nine numbers the site will publish without being asked: three session
- * types against three experience bands, in dollars.
+ * What the site will publish without being asked: every priced thing against
+ * the three experience bands, in dollars.
+ *
+ * Fifteen cells since 0056 — four session types plus project work. It was nine
+ * until پرسش و پاسخ and the hourly rate turned out to have no range at all,
+ * which meant no ceiling either.
  *
  * Dollars because that is what a session is worth. They were toman until 0055,
  * which meant the range and the price it judges were quoted in different
@@ -135,7 +156,9 @@ export default function PriceBandTable({
       <table className="w-full text-right text-sm">
         <thead className="bg-card text-muted">
           <tr>
-            <th className="px-4 py-3 font-medium">جلسه</th>
+            {/* Not «جلسه» any more: the last row is project work, which is
+                priced by the hour and is not a session. */}
+            <th className="px-4 py-3 font-medium">خدمت</th>
             {SENIORITY_LEVELS.map((level) => (
               <th key={level.value} className="px-4 py-3 font-medium">
                 {level.label}
@@ -144,20 +167,18 @@ export default function PriceBandTable({
           </tr>
         </thead>
         <tbody>
-          {SERVICES.map((service) => (
-            <tr key={service.key} className="border-t border-card-border">
+          {ROWS.map((row) => (
+            <tr key={row.key} className="border-t border-card-border">
               <td className="px-4 py-3 align-top">
-                <div className="font-medium">{service.title}</div>
-                <div className="mt-0.5 text-xs text-muted">
-                  {service.minutes.toLocaleString("fa-IR")} دقیقه
-                </div>
+                <div className="font-medium">{row.title}</div>
+                <div className="mt-0.5 text-xs text-muted">{row.meta}</div>
               </td>
               {SENIORITY_LEVELS.map((level) => (
                 <td key={level.value} className="px-4 py-3 align-top">
                   <Cell
-                    sessionKey={service.key}
+                    sessionKey={row.key}
                     seniority={level.value}
-                    band={find(service.key, level.value)}
+                    band={find(row.key, level.value)}
                     usdRate={usdRate}
                   />
                 </td>

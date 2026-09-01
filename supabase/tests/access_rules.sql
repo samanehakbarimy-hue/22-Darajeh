@@ -1993,6 +1993,26 @@ select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
   'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_usd, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''resume-review'','''','''',30, 2.9, true)',
   'a price inside it is kept','ok');
 
+-- The two that had no band until 0056, and so had no ceiling either. Both are
+-- an hour of somebody's time and both sit in the 4..15 senior range.
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_usd, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''open-qa'','''','''',60, 400, true)',
+  'پرسش و پاسخ is capped now','refused: PRICE_ABOVE_BAND');
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'insert into mentor_services (mentor_id, kind, session_key, title, description, minutes, price_usd, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''consultation'',''open-qa'','''','''',60, 9, true)',
+  'and a fair price for it still saves','ok');
+
+-- Project work has no session_key at all, which is how it slipped past the
+-- trigger entirely. It is filed under a reserved band key instead.
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'insert into mentor_services (mentor_id, kind, session_key, title, description, min_hours, price_usd, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''hourly_project'',null,'''','''',1, 400, true)',
+  'an hour of project work is capped now','refused: PRICE_ABOVE_BAND');
+
+-- Naming no price is not a price outside the band.
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'insert into mentor_services (mentor_id, kind, session_key, title, description, min_hours, is_negotiable, is_active) values (''cccccccc-0000-4000-8000-000000000003'',''hourly_project'',null,'''','''',1, true, true)',
+  'but negotiable project work is not judged','ok');
+
 -- Asking is the specialist's own, and only about themselves. In dollars, like
 -- the band it is asking to step outside of.
 select pg_temp.try_as('dddddddd-0000-4000-8000-000000000004',
