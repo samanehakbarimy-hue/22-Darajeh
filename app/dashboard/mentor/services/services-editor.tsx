@@ -86,11 +86,13 @@ export default function ServicesEditor({
           مدت هر جلسه ثابت است تا قیمت‌ها بین کارشناس‌ها قابل مقایسه باشد. تو فقط
           تصمیم می‌گیری کدام را ارائه بدهی و چقدر بگیری.
         </p>
+        {/* This used to open by explaining what an empty price does and close
+            by telling a specialist that the bottom of the band is a fine place
+            to be. Both went: the first is discoverable by leaving the field
+            empty, and the second was the site advising somebody on what their
+            own work is worth, which is not its business. */}
         <p className="mt-2 text-sm leading-7 text-muted">
-          قیمت را خالی بگذاری، روی پروفایلت «به‌زودی» می‌آید. صفر ننویس —
-          رایگان فقط همان گفتگوی ۲۲ دقیقه‌ای است. بیشتر کسانی که اینجا رزرو
-          می‌کنند اول راهشان‌اند و از جیب خودشان می‌دهند، پس پایین بازه هم قیمت
-          درستی است.
+          رایگان فقط همان گفتگوی ۲۲ دقیقه‌ای است.
         </p>
 
         <ul className="mt-5 flex flex-col gap-3">
