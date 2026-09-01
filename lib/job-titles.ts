@@ -18,7 +18,7 @@
  *
  * Scoped to the fields this site is for, and to the shape ADPList and
  * MentorCruise use — software, data, product, design, marketing, business,
- * people, leadership — with oil and gas, manufacturing and construction
+ * people — with oil and gas, manufacturing and construction
  * added, which those sites do not cover and this one exists partly to serve.
  */
 export type JobField =
@@ -28,7 +28,6 @@ export type JobField =
   | "marketing_sales"
   | "business_ops"
   | "hr"
-  | "leadership"
   | "content"
   | "oil_gas"
   | "manufacturing"
@@ -47,7 +46,6 @@ export const JOB_FIELDS: { key: JobField; label: string }[] = [
   { key: "marketing_sales", label: "بازاریابی و فروش" },
   { key: "business_ops", label: "کسب‌وکار، مالی و عملیات" },
   { key: "hr", label: "منابع انسانی" },
-  { key: "leadership", label: "رهبری" },
   { key: "content", label: "محتوا" },
 ];
 
@@ -85,6 +83,13 @@ export const TITLES_BY_FIELD: Record<JobField, [string, string][]> = {
     ["مدیر پایگاه داده", "Database Administrator"],
     ["معمار نرم‌افزار", "Software Architect"],
     ["معمار راهکار", "Solutions Architect"],
+    // Engineering leadership sits with engineering. These had a «رهبری» field
+    // of their own, which asked a seeker to know they wanted a manager before
+    // they knew what they wanted a manager of.
+    ["راهبر فنی", "Tech Lead"],
+    ["مدیر مهندسی", "Engineering Manager"],
+    ["معاون مهندسی", "VP of Engineering"],
+    ["مدیر ارشد فناوری", "CTO"],
   ],
 
   data_ai: [
@@ -114,6 +119,7 @@ export const TITLES_BY_FIELD: Record<JobField, [string, string][]> = {
     ["طراح موشن", "Motion Designer"],
     ["طراح برند", "Brand Designer"],
     ["راهبر طراحی", "Design Lead"],
+    ["مدیر ارشد محصول", "CPO"],
   ],
 
   marketing_sales: [
@@ -143,6 +149,9 @@ export const TITLES_BY_FIELD: Record<JobField, [string, string][]> = {
     ["مدیر پروژه", "Project Manager"],
     ["مدیر برنامه", "Program Manager"],
     ["اسکرام مستر", "Scrum Master"],
+    ["مدیر ارشد عملیات", "COO"],
+    ["مدیرعامل", "CEO"],
+    ["بنیان‌گذار", "Founder"],
   ],
 
   hr: [
@@ -150,17 +159,6 @@ export const TITLES_BY_FIELD: Record<JobField, [string, string][]> = {
     ["کارشناس جذب", "Recruiter"],
     ["کارشناس جذب استعداد", "Talent Acquisition Specialist"],
     ["شریک کسب‌وکار منابع انسانی", "HR Business Partner"],
-  ],
-
-  leadership: [
-    ["راهبر فنی", "Tech Lead"],
-    ["مدیر مهندسی", "Engineering Manager"],
-    ["معاون مهندسی", "VP of Engineering"],
-    ["مدیر ارشد فناوری", "CTO"],
-    ["مدیر ارشد محصول", "CPO"],
-    ["مدیر ارشد عملیات", "COO"],
-    ["مدیرعامل", "CEO"],
-    ["بنیان‌گذار", "Founder"],
   ],
 
   content: [
