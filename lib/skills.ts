@@ -126,7 +126,7 @@ const BY_TITLE: Record<string, string[]> = {
   "Content Writer": ["Copywriting", "SEO", "Content Strategy", "Editing"],
   "Technical Writer": ["Markdown", "Docs as Code", "API Documentation", "Git"],
 
-  // نفت، گاز و مهندسی سنگین
+  // نفت، گاز و پتروشیمی — و عمران و ساختمان
   "Mechanical Engineer": ["AutoCAD", "SolidWorks", "ANSYS", "CATIA", "Inventor"],
   "Electrical Engineer": ["ETAP", "MATLAB", "AutoCAD", "PLC", "SCADA"],
   "Civil Engineer": ["AutoCAD", "ETABS", "SAP2000", "SAFE", "Revit"],
