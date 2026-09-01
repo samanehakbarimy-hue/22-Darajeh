@@ -3,12 +3,7 @@
 import { useActionState, useState } from "react";
 import { saveMentorProfile } from "@/lib/actions/mentor";
 import Spinner from "@/components/Spinner";
-import {
-  MAX_YEARS,
-  MIN_YEARS,
-  seniorityBadge,
-  seniorityForYears,
-} from "@/lib/seniority";
+import { MAX_YEARS, MIN_YEARS } from "@/lib/seniority";
 import { fa } from "@/lib/persian";
 import { skillsFor, ALL_SKILLS } from "@/lib/skills";
 import { JOB_TITLES } from "@/lib/job-titles";
@@ -102,19 +97,57 @@ function parseTags(raw: string): string[] {
     .filter(Boolean);
 }
 
+/**
+ * One part of the form, and how far through it somebody is.
+ *
+ * The progress used to be a bar across the top of the page — three stages, two
+ * of which were other pages, and a tick beside a step you were not on. It told
+ * you where you were in a journey rather than what was left to do on the
+ * screen in front of you, which is the only question this page raises.
+ *
+ * So it lives on the sections instead: a number at the head of each, turning
+ * green with a tick once that part has everything it needs. Nothing moves and
+ * nothing is hidden — the marker changes colour under the cursor as the last
+ * field of a part is filled, which is the moment worth marking.
+ */
 function Section({
+  step,
+  done,
   title,
   description,
   children,
 }: {
+  step: number;
+  done: boolean;
   title: string;
   description?: string;
   children: React.ReactNode;
 }) {
   return (
     <section className="rounded-2xl border border-card-border bg-card p-6">
-      <h2 className="font-bold">{title}</h2>
-      {description && <p className="mt-1 text-sm text-muted">{description}</p>}
+      <div className="flex items-start gap-3">
+        <span
+          aria-hidden
+          className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+            done
+              ? "bg-success text-white"
+              : "border border-card-border bg-background text-muted"
+          }`}
+        >
+          {done ? "✓" : fa(step)}
+        </span>
+        <div className="min-w-0">
+          <h2 className="font-bold">
+            {title}
+            <span className="sr-only">
+              {done ? " — تکمیل شده" : " — هنوز کامل نیست"}
+            </span>
+          </h2>
+          {description && (
+            <p className="mt-1 text-sm text-muted">{description}</p>
+          )}
+        </div>
+      </div>
       <div className="mt-5 flex flex-col gap-5">{children}</div>
     </section>
   );
@@ -131,7 +164,6 @@ export default function MentorProfileForm({
   initialLinkedin,
   initialMeetingLink,
   initialPhone,
-  initialSeniority,
   initialYears,
   googleConnected,
 }: {
@@ -145,7 +177,6 @@ export default function MentorProfileForm({
   initialLinkedin: string;
   initialMeetingLink: string;
   initialPhone: string;
-  initialSeniority: string;
   /** Their stated years, or "" for a profile written before we asked. */
   initialYears: string;
   /** Connected specialists get a link per booking and need no fallback. */
@@ -169,18 +200,34 @@ export default function MentorProfileForm({
   const [phone, setPhone] = useState(initialPhone);
   const [years, setYears] = useState(initialYears);
 
-  // A preview of where this number lands, not the stored value -- the trigger
-  // in migration 0057 is what actually writes the band. Falls back to whatever
-  // band an older profile already carries while its year count is still empty.
-  const bandLabel =
-    seniorityBadge(seniorityForYears(Number(years))) ??
-    seniorityBadge(initialSeniority);
+  // Only once the number is genuinely outside what the database will take.
+  // Empty is not an error while somebody is still filling the form in; the
+  // save refuses it, and that is the right moment to say so.
+  const yearsNumber = Number(years);
+  const yearsError =
+    years.trim() !== "" &&
+    (!Number.isInteger(yearsNumber) ||
+      yearsNumber < MIN_YEARS ||
+      yearsNumber > MAX_YEARS)
+      ? `عددی بین ${fa(MIN_YEARS)} تا ${fa(MAX_YEARS)} بنویس.`
+      : "";
+  const yearsFilled = years.trim() !== "" && !yearsError;
+
 
   const [tags, setTags] = useState<string[]>(parseTags(initialTags));
   const [draft, setDraft] = useState("");
 
   const [skills, setSkills] = useState<string[]>(parseTags(initialSkills));
   const [skillDraft, setSkillDraft] = useState("");
+// What each part needs before its marker turns green. Deliberately the
+  // fields a seeker would miss, not every input on the screen — «کجا کار
+  // می‌کنی» is marked optional and a part that stayed grey without it would be
+  // calling that a lie.
+  const introDone = Boolean(preview) && headline.trim() !== "" && bio.trim() !== "";
+  const expertiseDone = tags.length > 0 && country.trim() !== "" && yearsFilled;
+  const skillsDone = skills.length > 0;
+  const contactDone =
+    phone.trim() !== "" && (googleConnected || meetingLink.trim() !== "");
 
   // Driven by the job title first, then the field. Two backend developers and
   // an AI engineer all sit in توسعه نرم‌افزار and share almost nothing, so the
@@ -289,6 +336,8 @@ export default function MentorProfileForm({
       className="mt-8 flex flex-col gap-5"
     >
       <Section
+        step={1}
+        done={introDone}
         title="معرفی"
         description="این بخش روی پروفایل عمومی تو نمایش داده می‌شه."
       >
@@ -383,6 +432,29 @@ export default function MentorProfileForm({
         </div>
         </div>
 
+        <div>
+          <label htmlFor="bio" className="mb-1.5 block text-sm font-medium">
+            معرفی کوتاه
+          </label>
+          <textarea
+            id="bio"
+            name="bio"
+            rows={5}
+            required
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="در چند خط بنویس چه تجربه‌ای داری و توی این ۲۲ دقیقه می‌تونی به چه کسی کمک کنی."
+            className={FIELD_CLASS}
+          />
+        </div>
+      </Section>
+
+      <Section
+        step={2}
+        done={expertiseDone}
+        title="تخصص و تجربه"
+        description="حوزه‌ای که در آن کار می‌کنی و مدتی که کرده‌ای."
+      >
         <div>
           <label
             htmlFor="tag_draft"
@@ -488,51 +560,42 @@ export default function MentorProfileForm({
               The band still exists — the price table is keyed by it — but it
               is derived from this number by a database trigger, so it is shown
               here rather than chosen. */}
+          {/* No min/max on the input and no rule printed underneath. A number
+              field is obvious enough without being told what a number is, and
+              a limit announced before anybody has done anything wrong reads
+              like a warning. It speaks only when the number is actually out of
+              range — which is also when it is useful. */}
           <div className="flex flex-wrap items-center gap-3">
             <input
               type="number"
               name="years_experience"
               inputMode="numeric"
-              min={MIN_YEARS}
-              max={MAX_YEARS}
               step={1}
               value={years}
               onChange={(event) => setYears(event.target.value)}
-              aria-describedby="years-help"
-              className="w-24 rounded-lg border border-card-border bg-background px-3 py-2 text-sm outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
+              aria-invalid={Boolean(yearsError)}
+              aria-describedby={yearsError ? "years-error" : undefined}
+              className={`w-24 rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 ${
+                yearsError
+                  ? "border-danger focus:ring-danger/20"
+                  : "border-card-border focus:border-brand-deep focus:ring-brand/20"
+              }`}
             />
             <span className="text-sm text-muted">سال</span>
-            {bandLabel && (
-              <span className="rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep">
-                بازه قیمت: {bandLabel}
-              </span>
-            )}
           </div>
-          <p id="years-help" className="mt-1.5 text-xs text-muted">
-            عددی بین {fa(MIN_YEARS)} تا {fa(MAX_YEARS)}. روی پروفایل همین عدد
-            نوشته می‌شود.
-          </p>
+          {yearsError && (
+            <p id="years-error" className="mt-1.5 text-xs text-danger">
+              {yearsError}
+            </p>
+          )}
         </div>
         </div>
 
-        <div>
-          <label htmlFor="bio" className="mb-1.5 block text-sm font-medium">
-            معرفی کوتاه
-          </label>
-          <textarea
-            id="bio"
-            name="bio"
-            rows={5}
-            required
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            placeholder="در چند خط بنویس چه تجربه‌ای داری و توی این ۲۲ دقیقه می‌تونی به چه کسی کمک کنی."
-            className={FIELD_CLASS}
-          />
-        </div>
       </Section>
 
       <Section
+        step={3}
+        done={skillsDone}
         title="مهارت‌ها و ابزارها"
         description="چیزهایی که باهاشان کار می‌کنی. متقاضی‌ها معمولاً دنبال همین‌اند، نه فقط عنوان حوزه."
       >
@@ -595,6 +658,8 @@ export default function MentorProfileForm({
       </Section>
 
       <Section
+        step={4}
+        done={contactDone}
         title="راه‌های ارتباطی"
         description="شماره تماست پیش ما می‌مونه و به کسی نشون داده نمی‌شه. لینک جلسه فقط بعد از رزرو، به همون متقاضی نشون داده می‌شه."
       >

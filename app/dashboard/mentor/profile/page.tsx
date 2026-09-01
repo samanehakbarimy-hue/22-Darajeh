@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import MentorProfileForm from "./mentor-profile-form";
-import StageBar from "@/components/StageBar";
 import { isGoogleConnectOffered } from "@/lib/google/meet";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -77,9 +76,12 @@ export default async function MentorProfilePage({
         این اطلاعات بعد از تأیید ادمین، به‌صورت عمومی نمایش داده می‌شه.
       </p>
 
-      {/* The same bar as the signup page, one step along: this screen is the
-          middle of becoming a specialist, not a form that arrived on its own. */}
-      <StageBar current={1} />
+      {/* The stage bar used to sit here, one step along from signup. It was
+          answering the wrong question: two of its three stages were other
+          pages, so it said where you were in a journey while the only thing
+          anybody wants to know on this screen is what is left to fill in.
+          That now lives on the four sections themselves, each numbered and
+          turning green as it is finished. */}
 
       {/* Sent back for a correction. The reason is shown in full, because
           "your profile was not accepted" with no reason is the thing that
@@ -165,7 +167,6 @@ export default async function MentorProfilePage({
         initialLinkedin={mentorProfile?.linkedin_url ?? ""}
         initialMeetingLink={link?.meeting_link ?? ""}
         initialPhone={contact?.phone ?? ""}
-        initialSeniority={mentorProfile?.seniority ?? ""}
         initialYears={
           mentorProfile?.years_experience == null
             ? ""
