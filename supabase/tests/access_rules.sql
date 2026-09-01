@@ -2049,6 +2049,21 @@ select pg_temp.try_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4',
   'select admin_decide_price_request((select id from price_requests limit 1), ''approved'', 500, null)',
   'an approval cannot pass the site maximum','refused');
 
+-- Experience is a year count, and the band is derived from it. A specialist
+-- who states their years must not be able to state a band that disagrees.
+select pg_temp.record('price asks','nine years lands in the senior band','senior',
+  public.seniority_for_years(9));
+select pg_temp.record('price asks','and twenty years in the principal one','principal',
+  public.seniority_for_years(20));
+select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
+  'update mentor_profiles set years_experience = 40 where id=''cccccccc-0000-4000-8000-000000000003''',
+  'a number outside 3..30 is refused','refused');
+-- Written straight through, so this proves the trigger and not the form.
+update mentor_profiles set seniority = 'mid', years_experience = 20
+ where id = 'cccccccc-0000-4000-8000-000000000003';
+select pg_temp.record('price asks','the years win over any band written beside them','principal',
+  (select seniority from mentor_profiles where id='cccccccc-0000-4000-8000-000000000003'));
+
 -- Setting the band is the admin's alone, and it is bounded too.
 select pg_temp.try_as('cccccccc-0000-4000-8000-000000000003',
   'select admin_set_price_band(''resume-review'',''senior'',1,50)',

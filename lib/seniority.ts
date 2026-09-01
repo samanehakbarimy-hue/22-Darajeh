@@ -41,6 +41,46 @@ export function seniorityBadge(value: string | null | undefined): string | null 
   return SENIORITY_LEVELS.find((l) => l.value === value)?.badge ?? null;
 }
 
+/** The narrowest and widest a specialist may claim. */
+export const MIN_YEARS = 3;
+export const MAX_YEARS = 30;
+
+/**
+ * Which price band a year count falls into.
+ *
+ * Must agree with seniority_for_years() in migration 0057, which is what the
+ * database actually enforces. This copy exists so a form can show somebody
+ * their band as they type, and it is only ever a preview — the stored value
+ * comes from the trigger, never from here.
+ */
+export function seniorityForYears(
+  years: number | null | undefined,
+): Seniority | null {
+  if (years === null || years === undefined || !Number.isFinite(years)) {
+    return null;
+  }
+  if (years < 7) return "mid";
+  if (years < 15) return "senior";
+  return "principal";
+}
+
+/**
+ * What a seeker reads: «۹ سال تجربه».
+ *
+ * Falls back to the old band label for a profile written before years were
+ * asked for. Inventing a number to fill the gap would publish a claim about
+ * somebody that they never made, so the band stays until they say otherwise.
+ */
+export function experienceLabel(
+  years: number | null | undefined,
+  seniority: string | null | undefined,
+): string | null {
+  if (typeof years === "number" && years > 0) {
+    return `${years.toLocaleString("fa-IR")} سال تجربه`;
+  }
+  return seniorityBadge(seniority);
+}
+
 /**
  * A suggested range, not a rule. Returns null when there is no base rate or no
  * seniority to scale it by — a suggestion drawn from nothing is worse than

@@ -7,7 +7,7 @@ import SpecialistFilters, {
   type FilterGroup,
   type FilterOption,
 } from "@/components/SpecialistFilters";
-import { seniorityBadge } from "@/lib/seniority";
+import { experienceLabel } from "@/lib/seniority";
 import { JOB_FIELDS, fieldOfTitle, type JobField } from "@/lib/job-titles";
 import { servicePrice, type MentorService } from "@/lib/services";
 import { getUsdToToman } from "@/lib/exchange-rate";
@@ -22,6 +22,7 @@ type Row = {
   expertise_tags: string[] | null;
   skills: string[] | null;
   seniority: string | null;
+  years_experience: number | null;
   profiles: unknown;
 };
 
@@ -85,7 +86,7 @@ export default async function SpecialistsPage({
   const { data } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, company, country, bio, expertise_tags, skills, seniority, profiles!mentor_profiles_id_fkey(full_name, photo_url)",
+      "id, headline, company, country, bio, expertise_tags, skills, seniority, years_experience, profiles!mentor_profiles_id_fkey(full_name, photo_url)",
     )
     .eq("status", "approved")
     .order("created_at", { ascending: false });
@@ -362,7 +363,7 @@ export default async function SpecialistsPage({
       // Tools first — they are the specific ones — then the broader fields,
       // with anything named twice kept once.
       tags: [...new Set([...(row.skills ?? []), ...(row.expertise_tags ?? [])])],
-      seniority: seniorityBadge(row.seniority),
+      seniority: experienceLabel(row.years_experience, row.seniority),
       heldSessions: held.get(row.id) ?? 0,
       rating: rating
         ? { average: rating.total / rating.count, count: rating.count }

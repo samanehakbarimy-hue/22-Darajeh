@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { processAvatar } from "@/lib/images";
 import { notifyProfileForReview } from "@/lib/email/notifications";
+import { MAX_YEARS, MIN_YEARS } from "@/lib/seniority";
 
 export type MentorProfileState =
   | { error?: string; success?: boolean; backToReview?: boolean }
@@ -33,10 +34,14 @@ export async function saveMentorProfile(
     .trim()
     .slice(0, 80);
   const country = String(formData.get("country") ?? "").trim();
-  // Blank is a real answer: the column is nullable and its check
-  // constraint would reject an empty string.
-  const seniorityRaw = String(formData.get("seniority") ?? "").trim();
-  const seniority = seniorityRaw === "" ? null : seniorityRaw;
+  // A year count now, not one of three bands. The band still exists because
+  // the price table is keyed by it, but the database derives it from this
+  // number — see migration 0057 — so it is never written from here.
+  const yearsRaw = String(formData.get("years_experience") ?? "")
+    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
+    .replace(/[^0-9]/g, "")
+    .trim();
+  const years = yearsRaw === "" ? null : Number(yearsRaw);
   const bio = String(formData.get("bio") ?? "").trim();
   const tagsRaw = String(formData.get("expertise_tags") ?? "").trim();
   const skillsRaw = String(formData.get("skills") ?? "").trim();
@@ -49,8 +54,13 @@ export async function saveMentorProfile(
   }
 
   // An admin checks this claim before approving, so it cannot be optional.
-  if (!seniority) {
-    return { error: "میزان تجربه را انتخاب کن." };
+  if (years === null || !Number.isFinite(years)) {
+    return { error: "چند سال تجربه داری؟ با عدد بنویس." };
+  }
+  if (years < MIN_YEARS || years > MAX_YEARS) {
+    return {
+      error: `عدد تجربه باید بین ${MIN_YEARS.toLocaleString("fa-IR")} و ${MAX_YEARS.toLocaleString("fa-IR")} باشد.`,
+    };
   }
 
   // An accepted booking must lead somewhere, but there are two ways to get
@@ -145,7 +155,9 @@ export async function saveMentorProfile(
     headline,
     company: company || null,
     country,
-    seniority,
+    // seniority is not written here — the trigger in 0057 derives it from
+    // this number, so the band and the years can never drift apart.
+    years_experience: years,
     bio,
     expertise_tags: expertiseTags,
     // Optional: a field is required, the tools are not. Someone whose work has

@@ -3,7 +3,13 @@
 import { useActionState, useState } from "react";
 import { saveMentorProfile } from "@/lib/actions/mentor";
 import Spinner from "@/components/Spinner";
-import { SENIORITY_LEVELS } from "@/lib/seniority";
+import {
+  MAX_YEARS,
+  MIN_YEARS,
+  seniorityBadge,
+  seniorityForYears,
+} from "@/lib/seniority";
+import { fa } from "@/lib/persian";
 import { skillsFor, ALL_SKILLS } from "@/lib/skills";
 import { JOB_TITLES } from "@/lib/job-titles";
 import { COUNTRIES } from "@/lib/countries";
@@ -126,6 +132,7 @@ export default function MentorProfileForm({
   initialMeetingLink,
   initialPhone,
   initialSeniority,
+  initialYears,
   googleConnected,
 }: {
   initialPhotoUrl: string;
@@ -139,6 +146,8 @@ export default function MentorProfileForm({
   initialMeetingLink: string;
   initialPhone: string;
   initialSeniority: string;
+  /** Their stated years, or "" for a profile written before we asked. */
+  initialYears: string;
   /** Connected specialists get a link per booking and need no fallback. */
   googleConnected: boolean;
 }) {
@@ -158,7 +167,14 @@ export default function MentorProfileForm({
   const [linkedin, setLinkedin] = useState(initialLinkedin);
   const [meetingLink, setMeetingLink] = useState(initialMeetingLink);
   const [phone, setPhone] = useState(initialPhone);
-  const [seniority, setSeniority] = useState(initialSeniority);
+  const [years, setYears] = useState(initialYears);
+
+  // A preview of where this number lands, not the stored value -- the trigger
+  // in migration 0057 is what actually writes the band. Falls back to whatever
+  // band an older profile already carries while its year count is still empty.
+  const bandLabel =
+    seniorityBadge(seniorityForYears(Number(years))) ??
+    seniorityBadge(initialSeniority);
 
   const [tags, setTags] = useState<string[]>(parseTags(initialTags));
   const [draft, setDraft] = useState("");
@@ -464,28 +480,38 @@ export default function MentorProfileForm({
           <span className="mb-1.5 block text-sm font-medium">
             چقدر تجربه داری؟
           </span>
-          {/* Shown to seekers, and what a price suggestion scales from
-              when this specialist adds a paid service. */}
-          <input type="hidden" name="seniority" value={seniority} />
-          <div className="flex flex-wrap gap-2">
-            {SENIORITY_LEVELS.map((level) => (
-              <button
-                key={level.value}
-                type="button"
-                onClick={() =>
-                  setSeniority(seniority === level.value ? "" : level.value)
-                }
-                aria-pressed={seniority === level.value}
-                className={`rounded-full border px-4 py-2 text-sm transition ${
-                  seniority === level.value
-                    ? "border-brand bg-brand-light text-brand-deep"
-                    : "border-card-border text-muted hover:border-brand hover:text-brand-deep"
-                }`}
-              >
-                {level.label}
-              </button>
-            ))}
+          {/* A number, not one of three boxes. Somebody with nine years and
+              somebody with thirteen are not the same person, and a range on a
+              public profile reads like a category the site assigned rather
+              than a fact its owner stated.
+
+              The band still exists — the price table is keyed by it — but it
+              is derived from this number by a database trigger, so it is shown
+              here rather than chosen. */}
+          <div className="flex flex-wrap items-center gap-3">
+            <input
+              type="number"
+              name="years_experience"
+              inputMode="numeric"
+              min={MIN_YEARS}
+              max={MAX_YEARS}
+              step={1}
+              value={years}
+              onChange={(event) => setYears(event.target.value)}
+              aria-describedby="years-help"
+              className="w-24 rounded-lg border border-card-border bg-background px-3 py-2 text-sm outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
+            />
+            <span className="text-sm text-muted">سال</span>
+            {bandLabel && (
+              <span className="rounded-full bg-brand-light px-3 py-1 text-xs text-brand-deep">
+                بازه قیمت: {bandLabel}
+              </span>
+            )}
           </div>
+          <p id="years-help" className="mt-1.5 text-xs text-muted">
+            عددی بین {fa(MIN_YEARS)} تا {fa(MAX_YEARS)}. روی پروفایل همین عدد
+            نوشته می‌شود.
+          </p>
         </div>
         </div>
 

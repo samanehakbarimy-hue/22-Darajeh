@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { dateFormats } from "@/lib/persian";
 import ServiceBooking from "@/components/ServiceBooking";
 import type { MentorService } from "@/lib/services";
-import { seniorityBadge } from "@/lib/seniority";
+import { experienceLabel } from "@/lib/seniority";
 import SaveSpecialist from "@/components/SaveSpecialist";
 import { getCurrentUser } from "@/lib/auth";
 import { getUsdToToman } from "@/lib/exchange-rate";
@@ -20,7 +20,7 @@ export default async function SpecialistPage({
   const { data: specialist } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, company, country, bio, expertise_tags, skills, linkedin_url, seniority, status, admin_summary, profiles!mentor_profiles_id_fkey(full_name, photo_url, created_at)",
+      "id, headline, company, country, bio, expertise_tags, skills, linkedin_url, seniority, years_experience, status, admin_summary, profiles!mentor_profiles_id_fkey(full_name, photo_url, created_at)",
     )
     .eq("id", id)
     .eq("status", "approved")
@@ -59,6 +59,12 @@ export default async function SpecialistPage({
   } | null;
   const name = profile?.full_name ?? "";
   const skills = specialist.skills ?? [];
+  // Their stated years, falling back to the old band for a profile written
+  // before a number was asked for.
+  const experience = experienceLabel(
+    specialist.years_experience,
+    specialist.seniority,
+  );
   const held = heldCount ?? 0;
 
   // Only the active ones, and an unapplied migration must not take the
@@ -179,12 +185,10 @@ export default async function SpecialistPage({
                   of their own. */}
               <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
                 {specialist.country && <span>{specialist.country}</span>}
-                {specialist.country && seniorityBadge(specialist.seniority) && (
+                {specialist.country && experience && (
                   <span aria-hidden>·</span>
                 )}
-                {seniorityBadge(specialist.seniority) && (
-                  <span>{seniorityBadge(specialist.seniority)}</span>
-                )}
+                {experience && <span>{experience}</span>}
               </p>
             </div>
           </div>

@@ -8,7 +8,7 @@ import {
   requestMentorChanges,
   saveAdminSummary,
  } from "@/lib/actions/admin";
-import { seniorityBadge } from "@/lib/seniority";
+import { experienceLabel } from "@/lib/seniority";
 import Avatar from "@/components/Avatar";
 import { dateFormats } from "@/lib/persian";
 import SendBackForReview from "@/components/SendBackForReview";
@@ -168,6 +168,7 @@ type MentorDetail = {
   skills: string[] | null;
   linkedin_url: string | null;
   seniority: string | null;
+  years_experience: number | null;
   admin_summary: string | null;
   mentor_meeting_links: unknown;
 };
@@ -321,7 +322,10 @@ function SpecialistList({
 
               <Detail label="ادعای تجربه">
                 <span className="text-muted">
-                  {seniorityBadge(detail?.seniority ?? null) || "—"}
+                  {experienceLabel(
+                    detail?.years_experience ?? null,
+                    detail?.seniority ?? null,
+                  ) || "—"}
                 </span>
               </Detail>
 
@@ -443,7 +447,7 @@ export default async function AdminPage() {
   const { data: pendingMentors } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, bio, expertise_tags, linkedin_url, headline, seniority, profiles!mentor_profiles_id_fkey(full_name), mentor_meeting_links(meeting_link)",
+      "id, bio, expertise_tags, linkedin_url, headline, seniority, years_experience, profiles!mentor_profiles_id_fkey(full_name), mentor_meeting_links(meeting_link)",
     )
     .eq("status", "pending")
     .order("created_at", { ascending: true });
@@ -454,7 +458,7 @@ export default async function AdminPage() {
   const { data: mentorDetails } = await supabase
     .from("mentor_profiles")
     .select(
-      "id, headline, company, bio, expertise_tags, skills, linkedin_url, seniority, admin_summary, mentor_meeting_links(meeting_link)",
+      "id, headline, company, bio, expertise_tags, skills, linkedin_url, seniority, years_experience, admin_summary, mentor_meeting_links(meeting_link)",
     );
 
   const detailById = new Map(
@@ -545,9 +549,10 @@ export default async function AdminPage() {
                   </p>
                 )}
 
-                {seniorityBadge(mentor.seniority) && (
+                {experienceLabel(mentor.years_experience, mentor.seniority) && (
                   <p className="mt-2 inline-block rounded-full border border-brand/40 bg-brand-light px-3 py-1 text-xs text-brand-deep">
-                    ادعای تجربه: {seniorityBadge(mentor.seniority)}
+                    ادعای تجربه:{" "}
+                    {experienceLabel(mentor.years_experience, mentor.seniority)}
                   </p>
                 )}
                 <p className="mt-2 text-sm text-muted">{mentor.bio}</p>
