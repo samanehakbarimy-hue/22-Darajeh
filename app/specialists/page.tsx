@@ -5,6 +5,7 @@ import SpecialistRow, {
 } from "@/components/SpecialistRow";
 import SpecialistFilters, {
   type FilterGroup,
+  type FilterOption,
 } from "@/components/SpecialistFilters";
 import { seniorityBadge } from "@/lib/seniority";
 import { JOB_FIELDS, fieldOfTitle, type JobField } from "@/lib/job-titles";
@@ -63,12 +64,18 @@ export default async function SpecialistsPage({
     q?: string;
     loc?: string | string[];
     field?: string | string[];
+    skill?: string | string[];
+    company?: string | string[];
   }>;
 }) {
-  const { q, loc, field } = await searchParams;
+  const { q, loc, field, skill, company } = await searchParams;
   const locations = asList(loc).filter((v) => v === "iran" || v === "abroad");
   const fieldKeys = new Set<string>(JOB_FIELDS.map((f) => f.key));
   const fields = asList(field).filter((v) => fieldKeys.has(v)) as JobField[];
+  // Not validated against a list, because there isn't one — anything that
+  // matches nobody simply returns nothing, which is the honest answer.
+  const skillsWanted = asList(skill);
+  const companiesWanted = asList(company);
   const supabase = await createClient();
 
   // One query for the whole approved set. The filters then run in memory: the
@@ -112,6 +119,36 @@ export default async function SpecialistsPage({
   // Without a count beside it, deliberately. A number here is a headcount by
   // another route — «۰» beside ten fields and «۱» beside one says how new this
   // is more plainly than the total ever did.
+  /**
+   * Options gathered from what specialists actually wrote, commonest first.
+   *
+   * The opposite of حوزه کاری on purpose. Fields are a list this site decides
+   * and publishes in full, empty ones included, because it is a statement of
+   * what the site is for. Companies and tools are nobody's decision — they
+   * arrive when somebody types them into their own profile — so there is no
+   * canonical list to show, and an entry nobody claims would be a filter that
+   * can only ever return nothing.
+   *
+   * Commonest first so that the six an open group shows are the six worth
+   * showing; ties fall back to alphabetical so the order is not arbitrary.
+   */
+  function gathered(pick: (row: Row) => (string | null)[]): FilterOption[] {
+    const tally = new Map<string, number>();
+    for (const row of approved) {
+      for (const raw of pick(row)) {
+        const value = raw?.trim();
+        if (!value) continue;
+        tally.set(value, (tally.get(value) ?? 0) + 1);
+      }
+    }
+    return [...tally.entries()]
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "fa"))
+      .map(([value]) => ({ value, label: value }));
+  }
+
+  const companyOptions = gathered((row) => [row.company]);
+  const skillOptions = gathered((row) => row.skills ?? []);
+
   const groups: FilterGroup[] = [
     {
       key: "field",
@@ -121,6 +158,14 @@ export default async function SpecialistsPage({
         label,
       })),
     },
+    // A group with nothing in it is left out altogether rather than opening
+    // onto an empty list.
+    ...(skillOptions.length
+      ? [{ key: "skill", title: "مهارت‌ها و ابزارها", options: skillOptions }]
+      : []),
+    ...(companyOptions.length
+      ? [{ key: "company", title: "شرکت", options: companyOptions }]
+      : []),
     {
       key: "loc",
       title: "موقعیت کارشناس",
@@ -131,10 +176,19 @@ export default async function SpecialistsPage({
     },
   ];
 
+  // Every group narrows; within a group, any one option is enough.
   const specialists = searched.filter((row) => {
     if (fields.length > 0) {
       const belongs = fieldOfTitle(row.headline);
       if (belongs === null || !fields.includes(belongs)) return false;
+    }
+    if (skillsWanted.length > 0) {
+      const has = row.skills ?? [];
+      if (!skillsWanted.some((wanted) => has.includes(wanted))) return false;
+    }
+    if (companiesWanted.length > 0) {
+      if (!row.company || !companiesWanted.includes(row.company.trim()))
+        return false;
     }
     if (locations.length === 0) return true;
     const where = locationOf(row);
@@ -142,7 +196,11 @@ export default async function SpecialistsPage({
   });
 
   const isFiltered =
-    Boolean(needle) || locations.length > 0 || fields.length > 0;
+    Boolean(needle) ||
+    locations.length > 0 ||
+    fields.length > 0 ||
+    skillsWanted.length > 0 ||
+    companiesWanted.length > 0;
 
   /**
    * How near a specialist came to what was asked for.
@@ -177,6 +235,10 @@ export default async function SpecialistsPage({
     }
     const belongs = fieldOfTitle(row.headline);
     if (belongs !== null && fields.includes(belongs)) score += 3;
+    for (const wanted of skillsWanted) {
+      if ((row.skills ?? []).includes(wanted)) score += 2;
+    }
+    if (row.company && companiesWanted.includes(row.company.trim())) score += 2;
     const where = locationOf(row);
     if (where !== null && locations.includes(where)) score += 1;
     return score;
@@ -333,6 +395,12 @@ export default async function SpecialistsPage({
         {fields.map((value) => (
           <input key={value} type="hidden" name="field" value={value} />
         ))}
+        {skillsWanted.map((value) => (
+          <input key={value} type="hidden" name="skill" value={value} />
+        ))}
+        {companiesWanted.map((value) => (
+          <input key={value} type="hidden" name="company" value={value} />
+        ))}
         <label htmlFor="q" className="sr-only">
           جستجوی کارشناس
         </label>
@@ -373,7 +441,12 @@ export default async function SpecialistsPage({
         <div className="lg:order-2">
           <SpecialistFilters
             groups={groups}
-            selected={{ loc: locations, field: fields }}
+            selected={{
+              field: fields,
+              skill: skillsWanted,
+              company: companiesWanted,
+              loc: locations,
+            }}
             query={q?.trim() ?? ""}
           />
         </div>
