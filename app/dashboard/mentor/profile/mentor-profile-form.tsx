@@ -98,58 +98,83 @@ function parseTags(raw: string): string[] {
 }
 
 /**
- * One part of the form, and how far through it somebody is.
+ * One part of the form, with its place on the rail beside it.
  *
  * The progress used to be a bar across the top of the page — three stages, two
- * of which were other pages, and a tick beside a step you were not on. It told
- * you where you were in a journey rather than what was left to do on the
- * screen in front of you, which is the only question this page raises.
+ * of which were other pages, and a tick beside a step you were not standing
+ * on. It answered where you are in a journey; the only question this screen
+ * raises is what is left to fill in.
  *
- * So it lives on the sections instead: a number at the head of each, turning
- * green with a tick once that part has everything it needs. Nothing moves and
- * nothing is hidden — the marker changes colour under the cursor as the last
- * field of a part is filled, which is the moment worth marking.
+ * So the circles come down the side instead, joined by a line that runs
+ * unbroken from one to the next and turns green behind each finished part. The
+ * marker sits outside the card, level with its heading, so a glance down the
+ * rail is a glance down the form: what is done, what is next, how much is left.
  */
 function Section({
   step,
   done,
+  last,
   title,
   description,
   children,
 }: {
   step: number;
   done: boolean;
+  /** The rail stops here; nothing follows for it to reach. */
+  last?: boolean;
   title: string;
   description?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-card-border bg-card p-6">
-      <div className="flex items-start gap-3">
+    // Narrower rail on a phone: 3rem of the 375px width spent on decoration
+    // leaves the chip fields genuinely cramped, and the line reads just as
+    // well at 28px.
+    <div
+      className={`grid grid-cols-[1.75rem_1fr] gap-3 sm:grid-cols-[2rem_1fr] sm:gap-4 ${
+        last ? "" : "pb-5"
+      }`}
+    >
+      <div className="flex flex-col items-center gap-2">
+        {/* mt-5 sets the circle level with the heading inside the card: the
+            card's own 1.5rem of padding, plus half a line of text. */}
         <span
           aria-hidden
-          className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+          className={`mt-5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors sm:h-8 sm:w-8 ${
             done
               ? "bg-success text-white"
-              : "border border-card-border bg-background text-muted"
+              : "border-2 border-card-border bg-background text-muted"
           }`}
         >
           {done ? "✓" : fa(step)}
         </span>
-        <div className="min-w-0">
-          <h2 className="font-bold">
-            {title}
-            <span className="sr-only">
-              {done ? " — تکمیل شده" : " — هنوز کامل نیست"}
-            </span>
-          </h2>
-          {description && (
-            <p className="mt-1 text-sm text-muted">{description}</p>
-          )}
-        </div>
+        {/* Drawn by this column stretching to the row's height rather than by
+            anything absolutely positioned, so it stays joined whatever a
+            section grows to. The space between parts is padding on the row and
+            not a gap, because a gap would cut the line at every step. */}
+        {!last && (
+          <span
+            aria-hidden
+            className={`w-0.5 flex-1 rounded-full transition-colors ${
+              done ? "bg-success" : "bg-card-border"
+            }`}
+          />
+        )}
       </div>
-      <div className="mt-5 flex flex-col gap-5">{children}</div>
-    </section>
+
+      <section className="rounded-2xl border border-card-border bg-card p-6">
+        <h2 className="font-bold">
+          {title}
+          <span className="sr-only">
+            {done ? " — تکمیل شده" : " — هنوز کامل نیست"}
+          </span>
+        </h2>
+        {description && (
+          <p className="mt-1 text-sm text-muted">{description}</p>
+        )}
+        <div className="mt-5 flex flex-col gap-5">{children}</div>
+      </section>
+    </div>
   );
 }
 
@@ -335,6 +360,9 @@ export default function MentorProfileForm({
       }}
       className="mt-8 flex flex-col gap-5"
     >
+      {/* One flex column with no gap: the rail draws the space between
+          parts itself, and a gap here would cut the line at every step. */}
+      <div className="flex flex-col">
       <Section
         step={1}
         done={introDone}
@@ -660,6 +688,7 @@ export default function MentorProfileForm({
       <Section
         step={4}
         done={contactDone}
+        last
         title="راه‌های ارتباطی"
         description="شماره تماست پیش ما می‌مونه و به کسی نشون داده نمی‌شه. لینک جلسه فقط بعد از رزرو، به همون متقاضی نشون داده می‌شه."
       >
@@ -733,6 +762,7 @@ export default function MentorProfileForm({
           </p>
         </div>
       </Section>
+      </div>
 
       {state?.error && (
         <p className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
