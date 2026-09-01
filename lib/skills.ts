@@ -47,6 +47,7 @@ const BY_TITLE: Record<string, string[]> = {
   "Cloud Engineer": ["AWS", "Azure", "Terraform", "Kubernetes", "Linux"],
   "Platform Engineer": ["Kubernetes", "Terraform", "CI/CD", "Go", "Observability"],
   "Security Engineer": ["Burp Suite", "Wireshark", "Nmap", "Kali Linux", "OWASP"],
+  "Network Engineer": ["Cisco IOS", "TCP/IP", "BGP", "MikroTik", "Wireshark", "VPN"],
   "Database Administrator": ["PostgreSQL", "SQL Server", "Oracle", "MySQL", "Backup و Recovery"],
   "Software Architect": ["System Design", "Microservices", "Kubernetes", "AWS", "PostgreSQL"],
   "Solutions Architect": ["AWS", "System Design", "Azure", "Microservices", "Pre-sales"],
@@ -62,6 +63,8 @@ const BY_TITLE: Record<string, string[]> = {
   "AI Research Scientist": ["PyTorch", "Python", "Mathematics", "Hugging Face", "Paper Writing"],
   "Computer Vision Engineer": ["OpenCV", "PyTorch", "YOLO", "Python", "CUDA"],
   "NLP Engineer": ["Hugging Face", "spaCy", "PyTorch", "Python", "LLM"],
+  "Generative AI Engineer": ["LLM", "LangChain", "RAG", "Hugging Face", "Prompt Engineering", "Vector Database"],
+  "Business Intelligence Analyst": ["Power BI", "SQL", "Tableau", "Excel", "DAX", "Data Modeling"],
   "BI Developer": ["Power BI", "SQL", "Tableau", "DAX", "ETL"],
 
   // محصول و طراحی
@@ -146,9 +149,19 @@ const BY_TITLE: Record<string, string[]> = {
   "Planning Engineer": ["Primavera P6", "MS Project", "Earned Value", "Excel"],
   "Materials Engineer": ["Material Selection", "Metallurgy", "ASTM", "Failure Analysis"],
   "HSE Engineer": ["HAZOP", "ISO 45001", "Risk Assessment", "PHA", "JSA"],
+  Architect: ["AutoCAD", "Revit", "SketchUp", "3ds Max", "Lumion"],
+
+  // تولید و ساخت
+  "Manufacturing Engineer": ["Lean Manufacturing", "AutoCAD", "SolidWorks", "APQP", "Six Sigma", "ERP"],
+  "Mechanical Design Engineer": ["SolidWorks", "CATIA", "AutoCAD", "ANSYS", "GD&T", "Inventor"],
+  "Product Development Engineer": ["SolidWorks", "CATIA", "DFM و DFA", "Prototyping", "APQP", "GD&T"],
+  "Industrial Engineer": ["Lean Manufacturing", "Six Sigma", "Arena", "Excel", "ERP", "Time Study"],
+  "Automation Engineer": ["PLC", "SCADA", "HMI", "Siemens TIA Portal", "Ladder Logic", "Industrial Robot"],
   "Robotics Engineer": ["ROS", "Python", "C++", "MATLAB", "Simulink", "Computer Vision"],
   "Mechatronics Engineer": ["MATLAB", "Simulink", "PLC", "SolidWorks", "Arduino", "Control Systems"],
-  Architect: ["AutoCAD", "Revit", "SketchUp", "3ds Max", "Lumion"],
+  "Quality Engineer": ["ISO 9001", "SPC", "FMEA", "Six Sigma", "APQP و PPAP", "Minitab"],
+  "Reliability Engineer": ["RCM", "FMEA", "Root Cause Analysis", "CMMS", "Weibull Analysis", "Vibration Analysis"],
+  "Automotive Engineer": ["CATIA", "IATF 16949", "GD&T", "ANSYS", "CAN Bus", "APQP"],
 };
 
 /** Broader fallback, for a title written freehand or left blank. */

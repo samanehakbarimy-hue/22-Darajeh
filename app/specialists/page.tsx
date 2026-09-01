@@ -7,6 +7,7 @@ import SpecialistFilters, {
   type FilterGroup,
 } from "@/components/SpecialistFilters";
 import { seniorityBadge } from "@/lib/seniority";
+import { JOB_FIELDS, fieldOfTitle, type JobField } from "@/lib/job-titles";
 import { servicePrice, type MentorService } from "@/lib/services";
 import { getUsdToToman } from "@/lib/exchange-rate";
 import { dateFormats } from "@/lib/persian";
@@ -58,10 +59,16 @@ function asList(value: string | string[] | undefined): string[] {
 export default async function SpecialistsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; loc?: string | string[] }>;
+  searchParams: Promise<{
+    q?: string;
+    loc?: string | string[];
+    field?: string | string[];
+  }>;
 }) {
-  const { q, loc } = await searchParams;
+  const { q, loc, field } = await searchParams;
   const locations = asList(loc).filter((v) => v === "iran" || v === "abroad");
+  const fieldKeys = new Set<string>(JOB_FIELDS.map((f) => f.key));
+  const fields = asList(field).filter((v) => fieldKeys.has(v)) as JobField[];
   const supabase = await createClient();
 
   // One query for the whole approved set. The filters then run in memory: the
@@ -98,7 +105,20 @@ export default async function SpecialistsPage({
 
   // Counted against what the search left, not against everybody: the number
   // beside a checkbox should say what ticking it would actually give you.
+  //
+  // A field with nobody in it is left out entirely rather than shown at zero.
+  // Ten empty checkboxes would be a longer sidebar than the results beside it,
+  // and each one a dead end; they appear as specialists in them do.
+  const fieldOptions = JOB_FIELDS.map(({ key, label }) => ({
+    value: key as string,
+    label,
+    count: searched.filter((row) => fieldOfTitle(row.headline) === key).length,
+  })).filter((option) => option.count > 0 || fields.includes(option.value as JobField));
+
   const groups: FilterGroup[] = [
+    ...(fieldOptions.length > 0
+      ? [{ key: "field", title: "حوزه کاری", options: fieldOptions }]
+      : []),
     {
       key: "loc",
       title: "موقعیت کارشناس",
@@ -118,12 +138,17 @@ export default async function SpecialistsPage({
   ];
 
   const specialists = searched.filter((row) => {
+    if (fields.length > 0) {
+      const belongs = fieldOfTitle(row.headline);
+      if (belongs === null || !fields.includes(belongs)) return false;
+    }
     if (locations.length === 0) return true;
     const where = locationOf(row);
     return where !== null && locations.includes(where);
   });
 
-  const isFiltered = Boolean(needle) || locations.length > 0;
+  const isFiltered =
+    Boolean(needle) || locations.length > 0 || fields.length > 0;
   const ids = specialists.map((row) => row.id);
   const now = new Date().toISOString();
 
@@ -259,6 +284,9 @@ export default async function SpecialistsPage({
         {locations.map((value) => (
           <input key={value} type="hidden" name="loc" value={value} />
         ))}
+        {fields.map((value) => (
+          <input key={value} type="hidden" name="field" value={value} />
+        ))}
         <label htmlFor="q" className="sr-only">
           جستجوی کارشناس
         </label>
@@ -299,7 +327,7 @@ export default async function SpecialistsPage({
         <div className="lg:order-2">
           <SpecialistFilters
             groups={groups}
-            selected={{ loc: locations }}
+            selected={{ loc: locations, field: fields }}
             query={q?.trim() ?? ""}
             total={specialists.length}
           />
