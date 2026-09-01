@@ -143,7 +143,59 @@ export default async function SpecialistsPage({
 
   const isFiltered =
     Boolean(needle) || locations.length > 0 || fields.length > 0;
-  const ids = specialists.map((row) => row.id);
+
+  /**
+   * How near a specialist came to what was asked for.
+   *
+   * Only ever used when the search matched nobody, and only to order the few
+   * profiles offered underneath instead of an empty page. Every criterion is
+   * scored separately, so somebody who is in the right field but the wrong
+   * country still counts as close — which is exactly the person worth showing
+   * when the two together found no one.
+   *
+   * A word only counts if it is written somewhere on the profile. Nothing here
+   * guesses at meaning: this is "you asked for four things and this person is
+   * three of them", not a claim to understand the question.
+   */
+  function nearness(row: Row): number {
+    const haystack = [
+      profileOf(row)?.full_name,
+      row.headline,
+      row.company,
+      row.bio,
+      row.country,
+      ...(row.expertise_tags ?? []),
+      ...(row.skills ?? []),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    let score = 0;
+    for (const word of needle.split(/\s+/).filter((w) => w.length > 1)) {
+      if (haystack.includes(word)) score += 2;
+    }
+    const belongs = fieldOfTitle(row.headline);
+    if (belongs !== null && fields.includes(belongs)) score += 3;
+    const where = locationOf(row);
+    if (where !== null && locations.includes(where)) score += 1;
+    return score;
+  }
+
+  // Sorted, not filtered: a score of zero still beats an empty page, and the
+  // sort is stable, so when nothing is nearer than anything else this is
+  // simply the newest few. Three, because this is a consolation and not the
+  // page's answer.
+  const suggestions =
+    isFiltered && specialists.length === 0
+      ? [...approved].sort((a, b) => nearness(b) - nearness(a)).slice(0, 3)
+      : [];
+
+  // Both sets, so the cards below the empty state are as complete as the ones
+  // above it would have been.
+  const ids = [
+    ...new Set([...specialists, ...suggestions].map((row) => row.id)),
+  ];
   const now = new Date().toISOString();
 
   // Everything the cards need, fetched for the whole page rather than per
@@ -370,6 +422,23 @@ export default async function SpecialistsPage({
                 </Link>
               )}
             </div>
+          )}
+
+          {/* Nobody leaves with nothing. The nearest few profiles go under the
+              box rather than inside it, so they read as an offer rather than
+              as results — they did not match, and the heading says so. */}
+          {suggestions.length > 0 && (
+            <section className="mt-8">
+              <h2 className="text-base font-bold">کارشناس‌های دیگر</h2>
+              <p className="mt-1 text-sm text-muted">
+                شاید یکی از این‌ها به سؤالت نزدیک باشه.
+              </p>
+              <div className="mt-4 flex flex-col gap-4">
+                {suggestions.map((row) => (
+                  <SpecialistRow key={row.id} specialist={toCard(row)} />
+                ))}
+              </div>
+            </section>
           )}
         </div>
       </div>
