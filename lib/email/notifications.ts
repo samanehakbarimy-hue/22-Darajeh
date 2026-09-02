@@ -37,6 +37,32 @@ async function partiesFor(bookingId: string): Promise<Parties | null> {
   }
 }
 
+type InquiryParties = {
+  seeker_name: string | null;
+  seeker_email: string;
+  mentor_name: string | null;
+  mentor_email: string;
+};
+
+/**
+ * The two people in a message, read through the definer function that checks
+ * the caller is one of them. Null rather than throwing, for the same reason as
+ * partiesFor: a notice that cannot be addressed is a notice that does not get
+ * sent, never a message that fails to save.
+ */
+async function inquiryPartiesFor(id: string): Promise<InquiryParties | null> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("inquiry_parties", {
+      inquiry_id: id,
+    });
+    if (error || !data?.length) return null;
+    return data[0] as InquiryParties;
+  } catch {
+    return null;
+  }
+}
+
 /** Escapes anything a person typed before it goes near an HTML email. */
 function esc(text: string): string {
   return text
@@ -197,4 +223,43 @@ export async function notifyProfileForReview(mentorId: string): Promise<void> {
   } catch {
     // A notice that cannot be sent is never a save that fails.
   }
+}
+
+/**
+ * Somebody asked a specialist a question.
+ *
+ * The message itself is not in the email. It says one thing has happened and
+ * points at the site, which is where the message lives and where the reply
+ * gets written — an inbox notice, not a copy of the inbox. That also keeps
+ * what a seeker wrote out of a mailbox nobody chose to put it in.
+ */
+export async function notifyNewInquiry(inquiryId: string): Promise<void> {
+  const p = await inquiryPartiesFor(inquiryId);
+  if (!p) return;
+
+  await sendEmail({
+    to: p.mentor_email,
+    subject: "یک پیام تازه در جاب‌آموز داری",
+    html: emailLayout({
+      heading: `${esc(p.seeker_name ?? "یک متقاضی")} برایت پیام گذاشت`,
+      body: "پیام و جای نوشتن جوابش در صندوق پیام توست.",
+      action: { label: "دیدن پیام", href: `${SITE}/dashboard/inbox` },
+    }),
+  });
+}
+
+/** The specialist answered, and the person who asked should know. */
+export async function notifyInquiryReply(inquiryId: string): Promise<void> {
+  const p = await inquiryPartiesFor(inquiryId);
+  if (!p) return;
+
+  await sendEmail({
+    to: p.seeker_email,
+    subject: "جواب پیامت آمد",
+    html: emailLayout({
+      heading: `${esc(p.mentor_name ?? "کارشناس")} به پیامت جواب داد`,
+      body: "جوابش در صندوق پیام توست.",
+      action: { label: "خواندن جواب", href: `${SITE}/dashboard/inbox` },
+    }),
+  });
 }

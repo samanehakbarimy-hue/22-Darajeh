@@ -1546,17 +1546,22 @@ select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
   'insert into inquiries (mentor_id, seeker_id, body) values (''cccccccc-0000-4000-8000-000000000003'',''bbbbbbbb-0000-4000-8000-000000000002'',''پیامی که به اسم کس دیگری فرستاده می‌شود.'')',
   'nor send one in somebody else''''s name','refused');
 
--- Privacy: between the two of them only
+-- Privacy: between the two of them only.
+--
+-- Counted against this fixture's specialist rather than the whole table: an
+-- admin who has sent a message of their own legitimately sees that one, and a
+-- suite that reads "0" as the rule starts failing the day somebody uses the
+-- site.
 select pg_temp.read_as('bbbbbbbb-0000-4000-8000-000000000002','authenticated',
-  'select count(*)::text from inquiries','inquiries','another seeker cannot read it','0');
+  'select count(*)::text from inquiries where mentor_id = ''cccccccc-0000-4000-8000-000000000003''','inquiries','another seeker cannot read it','0');
 select pg_temp.read_as(null,'anon',
-  'select count(*)::text from inquiries','inquiries','nor a signed-out visitor','0');
+  'select count(*)::text from inquiries where mentor_id = ''cccccccc-0000-4000-8000-000000000003''','inquiries','nor a signed-out visitor','0');
 select pg_temp.read_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4','authenticated',
-  'select count(*)::text from inquiries','inquiries','nor even the admin','0');
+  'select count(*)::text from inquiries where mentor_id = ''cccccccc-0000-4000-8000-000000000003''','inquiries','nor even the admin','0');
 select pg_temp.read_as('cccccccc-0000-4000-8000-000000000003','authenticated',
-  'select count(*)::text from inquiries','inquiries','the specialist it was sent to can','1');
+  'select count(*)::text from inquiries where mentor_id = ''cccccccc-0000-4000-8000-000000000003''','inquiries','the specialist it was sent to can','1');
 select pg_temp.read_as('aaaaaaaa-0000-4000-8000-000000000001','authenticated',
-  'select count(*)::text from inquiries','inquiries','and so can whoever wrote it','1');
+  'select count(*)::text from inquiries where mentor_id = ''cccccccc-0000-4000-8000-000000000003''','inquiries','and so can whoever wrote it','1');
 
 -- Answering is the specialist's, and it unblocks the next question
 select pg_temp.try_as('aaaaaaaa-0000-4000-8000-000000000001',
@@ -2076,6 +2081,132 @@ select pg_temp.try_as('13d63926-8e4a-469e-bd9f-11521e4d5fe4',
   'but not one that reaches above the site maximum','refused');
 
 select 'Asking for a price outside the band' as section, check_name, expected, actual,
+       (actual like expected || '%') as pass
+  from results order by 2;
+rollback;
+
+-- ---------------------------------------------------------------------------
+-- A message, and the one reply it gets.
+--
+-- The old flow had a button that wrote a timestamp and sent nothing. What
+-- matters now is that a reply is real, reaches only the two people in the
+-- message, and happens exactly once.
+-- ---------------------------------------------------------------------------
+begin;
+create temp table if not exists results(
+  flow text, check_name text, expected text, actual text
+) on commit drop;
+grant all on results to authenticated;
+
+create or replace function pg_temp.act_as(u uuid) returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', u, 'role', 'authenticated')::text, true);
+end $$;
+create or replace function pg_temp.act_as_nobody() returns void
+language plpgsql security definer as $$
+begin perform set_config('request.jwt.claims', '', true); end $$;
+create or replace function pg_temp.record(f text, c text, e text, a text)
+returns void language plpgsql security definer as $$
+begin insert into results values (f, c, e, a); end $$;
+create or replace function pg_temp.try_as(
+  actor uuid, stmt text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  if actor is null then perform pg_temp.act_as_nobody();
+  else perform pg_temp.act_as(actor); end if;
+  begin
+    execute 'set local role ' || case when actor is null then 'anon' else 'authenticated' end;
+    execute stmt;
+    outcome := 'ok';
+  exception when others then outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.act_as_nobody();
+  perform pg_temp.record('inbox', chk, expected, outcome);
+end $$;
+
+select set_config('request.jwt.claims', '', true);
+
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('11111111-0000-4000-8000-000000000001','ask@example.invalid','{"role":"seeker","full_name":"Seeker S"}'),
+  ('22222222-0000-4000-8000-000000000002','ment@example.invalid','{"role":"mentor","full_name":"Mentor N"}'),
+  ('33333333-0000-4000-8000-000000000003','none@example.invalid','{"role":"seeker","full_name":"Nobody"}');
+insert into mentor_profiles (id, bio, status, seniority) values
+  ('22222222-0000-4000-8000-000000000002','approved','approved','senior');
+
+-- A seeker asks.
+select pg_temp.try_as('11111111-0000-4000-8000-000000000001',
+  'insert into inquiries (mentor_id, seeker_id, body) values (''22222222-0000-4000-8000-000000000002'',''11111111-0000-4000-8000-000000000001'',''سلام، درباره رزومه سؤال داشتم'')',
+  'a seeker can ask a specialist','ok');
+
+-- And can still see it afterwards. This is the whole point of an inbox: the
+-- sender used to have no page anywhere that showed their own message.
+select pg_temp.act_as('11111111-0000-4000-8000-000000000001');
+set local role authenticated;
+select pg_temp.record('inbox','the sender can still read what they sent','1',
+  (select count(*)::text from inquiries));
+reset role;
+select pg_temp.act_as_nobody();
+
+-- A stranger cannot.
+select pg_temp.act_as('33333333-0000-4000-8000-000000000003');
+set local role authenticated;
+select pg_temp.record('inbox','somebody else sees nothing of it','0',
+  (select count(*)::text from inquiries));
+reset role;
+select pg_temp.act_as_nobody();
+
+-- Only the specialist replies, and a seeker cannot answer themselves.
+-- Asserted on the row, not on an exception: RLS narrowing an update to zero
+-- rows is reported as success, so "no error" would have proved nothing.
+select pg_temp.act_as('11111111-0000-4000-8000-000000000001');
+set local role authenticated;
+update inquiries set reply = 'من به خودم جواب می‌دهم', replied_at = now()
+ where seeker_id = '11111111-0000-4000-8000-000000000001';
+reset role;
+select pg_temp.act_as_nobody();
+select pg_temp.record('inbox','a seeker cannot write the reply','-',
+  coalesce((select reply from inquiries
+             where seeker_id = '11111111-0000-4000-8000-000000000001'), '-'));
+select pg_temp.try_as('22222222-0000-4000-8000-000000000002',
+  'update inquiries set reply = ''رزومه را بفرست'', replied_at = now(), answered_at = now() where mentor_id = ''22222222-0000-4000-8000-000000000002''',
+  'the specialist replies','ok');
+
+-- Once. A second attempt matches no rows rather than overwriting the first.
+select pg_temp.act_as('22222222-0000-4000-8000-000000000002');
+set local role authenticated;
+update inquiries set reply = 'حرفم عوض شد' where mentor_id = '22222222-0000-4000-8000-000000000002';
+reset role;
+select pg_temp.act_as_nobody();
+select pg_temp.record('inbox','and a second reply changes nothing','رزومه را بفرست',
+  (select reply from inquiries where mentor_id = '22222222-0000-4000-8000-000000000002'));
+
+-- The sender reads the answer.
+select pg_temp.act_as('11111111-0000-4000-8000-000000000001');
+set local role authenticated;
+select pg_temp.record('inbox','the sender reads the reply','رزومه را بفرست',
+  (select reply from inquiries where seeker_id = '11111111-0000-4000-8000-000000000001'));
+reset role;
+select pg_temp.act_as_nobody();
+
+-- Replying is what frees them to ask again -- the old button's only real job,
+-- now done by an actual answer.
+select pg_temp.try_as('11111111-0000-4000-8000-000000000001',
+  'insert into inquiries (mentor_id, seeker_id, body) values (''22222222-0000-4000-8000-000000000002'',''11111111-0000-4000-8000-000000000001'',''یک سؤال دیگر هم داشتم'')',
+  'an answered message frees the next one','ok');
+
+-- Addresses come out only for the two people in it.
+select pg_temp.try_as('33333333-0000-4000-8000-000000000003',
+  'select inquiry_parties((select id from inquiries limit 1))',
+  'a stranger cannot read the addresses','refused');
+select pg_temp.try_as('22222222-0000-4000-8000-000000000002',
+  'select inquiry_parties((select id from inquiries where replied_at is not null limit 1))',
+  'the specialist can, to send the notice','ok');
+
+select 'A message and its one reply' as section, check_name, expected, actual,
        (actual like expected || '%') as pass
   from results order by 2;
 rollback;

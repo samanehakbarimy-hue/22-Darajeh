@@ -31,6 +31,7 @@ export default async function Navbar() {
     role === "mentor"
       ? [
           { href: "/dashboard/sessions", label: "جلسات من" },
+          { href: "/dashboard/inbox", label: "صندوق پیام" },
           { href: "/dashboard/mentor/availability", label: "زمان‌های آزاد" },
           { href: "/dashboard/mentor/services", label: "خدمات و قیمت‌ها" },
           { href: "/dashboard/mentor/profile", label: "پروفایل من" },
@@ -40,11 +41,13 @@ export default async function Navbar() {
             { href: "/admin", label: "مدیریت" },
             { href: "/specialists", label: "کارشناس‌ها" },
             { href: "/dashboard/requests", label: "درخواست‌های من" },
+            { href: "/dashboard/inbox", label: "صندوق پیام" },
           ]
         : user
           ? [
               { href: "/specialists", label: "پیدا کردن کارشناس" },
               { href: "/dashboard/requests", label: "درخواست‌های من" },
+              { href: "/dashboard/inbox", label: "صندوق پیام" },
             ]
           : [{ href: "/specialists", label: "پیدا کردن کارشناس" }];
 

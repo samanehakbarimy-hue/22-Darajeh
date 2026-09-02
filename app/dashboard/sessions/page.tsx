@@ -9,7 +9,7 @@ import { dateFormats, sessionTiming } from "@/lib/persian";
 import SessionOutcome from "@/components/SessionOutcome";
 import BriefReply from "@/components/BriefReply";
 import { signAttachment } from "@/lib/briefs";
-import { markInquiryAnswered } from "@/lib/actions/inquiries";
+import InquiryReply from "@/components/InquiryReply";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function MySessionsPage() {
@@ -287,8 +287,8 @@ export default async function MySessionsPage() {
             </span>
           </h2>
           <p className="mt-1.5 text-sm leading-7 text-muted">
-            کسی پیش از رزرو سؤالی پرسیده. تا وقتی جواب ندهی، نمی‌تواند پیام
-            تازه‌ای بفرستد.
+            کسی پیش از رزرو سؤالی پرسیده. جوابت برایش ایمیل می‌شود و در صندوق
+            پیام هر دویتان می‌ماند. تا جواب ندهی، نمی‌تواند پیام تازه‌ای بفرستد.
           </p>
 
           <ul className="mt-4 flex flex-col gap-4">
@@ -301,15 +301,12 @@ export default async function MySessionsPage() {
                 <p className="mt-2 whitespace-pre-line leading-8 text-muted">
                   {inquiry.body}
                 </p>
-                <form action={markInquiryAnswered} className="mt-4">
-                  <input type="hidden" name="inquiry_id" value={inquiry.id} />
-                  <button
-                    type="submit"
-                    className="rounded-full border border-card-border px-4 py-2 text-sm font-medium hover:border-brand hover:text-brand-deep"
-                  >
-                    جواب دادم
-                  </button>
-                </form>
+                {/* The reply is written in the inbox, which is also where the
+                    answer stays afterwards. What stood here was a button
+                    saying «جواب دادم» that wrote a timestamp, hid the card and
+                    sent nothing — the one place a real answer must not be is
+                    behind a control that makes the question disappear. */}
+                <InquiryReply inquiryId={inquiry.id} />
               </li>
             ))}
           </ul>

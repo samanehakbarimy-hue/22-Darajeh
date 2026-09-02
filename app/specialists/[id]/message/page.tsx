@@ -55,10 +55,21 @@ export default async function MessageSpecialistPage({
 
       {sent ? (
         <div className="mt-8 rounded-2xl border border-brand/40 bg-brand-light px-5 py-4 text-sm leading-7 text-brand-deep">
-          پیامت رفت. وقتی جواب داد، خبردار می‌شوی.
+          {/* This sentence was a promise nothing could keep: there was no
+              reply field, no email on the way back, and no page where the
+              sender could see their own message. All three exist now, so it
+              points at the one that holds the answer. */}
+          پیامت رفت. وقتی جواب بدهد برایت ایمیل می‌شود، و جوابش در صندوق پیام
+          تو می‌ماند.
+          <Link
+            href="/dashboard/inbox"
+            className="mt-3 block font-medium underline"
+          >
+            رفتن به صندوق پیام
+          </Link>
           <Link
             href={`/specialists/${id}`}
-            className="mt-3 block font-medium underline"
+            className="mt-1.5 block font-medium underline"
           >
             بازگشت به پروفایل {name}
           </Link>
