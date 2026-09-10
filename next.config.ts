@@ -38,18 +38,23 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
+    // Everything funnels to the bare jobamooz.com. www of either name, and the
+    // whole of the old 22darajeh.com, land on the matching path here with a
+    // 308 — a real reader following an old bookmark or an old business card
+    // arrives where they meant to, and a search engine folds the old address
+    // into this one. Both 22darajeh.com and its www must stay attached to this
+    // project in Vercel or these rules never see the request.
+    const toCanonical = (host: string) => ({
+      source: "/:path*",
+      has: [{ type: "host" as const, value: host }],
+      destination: "https://jobamooz.com/:path*",
+      permanent: true,
+    });
+
     return [
-      // One canonical address: www goes to the bare name.
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.jobamooz.com" }],
-        destination: "https://jobamooz.com/:path*",
-        permanent: true,
-      },
-      // 22darajeh.com is not ours any more. It used to redirect here; that link
-      // is cut on purpose. The domain should also be detached from this project
-      // in Vercel — with no domain attached these rules never match anyway, but
-      // they are gone so nobody re-points it and revives the redirect.
+      toCanonical("www.jobamooz.com"),
+      toCanonical("22darajeh.com"),
+      toCanonical("www.22darajeh.com"),
     ];
   },
 };
