@@ -57,14 +57,17 @@ Open questions blocking it:
   trigger), four-part vertical rail progress, copy cleanup.
 - **Pricing bands in USD** with the 60 USD cap; the two previously-uncapped
   services now have bands.
+- **`22darajeh.com` redirects to jobamooz.com again** (`1698010`). Both apex
+  and www 308 to the matching path; rules in `next.config.ts` `redirects()`.
+  The domains are assigned to the `jobamooz` Vercel project — keep them there.
 
 ## Open decisions / loose ends
 
-- **`22darajeh.com` and `www.22darajeh.com` return 404.** The old domains are
-  not attached to the renamed Vercel project and the redirect rules are gone
-  from `next.config.ts`. Decide whether the old domain should still redirect.
 - **`SITE_PRIVATE` is on** — signed-out visitors see «در دست ساخت». Deliberate
   (her call). Do not "fix" it.
+- **`git push` flips to the wrong GitHub account.** `gh` CLI is git's
+  credential helper and keeps re-selecting `rsheikhyy` (403 on her repo). Fix
+  each time with `gh auth switch --user samanehakbarimy-hue`.
 
 ## Test / build state at HEAD
 
@@ -77,5 +80,5 @@ Open questions blocking it:
 ## First action for the next session
 
 If continuing the signup emails: get the four open questions answered before
-writing the migration — the second one decides the function's shape.
-Otherwise the 22darajeh.com 404 is the most concrete loose end.
+writing the migration — the second one decides the function's shape. That is
+the only open build task.
