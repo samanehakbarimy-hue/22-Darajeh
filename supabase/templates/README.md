@@ -8,9 +8,12 @@ pasted in by hand.
 **Where:** Supabase → Authentication → Emails → the template, then paste the
 subject and the HTML and save.
 
-| File | Template | Subject to set |
-| --- | --- | --- |
-| `confirm-signup.html` | Confirm signup | `تأیید ایمیل در جاب‌آموز` |
+| File | Template | Subject | Pasted in |
+| --- | --- | --- | --- |
+| `confirm-signup.html` | Confirm signup | `تأیید ایمیل در جاب‌آموز` | 2026-09-20 |
+
+Editing a file here changes nothing on its own. Whatever is in the dashboard is
+what gets sent, so a change to one of these has to be pasted in again.
 
 `{{ .ConfirmationURL }}` is Supabase's own variable and must stay exactly as
 written, twice — once on the button and once as text, because a mail client

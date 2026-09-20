@@ -16,25 +16,16 @@ _Written 2026-09-20. The repo is the source of truth; where this disagrees, beli
   `gh auth switch --user samanehakbarimy-hue`. If pushes 403 again, that
   switch got flipped back — re-run it.
 
-## Active unfinished task: paste one template into Supabase
+## Active unfinished task: none
 
-The specialist signup emails are **built, tested and deployed** (`e5bc93e`,
-migration 0060) — see "Recently shipped". One step is left and only Samaneh
-can do it, because Supabase has no API for auth templates:
-
-**Supabase → Authentication → Emails → Confirm signup.** Paste
-`supabase/templates/confirm-signup.html` as the body and
-`تأیید ایمیل در جاب‌آموز` as the subject. Until then a new specialist still
-gets the English default ("Confirm your signup"). `{{ .ConfirmationURL }}`
-appears twice in that file and must stay exactly as written.
+The specialist signup emails are finished, deployed and in place. The one step
+that needed a human -- pasting the Persian Confirm signup template into the
+Supabase dashboard, which has no API -- was done on 2026-09-20 through her own
+Chrome, and Supabase's own preview renders it correctly.
 
 The other five auth templates are still English defaults. Reset Password is
 the one a real person is most likely to meet next; nobody has asked for it.
-
-Her one open judgement call: the Persian wording of both letters. She was
-shown them rendered on 2026-09-20. Changing either is a one-string edit —
-`sendWelcomeToSpecialist()` in `lib/email/notifications.ts` for the welcome,
-the template file for the confirm.
+`supabase/templates/README.md` lists them.
 
 ## Recently shipped (do not redo)
 
@@ -86,6 +77,5 @@ the template file for the confirm.
 
 ## First action for the next session
 
-Nothing is half-built. The only outstanding step is hers: pasting
-`supabase/templates/confirm-signup.html` into Supabase. Ask whether that is
-done before writing anything new about signup mail.
+Nothing is half-built and nothing is waiting on her. Pick up whatever she
+asks for next.
