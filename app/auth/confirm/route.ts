@@ -2,6 +2,7 @@ import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { safeNext } from "@/lib/next-path";
+import { sendWelcomeToSpecialist } from "@/lib/email/notifications";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -18,6 +19,11 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ type, token_hash });
     if (!error) {
+      // A specialist arriving here for the first time is owed one letter. The
+      // decision of whether this is the first time is the database's, not
+      // ours — see claim_welcome_email(). Awaited rather than left running,
+      // because this function stops existing the moment it answers.
+      await sendWelcomeToSpecialist();
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

@@ -2210,3 +2210,122 @@ select 'A message and its one reply' as section, check_name, expected, actual,
        (actual like expected || '%') as pass
   from results order by 2;
 rollback;
+
+-- ============================================================
+-- The one letter a specialist gets
+-- ============================================================
+begin;
+create temp table if not exists results(
+  flow text, check_name text, expected text, actual text
+) on commit drop;
+grant all on results to authenticated;
+
+create or replace function pg_temp.act_as(u uuid) returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', u, 'role', 'authenticated')::text, true);
+end $$;
+
+create or replace function pg_temp.act_as_nobody() returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims', '', true);
+end $$;
+
+create or replace function pg_temp.record(f text, c text, e text, a text)
+returns void language plpgsql security definer as $$
+begin
+  insert into results values (f, c, e, a);
+end $$;
+
+create or replace function pg_temp.read_as(
+  actor uuid, dbrole text, q text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  if actor is null then perform pg_temp.act_as_nobody();
+  else perform pg_temp.act_as(actor); end if;
+  begin
+    execute 'set local role ' || quote_ident(dbrole);
+    execute q into outcome;
+    outcome := coalesce(outcome, 'null');
+  exception when others then outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.record('welcome', chk, expected, outcome);
+end $$;
+
+-- handle_new_user writes the profile, so the role here is the one the signup
+-- page asked for -- which is exactly what the claim reads.
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('aaaaaaaa-0000-4000-8000-000000000001','a@example.invalid','{"role":"seeker","full_name":"Seeker A"}'),
+  ('cccccccc-0000-4000-8000-000000000003','m@example.invalid','{"role":"mentor","full_name":"Mentor M"}'),
+  ('dddddddd-0000-4000-8000-000000000004','u@example.invalid','{"role":"mentor","full_name":"Mentor U"}');
+select pg_temp.act_as_nobody();
+
+-- Nobody signed in has an account to welcome, and anon holds no grant at all.
+select pg_temp.read_as(null, 'anon',
+  'select count(*)::text from claim_welcome_email()',
+  'signed out, there is nothing to claim','refused');
+
+-- A seeker is not owed this letter. Not an error -- simply no row.
+select pg_temp.read_as('aaaaaaaa-0000-4000-8000-000000000001','authenticated',
+  'select email from claim_welcome_email()',
+  'a seeker gets no row','null');
+
+-- The specialist does, and gets their own address rather than one passed in:
+-- the function takes no argument, so there is no other row to ask for.
+select pg_temp.read_as('cccccccc-0000-4000-8000-000000000003','authenticated',
+  'select email from claim_welcome_email()',
+  'a specialist gets their own address','m@example.invalid');
+
+select pg_temp.act_as_nobody();
+select pg_temp.record('welcome','and the claim is written down','true',
+  (select (welcome_email_sent_at is not null)::text from profiles
+    where id='cccccccc-0000-4000-8000-000000000003'));
+
+-- Claiming did not spend anybody else's.
+select pg_temp.record('welcome','another specialist is untouched','true',
+  (select (welcome_email_sent_at is null)::text from profiles
+    where id='dddddddd-0000-4000-8000-000000000004'));
+
+-- Once. This is the whole point: the auth callback runs on every LinkedIn
+-- sign-in, so the second, third and hundredth time must come back empty.
+select pg_temp.read_as('cccccccc-0000-4000-8000-000000000003','authenticated',
+  'select email from claim_welcome_email()',
+  'a second call gets nothing','null');
+
+-- Giving it back, which is what happens when the send itself failed.
+select pg_temp.act_as('cccccccc-0000-4000-8000-000000000003');
+set local role authenticated;
+select release_welcome_email();
+reset role;
+select pg_temp.act_as_nobody();
+select pg_temp.read_as('cccccccc-0000-4000-8000-000000000003','authenticated',
+  'select email from claim_welcome_email()',
+  'a released claim can be taken again','m@example.invalid');
+
+-- But only for the failure that just happened. An old stamp stays put, so
+-- this is a recovery path and not a button for re-sending the letter at will.
+select pg_temp.act_as_nobody();
+update profiles set welcome_email_sent_at = now() - interval '2 hours'
+ where id='cccccccc-0000-4000-8000-000000000003';
+select pg_temp.act_as('cccccccc-0000-4000-8000-000000000003');
+set local role authenticated;
+select release_welcome_email();
+reset role;
+select pg_temp.act_as_nobody();
+select pg_temp.record('welcome','an old claim is not released','true',
+  (select (welcome_email_sent_at is not null)::text from profiles
+    where id='cccccccc-0000-4000-8000-000000000003'));
+
+-- The other specialist's letter is still waiting, addressed to them.
+select pg_temp.read_as('dddddddd-0000-4000-8000-000000000004','authenticated',
+  'select email from claim_welcome_email()',
+  'each specialist is welcomed separately','u@example.invalid');
+
+select 'The one letter a specialist gets' as section, check_name, expected, actual,
+       (actual like expected || '%') as pass
+  from results order by 2;
+rollback;

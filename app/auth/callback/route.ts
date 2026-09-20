@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isProviderAvatarUrl, storeRemoteAvatar } from "@/lib/avatar";
 import { safeNext } from "@/lib/next-path";
+import { sendWelcomeToSpecialist } from "@/lib/email/notifications";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -115,6 +116,12 @@ export async function GET(request: NextRequest) {
           await supabase.from("profiles").update(patch).eq("id", data.user.id);
         }
       }
+
+      // Last, because the letter greets them by the name the block above may
+      // have just copied out of LinkedIn. This route runs on every LinkedIn
+      // sign-in, not only the first — claim_welcome_email() is what makes
+      // that safe, and it is the only thing that does.
+      await sendWelcomeToSpecialist();
 
       return NextResponse.redirect(`${origin}${next}`);
     }

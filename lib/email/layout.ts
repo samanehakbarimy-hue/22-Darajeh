@@ -6,7 +6,13 @@
  * alternatives are exactly what those clients handle worst. dir="rtl" is on the
  * body so Persian runs the right way even where the client guesses otherwise.
  */
-const BRAND = "#da0101";
+// The site's own button, copied out of globals.css: teal fill, near-black
+// label. It is dark-on-teal rather than white-on-teal for the reason the site
+// is — white on this green is about 3.6:1, which is not enough for a label
+// this size. The red that used to be here was left over from a palette the
+// site stopped using, and a letter is often the first thing somebody sees.
+const BRAND = "#20917e";
+const BRAND_ON = "#0a1c19";
 const INK = "#141110";
 const MUTED = "#6b6560";
 
@@ -21,7 +27,7 @@ export function emailLayout({
 }): string {
   const button = action
     ? `<tr><td style="padding:8px 0 4px">
-         <a href="${action.href}" style="display:inline-block;background:${BRAND};color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:999px;font-weight:bold;font-size:15px">${action.label}</a>
+         <a href="${action.href}" style="display:inline-block;background:${BRAND};color:${BRAND_ON};text-decoration:none;padding:12px 28px;border-radius:999px;font-weight:bold;font-size:15px">${action.label}</a>
        </td></tr>`
     : "";
 

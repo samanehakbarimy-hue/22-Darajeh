@@ -248,6 +248,53 @@ export async function notifyNewInquiry(inquiryId: string): Promise<void> {
   });
 }
 
+/**
+ * The one letter a new specialist gets, on the way in.
+ *
+ * Called from both auth routes, which means it is called on every LinkedIn
+ * sign-in for the rest of that account's life. Sending once is not this
+ * function's decision to make safely — claim_welcome_email() (migration 0060)
+ * stamps the row and hands back an address in the same statement, and returns
+ * nothing at all to everybody else. No row, no letter, no question asked.
+ *
+ * Stamp first, send second: a crash between the two costs a letter, and the
+ * other order costs a duplicate. When the send genuinely fails the stamp goes
+ * back, so the next sign-in tries again — which is also what makes this work
+ * in development, where there is no Resend key and nothing is ever sent.
+ */
+export async function sendWelcomeToSpecialist(): Promise<void> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("claim_welcome_email");
+    const claim = (data as { email: string; full_name: string | null }[] | null)?.[0];
+    if (error || !claim?.email) return;
+
+    const name = claim.full_name?.trim();
+
+    const sent = await sendEmail({
+      to: claim.email,
+      subject: "به جاب‌آموز خوش آمدی",
+      html: emailLayout({
+        heading: name ? `${esc(name)} خوش آمدی` : "خوش آمدی",
+        body: `
+          <div>حساب کارشناس ساخته شد. قدم بعدی پروفایل است: کاری که می‌کنی، جایی که کار می‌کنی، و تجربه‌ای که داری.</div>
+          <div style="margin-top:12px">وقتی پروفایل را فرستادی، یک نفر آن را می‌خواند و تأیید می‌کند. تا آن موقع روی فهرست کارشناس‌ها دیده نمی‌شوی.</div>
+          <div style="margin-top:12px">زمان‌ها را خودت می‌گذاری و هر درخواستی را می‌توانی بپذیری یا رد کنی. گفتگوی ۲۲ دقیقه‌ای رایگان است و قیمت جلسه‌های تخصصی را خودت تعیین می‌کنی.</div>`,
+        action: {
+          label: "کامل کردن پروفایل",
+          href: `${SITE}/dashboard/mentor/profile`,
+        },
+      }),
+    });
+
+    if (!sent) {
+      await supabase.rpc("release_welcome_email");
+    }
+  } catch {
+    // A letter that cannot be sent is never a sign-in that fails.
+  }
+}
+
 /** The specialist answered, and the person who asked should know. */
 export async function notifyInquiryReply(inquiryId: string): Promise<void> {
   const p = await inquiryPartiesFor(inquiryId);
