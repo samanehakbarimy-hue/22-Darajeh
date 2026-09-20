@@ -1,10 +1,10 @@
 # Handoff — JobAmooz
 
-_Written 2026-09-10. The repo is the source of truth; where this disagrees, believe the files._
+_Written 2026-09-20. The repo is the source of truth; where this disagrees, believe the files._
 
 ## Git / deploy state
 
-- `master` HEAD == `origin/master` == `5454c3b`. Nothing unpushed.
+- `master` HEAD == `origin/master` == `e5bc93e`, deployed to production.
 - Uncommitted, leave alone: `.claude/settings.local.json`, `CLAUDE.md` (has the
   Session handoff section), this file.
 - Production is `jobamooz` on Vercel (`sama-9866`), aliased to `jobamooz.com`.
@@ -16,33 +16,40 @@ _Written 2026-09-10. The repo is the source of truth; where this disagrees, beli
   `gh auth switch --user samanehakbarimy-hue`. If pushes 403 again, that
   switch got flipped back — re-run it.
 
-## Active unfinished task: specialist signup emails
+## Active unfinished task: paste one template into Supabase
 
-**Proposed, not built.** A written proposal (both Persian drafts + the
-once-only design) was shown to the user weeks ago; she has not answered the
-open questions, so no code exists.
+The specialist signup emails are **built, tested and deployed** (`e5bc93e`,
+migration 0060) — see "Recently shipped". One step is left and only Samaneh
+can do it, because Supabase has no API for auth templates:
 
-Plan once the questions are answered:
-1. Migration `0060`: add `profiles.welcome_email_sent_at` + a `SECURITY
-   DEFINER` claim function that stamps it only where still null and returns a
-   row only to the caller that won (idempotent welcome email).
-2. Send function in `lib/email/notifications.ts`, called from
-   `app/auth/callback/route.ts` and `app/auth/confirm/route.ts`.
-3. Access-rule checks: second call sends nothing, unverified refused, seeker
-   refused, no claiming for another user.
-4. Paste the Persian confirm-signup template into Supabase by hand (all six
-   auth templates are currently untouched English defaults).
+**Supabase → Authentication → Emails → Confirm signup.** Paste
+`supabase/templates/confirm-signup.html` as the body and
+`تأیید ایمیل در جاب‌آموز` as the subject. Until then a new specialist still
+gets the English default ("Confirm your signup"). `{{ .ConfirmationURL }}`
+appears twice in that file and must stay exactly as written.
 
-Open questions blocking it:
-- Approve or edit the two Persian texts.
-- Stamp before sending (a send failure loses the email) or after (risk of
-  duplicates)?
-- Should LinkedIn signups, which skip the confirm email, get the welcome?
-- Existing emails carry a leftover red button (`#da0101`) vs the site teal —
-  change it or leave it?
+The other five auth templates are still English defaults. Reset Password is
+the one a real person is most likely to meet next; nobody has asked for it.
+
+Her one open judgement call: the Persian wording of both letters. She was
+shown them rendered on 2026-09-20. Changing either is a one-string edit —
+`sendWelcomeToSpecialist()` in `lib/email/notifications.ts` for the welcome,
+the template file for the confirm.
 
 ## Recently shipped (do not redo)
 
+- **The specialist welcome email** (`e5bc93e`, migration 0060).
+  `claim_welcome_email()` stamps `profiles.welcome_email_sent_at` and returns
+  the address in one statement, so the letter goes once however many times the
+  auth callback runs (it runs on every LinkedIn sign-in). Stamp first, send
+  second, `release_welcome_email()` hands it back when the send failed — which
+  is also why this works locally with no Resend key. Every account that existed
+  on 2026-09-20 was stamped in the migration so nobody got a stale welcome.
+  Called from both `app/auth/confirm/route.ts` and `app/auth/callback/route.ts`.
+  9 new access-rule checks; suite is 210 now.
+- **Email buttons are the site teal** (`#20917e` fill, `#0a1c19` label, as in
+  `globals.css`). The old `#da0101` was from a palette the site stopped using.
+  This changes every notice, not just the new one.
 - **Pricing cron fixed** (`5454c3b`, migration 0059). It had never run: the
   route called `refresh_prices()` through the anon-key client, which that
   function is revoked from. Now a narrow `pricing_cron` Postgres role (EXECUTE
@@ -72,13 +79,13 @@ Open questions blocking it:
 ## Test / build state at HEAD
 
 - `npm test` — 31 pass, 0 fail
-- `node scripts/db.js supabase/tests/access_rules.sql` — all pass, 0 fail
+- `node scripts/db.js supabase/tests/access_rules.sql` — 210 pass, 0 fail
 - `npx tsc --noEmit` — clean
 - `npm run build` — succeeds
 - `npm run lint` — 3 errors, all pre-existing in `scripts/db.js` (AGENTS.md)
 
 ## First action for the next session
 
-If continuing the signup emails: get the four open questions answered before
-writing the migration — the second one decides the function's shape. That is
-the only open build task.
+Nothing is half-built. The only outstanding step is hers: pasting
+`supabase/templates/confirm-signup.html` into Supabase. Ask whether that is
+done before writing anything new about signup mail.
