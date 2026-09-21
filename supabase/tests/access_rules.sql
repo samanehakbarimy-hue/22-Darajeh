@@ -2329,3 +2329,86 @@ select 'The one letter a specialist gets' as section, check_name, expected, actu
        (actual like expected || '%') as pass
   from results order by 2;
 rollback;
+
+-- ============================================================
+-- A person edits their name and photo, and nothing else on their row
+-- ============================================================
+begin;
+create temp table if not exists results(
+  flow text, check_name text, expected text, actual text
+) on commit drop;
+grant all on results to authenticated;
+
+create or replace function pg_temp.act_as(u uuid) returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', u, 'role', 'authenticated')::text, true);
+end $$;
+
+create or replace function pg_temp.act_as_nobody() returns void
+language plpgsql security definer as $$
+begin
+  perform set_config('request.jwt.claims', '', true);
+end $$;
+
+create or replace function pg_temp.record(f text, c text, e text, a text)
+returns void language plpgsql security definer as $$
+begin
+  insert into results values (f, c, e, a);
+end $$;
+
+create or replace function pg_temp.try_as(
+  actor uuid, stmt text, chk text, expected text
+) returns void language plpgsql as $$
+declare outcome text;
+begin
+  perform pg_temp.act_as(actor);
+  begin
+    execute 'set local role authenticated';
+    execute stmt;
+    outcome := 'ok';
+  exception when others then
+    outcome := 'refused: ' || sqlerrm;
+  end;
+  execute 'reset role';
+  perform pg_temp.act_as_nobody();
+  perform pg_temp.record('own row', chk, expected, outcome);
+end $$;
+
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('eeeeeeee-0000-4000-8000-00000000000e','e@example.invalid','{"role":"mentor","full_name":"Mentor E"}');
+select pg_temp.act_as_nobody();
+
+-- The three things that are theirs.
+select pg_temp.try_as('eeeeeeee-0000-4000-8000-00000000000e',
+  'update profiles set full_name = ''E. Renamed'' where id = ''eeeeeeee-0000-4000-8000-00000000000e''',
+  'they can change their name','ok');
+select pg_temp.try_as('eeeeeeee-0000-4000-8000-00000000000e',
+  'update profiles set photo_url = ''https://x.example.invalid/e.webp'' where id = ''eeeeeeee-0000-4000-8000-00000000000e''',
+  'they can change their photo','ok');
+select pg_temp.try_as('eeeeeeee-0000-4000-8000-00000000000e',
+  'update profiles set role = ''seeker'' where id = ''eeeeeeee-0000-4000-8000-00000000000e''',
+  'they can pick seeker or mentor','ok');
+
+-- Suspended by an admin. This was the hole: the row is theirs, so RLS let it
+-- through, and the grant covered every column. Found 2026-09-21.
+update profiles set suspended_at = now() where id = 'eeeeeeee-0000-4000-8000-00000000000e';
+select pg_temp.try_as('eeeeeeee-0000-4000-8000-00000000000e',
+  'update profiles set suspended_at = null where id = ''eeeeeeee-0000-4000-8000-00000000000e''',
+  'a suspended person cannot lift it themselves','refused');
+select pg_temp.record('own row','and is in fact still suspended','true',
+  (select (suspended_at is not null)::text from profiles where id='eeeeeeee-0000-4000-8000-00000000000e'));
+
+-- The bookkeeping columns are not theirs either.
+select pg_temp.try_as('eeeeeeee-0000-4000-8000-00000000000e',
+  'update profiles set created_at = ''2001-01-01'' where id = ''eeeeeeee-0000-4000-8000-00000000000e''',
+  'they cannot rewrite their join date','refused');
+select pg_temp.try_as('eeeeeeee-0000-4000-8000-00000000000e',
+  'update profiles set welcome_email_sent_at = null where id = ''eeeeeeee-0000-4000-8000-00000000000e''',
+  'they cannot reset the welcome stamp','refused');
+
+select 'Their own row: name and photo only' as section, check_name, expected, actual,
+       (actual like expected || '%') as pass
+  from results order by 2;
+rollback;
