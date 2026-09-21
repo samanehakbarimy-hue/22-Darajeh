@@ -261,10 +261,16 @@ export async function notifyNewInquiry(inquiryId: string): Promise<void> {
  * other order costs a duplicate. When the send genuinely fails the stamp goes
  * back, so the next sign-in tries again — which is also what makes this work
  * in development, where there is no Resend key and nothing is ever sent.
+ *
+ * Takes the client that just verified the person rather than making its own:
+ * the session is seconds old and lives in cookies this request only just
+ * wrote, and whether a fresh client would see them is not a bet worth making
+ * on the one email that has no retry.
  */
-export async function sendWelcomeToSpecialist(): Promise<void> {
+export async function sendWelcomeToSpecialist(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+): Promise<void> {
   try {
-    const supabase = await createClient();
     const { data, error } = await supabase.rpc("claim_welcome_email");
     const claim = (data as { email: string; full_name: string | null }[] | null)?.[0];
     if (error || !claim?.email) return;
