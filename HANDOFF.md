@@ -4,8 +4,8 @@ _Written 2026-09-29. The repo is the source of truth; where this disagrees, beli
 
 ## Git / deploy state
 
-- `master` == `origin/master` == `4cba25e`, **deployed to production 2026-09-29**
-  (merges of #80 and #81; both branches deleted). Live checks after deploy:
+- `master` == `origin/master` == `69c09a3`, **deployed to production 2026-09-29**
+  (merges of #80, #81 and #82; branches deleted). Live checks after deploy:
   five security headers present, X-Powered-By gone, every page 200, cron 401,
   holding page intact.
 - Vercel builds a preview for every pushed branch (behind its login wall);
@@ -103,9 +103,12 @@ Welcome email never went out for her (callback bailed before the claim).
 
 ## Follow-ups that exist because of the 29th, none started
 
-- Switch the Supabase "Confirm signup" template link to the token_hash form
-  (`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup`) so
-  confirmation logs people in from any device. Template file + paste by hand.
+- **PASTE PENDING:** #82 is merged and live, so `/auth/confirm` understands
+  the new link — but the Supabase dashboard still holds the OLD template.
+  Nothing changes for signups until `supabase/templates/confirm-signup.html`
+  is pasted into Authentication → Emails → Confirm signup. Needs her Chrome
+  (extension disconnected all day on the 29th) or her sign-in in the pane.
+  Then a real test: register on one device, open the email on another.
 - `keepTheForm()` on the shorter forms (booking, message, brief, review).
 - Shrink photos in the browser before upload; phone photos are 4–15MB and
   the form currently refuses anything over 3MB.
