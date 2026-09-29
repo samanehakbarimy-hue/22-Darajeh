@@ -12,6 +12,13 @@ import { existsSync } from "node:fs";
 const ROOT = pathToFileURL(`${process.cwd()}/`).href;
 
 export function resolve(specifier, context, next) {
+  // Next ships "next/navigation" as a file with no exports map, which a
+  // bundler forgives and Node does not. Only the bare form is rewritten, so a
+  // deep import that already names its file is left alone.
+  if (/^next\/[^/]+$/.test(specifier)) {
+    return next(`${specifier}.js`, context);
+  }
+
   if (!specifier.startsWith("@/")) return next(specifier, context);
 
   const base = new URL(specifier.slice(2), ROOT).href;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { keepTheForm } from "@/lib/keep-the-form";
 import { updateAccount, deleteAccount } from "@/lib/actions/account";
 import Spinner from "@/components/Spinner";
 
@@ -13,7 +14,10 @@ export default function AccountForm({
   initialFullName: string;
   initialPhotoUrl: string;
 }) {
-  const [state, action, pending] = useActionState(updateAccount, undefined);
+  const [state, action, pending] = useActionState(
+    keepTheForm(updateAccount, "ذخیره نشد: اتصال قطع شد یا سرور جواب نداد. چیزی که نوشتی سر جایش است — دوباره «ذخیره» را بزن."),
+    undefined,
+  );
   const [preview, setPreview] = useState(initialPhotoUrl);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
