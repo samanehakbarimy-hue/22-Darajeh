@@ -121,7 +121,7 @@ export async function GET(request: NextRequest) {
       // have just copied out of LinkedIn. This route runs on every LinkedIn
       // sign-in, not only the first — claim_welcome_email() is what makes
       // that safe, and it is the only thing that does.
-      await sendWelcomeToSpecialist();
+      await sendWelcomeToSpecialist(supabase);
 
       return NextResponse.redirect(`${origin}${next}`);
     }

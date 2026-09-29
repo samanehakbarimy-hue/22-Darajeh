@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Nobody needs to be told which framework this is.
+  poweredByHeader: false,
   experimental: {
     serverActions: {
       // Default is 1mb, too small for a real profile photo upload.
@@ -9,6 +11,30 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        // On every response. Until 2026-09-21 the only security header the
+        // site sent was the HSTS one Vercel adds itself.
+        //
+        // frame-ancestors 'none' (and X-Frame-Options for the clients that
+        // predate it): nothing here is meant to be embedded, and the admin
+        // page has approve and suspend buttons that a hostile page could lay
+        // an invisible frame over and have a signed-in admin click.
+        //
+        // The referrer policy is for /auth/confirm and /reset-password, whose
+        // URLs carry one-time tokens; cross-origin requests now get the
+        // origin alone, never the path.
+        source: "/:path*",
+        headers: [
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
+        ],
+      },
       {
         // Next serves everything in public/ as `max-age=0, must-revalidate`,
         // because it cannot fingerprint names it did not choose. That is safe

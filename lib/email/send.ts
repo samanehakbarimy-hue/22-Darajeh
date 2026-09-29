@@ -35,6 +35,11 @@ export async function sendEmail({
   try {
     const res = await fetch(ENDPOINT, {
       method: "POST",
+      // This is awaited inside the auth callbacks now, so a hanging Resend
+      // would hold a person's sign-in open until the platform killed it.
+      // Five seconds is longer than a healthy send ever takes; past that the
+      // caller is told false and gets on with its redirect.
+      signal: AbortSignal.timeout(5000),
       headers: {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",

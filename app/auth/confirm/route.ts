@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       // decision of whether this is the first time is the database's, not
       // ours — see claim_welcome_email(). Awaited rather than left running,
       // because this function stops existing the moment it answers.
-      await sendWelcomeToSpecialist();
+      await sendWelcomeToSpecialist(supabase);
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
