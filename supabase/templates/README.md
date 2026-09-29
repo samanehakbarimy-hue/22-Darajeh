@@ -10,16 +10,28 @@ subject and the HTML and save.
 
 | File | Template | Subject | Pasted in |
 | --- | --- | --- | --- |
-| `confirm-signup.html` | Confirm signup | `تأیید ایمیل در جاب‌آموز` | 2026-09-20 |
+| `confirm-signup.html` | Confirm signup | `تأیید ایمیل در جاب‌آموز` | 2026-09-20; link changed 2026-09-29 (see below) |
 
 Editing a file here changes nothing on its own. Whatever is in the dashboard is
 what gets sent, so a change to one of these has to be pasted in again.
 
-`{{ .ConfirmationURL }}` is Supabase's own variable and must stay exactly as
-written, twice — once on the button and once as text, because a mail client
-that strips the button still leaves somebody a link they can copy. This is the
-same link the untouched English default used; only the words and the styling
-around it changed, so nothing about how a confirmation is verified moved.
+The link appears twice — once on the button and once as text, because a mail
+client that strips the button still leaves somebody a link they can copy — and
+both must be identical:
+
+    {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}
+
+**Why not `{{ .ConfirmationURL }}`, the default.** That one goes through
+Supabase's own verify endpoint and comes back to `/auth/callback` with a
+one-time code that can only be exchanged by the browser that started the
+signup (PKCE). Somebody who registers on a laptop and opens the email on
+their phone — the first outside specialist did exactly this on 2026-09-29 —
+lands on the login page with an error, never gets the welcome email, and has
+to sign in by hand. The `token_hash` form is verified by our own
+`/auth/confirm` route on whatever device opens it. `{{ .RedirectTo }}` is the
+callback URL signUp() asked for; the route unwraps the destination inside it.
+
+The three template variables are Supabase's and must stay exactly as written.
 
 The styling is `lib/email/layout.ts` written out flat. If that shell changes —
 the wordmark, the colours, the footer line — this file is the one place that
