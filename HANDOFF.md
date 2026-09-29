@@ -1,10 +1,21 @@
 # Handoff — JobAmooz
 
-_Written 2026-09-20. The repo is the source of truth; where this disagrees, believe the files._
+_Written 2026-09-29. The repo is the source of truth; where this disagrees, believe the files._
 
 ## Git / deploy state
 
-- `master` HEAD == `origin/master` == `e5bc93e`, deployed to production.
+- `master` == `origin/master` == `fd2a368`, deployed to production.
+- **Two open PRs, both waiting on her go, neither deployed:**
+  - #80 `fix/audit-findings` — six audit findings (column-level grants on
+    profiles [migration 0061, ALREADY APPLIED to the live database], photo
+    magic-byte allow-list, next 16.3.5 + sharp 0.35.4, security headers,
+    welcome-email client reuse, 5s Resend timeout).
+  - #81 `fix/a-stalled-save-keeps-your-words` — timeouts on every Supabase
+    call (25s page client / 10s proxy) and `keepTheForm()` so a dead request
+    shows an error line instead of wiping the form. Branched from master, so
+    independent of #80; merge either first.
+- Vercel builds a preview for every pushed branch (behind its login wall);
+  production still deploys only by `vercel --prod --yes` from PowerShell.
 - Uncommitted, leave alone: `.claude/settings.local.json`, `CLAUDE.md` (has the
   Session handoff section), this file.
 - Production is `jobamooz` on Vercel (`sama-9866`), aliased to `jobamooz.com`.
@@ -16,16 +27,36 @@ _Written 2026-09-20. The repo is the source of truth; where this disagrees, beli
   `gh auth switch --user samanehakbarimy-hue`. If pushes 403 again, that
   switch got flipped back — re-run it.
 
-## Active unfinished task: none
+## Active: the first outside signup went badly (2026-09-29)
 
-The specialist signup emails are finished, deployed and in place. The one step
-that needed a human -- pasting the Persian Confirm signup template into the
-Supabase dashboard, which has no API -- was done on 2026-09-20 through her own
-Chrome, and Supabase's own preview renders it correctly.
+Samaneh's friend «سما» registered as a specialist at 13:41 UTC, confirmed at
+13:42, signed in at 13:45, filled in the profile, pressed save, watched a
+spinner for ~4 minutes, then got the «از سمت ما بود، نه تو» page. Nothing
+saved: `profiles` row exists, no `mentor_profiles` row, no welcome stamp.
 
-The other five auth templates are still English defaults. Reset Password is
-the one a real person is most likely to meet next; nobody has asked for it.
-`supabase/templates/README.md` lists them.
+What is established:
+- Vercel's function cap is 300s → the save ran until killed → 504 → React
+  error boundary replaced the page and unmounted the form. Reproduced locally
+  by answering a server action with a 504. Fixed in #81 (both halves).
+- Not the photo processing (sharp does a 196MP bomb in 0.26s), not a lock
+  (nothing stuck in pg_stat_activity), not a platform incident (Supabase's
+  only one that day was 16:26 UTC, US-East; Vercel none).
+- Photo was ≤3MB (client gate at line 338 of the profile form).
+
+What is NOT established: which Supabase call stalled. Only the **Supabase
+dashboard API/Postgres logs for 13:45–14:15 UTC on 2026-09-29** can say, and
+they expire ~24h after. Needs her Chrome (extension was disconnected) or her
+signing in to Supabase in the browser pane. After that window, this is
+unknowable and the fixes in #81 are the answer regardless.
+
+Also seen, lower priority: the email confirmation link did not log her in
+(one session, at 13:45:30, not 13:42) — she had to sign in by hand. The
+confirm mail uses `{{ .ConfirmationURL }}` → `/auth/callback` (PKCE), which
+needs the browser that started signup. `/auth/confirm` (token_hash) exists
+for exactly this and works from any device; switching the Supabase template
+to it is a small follow-up, not done.
+
+Welcome email never went out for her (callback bailed before the claim).
 
 ## Recently shipped (do not redo)
 
@@ -77,5 +108,6 @@ the one a real person is most likely to meet next; nobody has asked for it.
 
 ## First action for the next session
 
-Nothing is half-built and nothing is waiting on her. Pick up whatever she
-asks for next.
+If it is still before ~13:45 UTC on 2026-09-30, get into the Supabase
+dashboard logs for the window above before anything else. Then: her go on
+#80 and #81 → merge → `vercel --prod --yes` → update this file.
