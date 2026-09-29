@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { saveMentorProfile } from "@/lib/actions/mentor";
+import { keepTheForm } from "@/lib/keep-the-form";
 import Spinner from "@/components/Spinner";
 import { MAX_YEARS, MIN_YEARS } from "@/lib/seniority";
 import { fa } from "@/lib/persian";
@@ -207,7 +208,11 @@ export default function MentorProfileForm({
   /** Connected specialists get a link per booking and need no fallback. */
   googleConnected: boolean;
 }) {
-  const [state, action, pending] = useActionState(saveMentorProfile, undefined);
+  // Ten minutes of typing must survive a dropped connection: see keepTheForm.
+  const [state, action, pending] = useActionState(
+    keepTheForm(saveMentorProfile, "ذخیره نشد: اتصال قطع شد یا سرور جواب نداد. چیزی که نوشتی سر جایش است — دوباره «ذخیره» را بزن."),
+    undefined,
+  );
   const [preview, setPreview] = useState(initialPhotoUrl);
   const [photoError, setPhotoError] = useState("");
   const [photoName, setPhotoName] = useState("");
