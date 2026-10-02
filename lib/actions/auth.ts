@@ -8,11 +8,23 @@ import { safeNext } from "@/lib/next-path";
 export type AuthFormState = { error?: string } | undefined;
 
 
+/** True when the off-screen field from components/SignupTrap was filled in. */
+function caughtInTrap(formData: FormData): boolean {
+  return String(formData.get("company_website") ?? "").trim() !== "";
+}
+
 async function signUp(
   formData: FormData,
   role: "mentor" | "seeker",
   extra: Record<string, string> = {},
 ): Promise<AuthFormState> {
+  // A filled trap field is a script, not a person. It is shown the same
+  // "check your email" page a real signup sees, so it learns nothing, and no
+  // account is created and no email is sent.
+  if (caughtInTrap(formData)) {
+    redirect("/signup/check-email");
+  }
+
   const fullName = String(formData.get("full_name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
