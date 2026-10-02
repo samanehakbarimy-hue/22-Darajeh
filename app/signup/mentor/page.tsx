@@ -7,6 +7,7 @@ import { signUpMentor } from "@/lib/actions/auth";
 import PasswordInput from "@/components/PasswordInput";
 import LinkedInButton from "@/components/LinkedInButton";
 import Spinner from "@/components/Spinner";
+import SignupTrap from "@/components/SignupTrap";
 import StageBar from "@/components/StageBar";
 
 /* Helping and earning, in that order — the two reasons somebody does this.
@@ -51,6 +52,7 @@ function MentorSignupPageForm() {
 
             <form action={action} className="flex flex-col gap-4">
               <input type="hidden" name="next" value={next} />
+              <SignupTrap />
               <div>
                 <label
                   htmlFor="full_name"

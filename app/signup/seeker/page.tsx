@@ -7,6 +7,7 @@ import { signUpSeeker } from "@/lib/actions/auth";
 import PasswordInput from "@/components/PasswordInput";
 import LinkedInButton from "@/components/LinkedInButton";
 import Spinner from "@/components/Spinner";
+import SignupTrap from "@/components/SignupTrap";
 
 function SeekerSignupPageForm() {
   const [state, action, pending] = useActionState(signUpSeeker, undefined);
@@ -31,6 +32,7 @@ function SeekerSignupPageForm() {
 
       <form action={action} className="flex flex-col gap-4">
         <input type="hidden" name="next" value={next} />
+        <SignupTrap />
         <div>
           <label htmlFor="full_name" className="mb-1 block text-sm font-medium">
             نام و نام خانوادگی
