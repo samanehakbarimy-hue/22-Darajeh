@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { Vazirmatn } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const vazirmatn = Vazirmatn({
@@ -19,6 +20,10 @@ const IS_PRIVATE = process.env.SITE_PRIVATE === "true";
 const ALLOW_INDEXING = process.env.ALLOW_INDEXING === "true";
 
 export const metadata: Metadata = {
+  // Lets every page give its canonical address and its preview image as a
+  // path; without a base, Next cannot turn "/og.png" into a full URL and a
+  // shared link arrives with no picture.
+  metadataBase: new URL(siteUrl()),
   // The public title is the pitch, and login, privacy and terms have to stay
   // open for people to sign in and for Google to verify the OAuth app. Leaving
   // the tagline in the tab of those pages hands the idea to anyone who looks,
@@ -36,6 +41,27 @@ export const metadata: Metadata = {
   ...(ALLOW_INDEXING
     ? {}
     : { robots: { index: false, follow: false, nocache: true } }),
+  // What a link looks like when somebody pastes it into Telegram, WhatsApp or
+  // LinkedIn. Held back with the title while the site is private, for the
+  // same reason: the preview would say what the curtain is there to hide.
+  ...(IS_PRIVATE
+    ? {}
+    : {
+        openGraph: {
+          siteName: "جاب‌آموز",
+          locale: "fa_IR",
+          type: "website",
+          images: [
+            {
+              url: "/og.png",
+              width: 1200,
+              height: 630,
+              alt: "جاب‌آموز — هر سؤال شغلی داری، از کسی بپرس که همان کار را می‌کند.",
+            },
+          ],
+        },
+        twitter: { card: "summary_large_image" },
+      }),
 };
 
 export const viewport: Viewport = {

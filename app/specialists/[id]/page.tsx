@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -8,6 +9,61 @@ import { experienceLabel } from "@/lib/seniority";
 import SaveSpecialist from "@/components/SaveSpecialist";
 import { getCurrentUser } from "@/lib/auth";
 import { getUsdToToman } from "@/lib/exchange-rate";
+import { jsonLd, truncate } from "@/lib/seo";
+import { siteUrl } from "@/lib/site";
+
+/**
+ * The page's own name in a search result and a shared link.
+ *
+ * Every profile used to carry the site's general title, so a search for a
+ * person or a job found a result that named neither. Only what is already
+ * public on the page goes in: the name, the headline, the start of the bio,
+ * the photo. An unapproved or missing profile gets nothing of its own.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("mentor_profiles")
+    .select("headline, bio, profiles!mentor_profiles_id_fkey(full_name, photo_url)")
+    .eq("id", id)
+    .eq("status", "approved")
+    .maybeSingle();
+
+  if (!data) return {};
+
+  const person = data.profiles as unknown as {
+    full_name: string;
+    photo_url: string | null;
+  } | null;
+  const name = person?.full_name?.trim() || "کارشناس";
+  const headline = data.headline?.trim();
+  const title = headline
+    ? `${name} — ${headline} | جاب‌آموز`
+    : `${name} | جاب‌آموز`;
+  const description = data.bio?.trim()
+    ? truncate(data.bio)
+    : `۲۲ دقیقه گفتگوی رایگان با ${name}${headline ? `، ${headline}` : ""}.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/specialists/${id}` },
+    openGraph: {
+      title,
+      description,
+      type: "profile",
+      siteName: "جاب‌آموز",
+      locale: "fa_IR",
+      url: `/specialists/${id}`,
+      images: person?.photo_url ? [{ url: person.photo_url }] : ["/og.png"],
+    },
+  };
+}
 
 export default async function SpecialistPage({
   params,
@@ -126,6 +182,30 @@ export default async function SpecialistPage({
     // Wide, because this page is a profile beside a decision panel rather than
     // a column of prose.
     <div className="mx-auto w-full max-w-7xl flex-1 px-6 py-10">
+      {/* The same facts the page shows, in the form a search engine or an AI
+          assistant reads without guessing. Nothing here that is not already
+          visible on the page. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd({
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            mainEntity: {
+              "@type": "Person",
+              name,
+              url: `${siteUrl()}/specialists/${id}`,
+              ...(specialist.headline ? { jobTitle: specialist.headline } : {}),
+              ...(specialist.company
+                ? { worksFor: { "@type": "Organization", name: specialist.company } }
+                : {}),
+              ...(profile?.photo_url ? { image: profile.photo_url } : {}),
+              ...(specialist.bio ? { description: truncate(specialist.bio, 300) } : {}),
+              knowsAbout: [...(specialist.expertise_tags ?? []), ...skills],
+            },
+          }),
+        }}
+      />
       <nav className="flex flex-wrap items-center gap-2 text-sm text-muted">
         <Link href="/" className="hover:text-foreground">
           جاب‌آموز

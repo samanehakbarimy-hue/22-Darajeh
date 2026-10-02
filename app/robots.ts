@@ -21,7 +21,27 @@ export default function robots(): MetadataRoute.Robots {
 
   return allowIndexing
     ? {
-        rules: { userAgent: "*", allow: "/" },
+        rules: {
+          userAgent: "*",
+          allow: "/",
+          // Once the site is meant to be found, the pages that are only a
+          // form or only somebody's own account are not what should be found.
+          // They are left crawlable while the site is private, above, so the
+          // noindex tag on them can still be read.
+          disallow: [
+            "/dashboard",
+            "/admin",
+            "/api/",
+            "/auth/",
+            "/login",
+            "/forgot-password",
+            "/reset-password",
+            "/signup/check-email",
+            "/specialists/*/book",
+            "/specialists/*/message",
+            "/specialists/*/project",
+          ],
+        },
         sitemap: `${siteUrl()}/sitemap.xml`,
       }
     : { rules: { userAgent: "*", allow: "/" } };

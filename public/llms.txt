@@ -1,0 +1,21 @@
+# JobAmooz (جاب‌آموز)
+
+> JobAmooz is a Persian-language site where someone with a career question books a free 22-minute conversation with a specialist who currently does that job. It is written for Persian speakers, right to left.
+
+A visitor picks a field or searches by job title, tool or company, reads a specialist's profile, and requests one of the times that specialist has published. The specialist accepts or declines. Every specialist profile is read and approved by a person before it is listed.
+
+Some specialists also list longer paid sessions (résumé review, career path, interview preparation) and project work. Prices are set by the specialist within a range the site publishes.
+
+## Pages
+
+- [Home](https://jobamooz.com/): what the site is and how a conversation works
+- [Find a specialist](https://jobamooz.com/specialists): the list of approved specialists, searchable and filterable by field
+- [Frequently asked questions](https://jobamooz.com/faq): how the free conversation works and what joining as a specialist involves
+- [Become a specialist](https://jobamooz.com/signup/mentor): registration for professionals who want to answer questions
+- [Contact](https://jobamooz.com/contact)
+
+## Notes
+
+- Language: Persian (fa). Proper names and tools are often written in English.
+- The 22-minute conversation is free. There is no charge to register as a seeker or as a specialist.
+- Individual specialist pages live at `https://jobamooz.com/specialists/<id>` and are listed in the [sitemap](https://jobamooz.com/sitemap.xml).

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import SpecialistRow, {
@@ -57,6 +58,15 @@ function asList(value: string | string[] | undefined): string[] {
   if (!value) return [];
   return Array.isArray(value) ? value : [value];
 }
+
+export const metadata: Metadata = {
+  title: "پیدا کردن کارشناس — ۲۲ دقیقه گفتگوی رایگان | جاب‌آموز",
+  description:
+    "کارشناس‌هایی که همین حالا در همان حوزه کار می‌کنند. حوزه را انتخاب کن، پروفایل‌ها را بخوان و ۲۲ دقیقه رایگان با یکی از آن‌ها حرف بزن.",
+  // Every search and filter is this same page with a query string; one
+  // address stands for all of them.
+  alternates: { canonical: "/specialists" },
+};
 
 export default async function SpecialistsPage({
   searchParams,
