@@ -8,11 +8,12 @@ _Written 2026-10-02. The repo is the source of truth; where this disagrees, beli
   #83 (phone header menu) and #84 (Next.js 16.3.8, closes the next/og
   advisory; `npm audit` clean). Live checks after deploy: phone menu present,
   every page 200, security headers present, holding page intact.
-- **Open PR #85 `feat/be-findable`**, waiting on her approval of the Persian
-  wording: per-page titles/descriptions, canonicals, JSON-LD on the homepage
-  and specialist profiles, `public/og.png`, `public/llms.txt`, robots
-  disallow list for account/form pages once indexing is on. It does NOT open
-  the site or turn on indexing.
+- #85 (per-page titles, canonicals, JSON-LD, `public/og.png`,
+  `public/llms.txt`, robots disallow list) merged and deployed 2026-10-02
+  after she approved the wording. Checked live: the share image is served,
+  and a signed-out visitor still gets the holding page with `noindex` and no
+  preview tags. The site is NOT open and NOT indexed.
+- No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
 - Uncommitted, leave alone: `.claude/settings.local.json`, `CLAUDE.md` (has the
@@ -63,7 +64,7 @@ Welcome email never went out for her (callback bailed before the claim).
 She wants to start the business slowly: tested, safe, then visible. Order:
 
 1. Done: #83 and #84 merged and deployed.
-2. #85 (visibility prep): built, awaiting her approval of the wording.
+2. Done: #85 (visibility prep) merged and deployed.
 3. Needs her Chrome extension reconnected (unreachable since 2026-09-20) or
    her sign-in to Supabase in the browser pane: paste the token_hash
    confirm-signup template (#82's manual step, still pending); turn on
