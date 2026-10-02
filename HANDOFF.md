@@ -13,6 +13,13 @@ _Written 2026-10-02. The repo is the source of truth; where this disagrees, beli
   after she approved the wording. Checked live: the share image is served,
   and a signed-out visitor still gets the holding page with `noindex` and no
   preview tags. The site is NOT open and NOT indexed.
+- #86 (signup trap field: a clipped, untabbable input that bots fill and
+  people never meet; a filled trap is sent to `/signup/check-email` before any
+  account or email) merged and deployed 2026-10-02. This is the part of
+  signup bot protection that needs no dashboard; a CAPTCHA in Supabase Auth
+  would still need her (third-party account + secret) and a code change to
+  pass the token, so do not switch CAPTCHA on in the dashboard alone — it
+  would break every signup and login.
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
@@ -67,8 +74,9 @@ She wants to start the business slowly: tested, safe, then visible. Order:
 2. Done: #85 (visibility prep) merged and deployed.
 3. Needs her Chrome extension reconnected (unreachable since 2026-09-20) or
    her sign-in to Supabase in the browser pane: paste the token_hash
-   confirm-signup template (#82's manual step, still pending); turn on
-   CAPTCHA and leaked-password protection for signups in Supabase Auth.
+   confirm-signup template (#82's manual step, still pending). Neither the
+   Chrome extension nor the browser pane was signed in to Supabase on
+   2026-10-02; Claude may not sign in for her.
 4. One real end-to-end test by a person: register, confirm on a phone, save
    a profile, book a session. Nobody has done this since the 09-29 fixes.
    Signed-in pages have not been viewed at phone width either.
