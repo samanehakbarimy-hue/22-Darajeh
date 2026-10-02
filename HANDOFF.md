@@ -1,13 +1,18 @@
 # Handoff — JobAmooz
 
-_Written 2026-09-29. The repo is the source of truth; where this disagrees, believe the files._
+_Written 2026-10-02. The repo is the source of truth; where this disagrees, believe the files._
 
 ## Git / deploy state
 
-- `master` == `origin/master` == `69c09a3`, **deployed to production 2026-09-29**
-  (merges of #80, #81 and #82; branches deleted). Live checks after deploy:
-  five security headers present, X-Powered-By gone, every page 200, cron 401,
-  holding page intact.
+- `master` == `origin/master`, **deployed to production 2026-10-02** with
+  #83 (phone header menu) and #84 (Next.js 16.3.8, closes the next/og
+  advisory; `npm audit` clean). Live checks after deploy: phone menu present,
+  every page 200, security headers present, holding page intact.
+- **Open PR #85 `feat/be-findable`**, waiting on her approval of the Persian
+  wording: per-page titles/descriptions, canonicals, JSON-LD on the homepage
+  and specialist profiles, `public/og.png`, `public/llms.txt`, robots
+  disallow list for account/form pages once indexing is on. It does NOT open
+  the site or turn on indexing.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
 - Uncommitted, leave alone: `.claude/settings.local.json`, `CLAUDE.md` (has the
@@ -52,6 +57,27 @@ for exactly this and works from any device; switching the Supabase template
 to it is a small follow-up, not done.
 
 Welcome email never went out for her (callback bailed before the claim).
+
+## The launch plan she agreed to on 2026-10-02
+
+She wants to start the business slowly: tested, safe, then visible. Order:
+
+1. Done: #83 and #84 merged and deployed.
+2. #85 (visibility prep): built, awaiting her approval of the wording.
+3. Needs her Chrome extension reconnected (unreachable since 2026-09-20) or
+   her sign-in to Supabase in the browser pane: paste the token_hash
+   confirm-signup template (#82's manual step, still pending); turn on
+   CAPTCHA and leaked-password protection for signups in Supabase Auth.
+4. One real end-to-end test by a person: register, confirm on a phone, save
+   a profile, book a session. Nobody has done this since the 09-29 fixes.
+   Signed-in pages have not been viewed at phone width either.
+5. Only then, on her explicit word: unset `SITE_PRIVATE`, set
+   `ALLOW_INDEXING=true`, deploy; verify the domain in Google Search Console
+   and Bing Webmaster Tools and submit the sitemap (needs her).
+
+Honest limits told to her: no guarantee against a determined attacker, no
+guarantee of appearing in AI answers, and one approved specialist in one
+field means most searches on the site find nobody.
 
 ## Recently shipped (do not redo)
 
