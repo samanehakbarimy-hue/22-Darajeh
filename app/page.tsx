@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SpecialistCard from "@/components/SpecialistCard";
 import HeroHands from "@/components/HeroHands";
 import TypingRoles from "@/components/TypingRoles";
+import { jsonLd } from "@/lib/seo";
+import { siteUrl } from "@/lib/site";
 
 const BENEFITS = [
   {
@@ -32,6 +35,10 @@ const BENEFITS = [
   },
 ];
 
+// The homepage is also where a sign-in link can land, carrying a code in its
+// query string. One address stands for all of those.
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+
 export default async function Home({
   searchParams,
 }: {
@@ -58,6 +65,37 @@ export default async function Home({
 
   return (
     <main className="relative flex flex-1 flex-col px-6 pb-24 pt-10 sm:px-10">
+      {/* Who runs this site and how to search it, said once in the form
+          machines read. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                name: "جاب‌آموز",
+                alternateName: "JobAmooz",
+                url: siteUrl(),
+                logo: `${siteUrl()}/logo-mark.png`,
+              },
+              {
+                "@type": "WebSite",
+                name: "جاب‌آموز",
+                alternateName: "JobAmooz",
+                url: siteUrl(),
+                inLanguage: "fa",
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: `${siteUrl()}/specialists?q={search_term_string}`,
+                  "query-input": "required name=search_term_string",
+                },
+              },
+            ],
+          }),
+        }}
+      />
       <HeroHands />
       <div className="relative z-10 mx-auto w-full max-w-6xl">
         {deleted === "1" && (
