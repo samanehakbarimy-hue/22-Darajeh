@@ -1,6 +1,6 @@
 # Handoff — JobAmooz
 
-_Written 2026-10-02. The repo is the source of truth; where this disagrees, believe the files._
+_Written 2026-10-03. The repo is the source of truth; where this disagrees, believe the files._
 
 ## Git / deploy state
 
@@ -20,6 +20,10 @@ _Written 2026-10-02. The repo is the source of truth; where this disagrees, beli
   would still need her (third-party account + secret) and a code change to
   pass the token, so do not switch CAPTCHA on in the dashboard alone — it
   would break every signup and login.
+- #87 merged and deployed 2026-10-03: **the header and footer are navy
+  (`#1c2b45`), not green.** A tester said the old `#1a4740` read as
+  police-uniform green; she compared four options on the real browse page and
+  chose navy. The mid green stays on buttons only. Do not move it back.
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
@@ -87,6 +91,17 @@ She wants to start the business slowly: tested, safe, then visible. Order:
 Honest limits told to her: no guarantee against a determined attacker, no
 guarantee of appearing in AI answers, and one approved specialist in one
 field means most searches on the site find nobody.
+
+## Open decision: one voice for the Persian copy
+
+The same tester's main point (voice note, 2026-10-03): the text mixes
+colloquial and formal Persian, e.g. the FAQ asks «واقعاً رایگانه؟» and answers
+«هیچ هزینه‌ای ندارد»; the confirm email has «فعال شود» beside «بزن». He also
+called «رایگانه» a هکسره mistake, which it is not (the ه is «است»). She was
+asked to choose: colloquial throughout (like the homepage headline) or simple
+written Persian with «تو» throughout (Claude's recommendation). No copy has
+been changed. Whichever she picks applies to the site, the emails in
+`lib/email/`, and the Supabase template file.
 
 ## Recently shipped (do not redo)
 
