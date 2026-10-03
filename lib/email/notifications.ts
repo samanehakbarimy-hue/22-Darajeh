@@ -134,7 +134,7 @@ export async function notifyDeclined(bookingId: string): Promise<void> {
       heading: `${esc(p.mentor_name ?? "کارشناس")} نتوانست این وقت را قبول کند`,
       body: `
         <div>زمان درخواستی: ${whenLine(p.starts_at)}</div>
-        <div style="margin-top:12px">این یعنی آن ساعت مناسب نبوده است، نه اینکه سؤالت اشکالی داشته باشد. وقت دیگری از همین کارشناس یا یک کارشناس دیگر انتخاب کن.</div>`,
+        <div style="margin-top:12px">می‌توانی وقت دیگری از همین کارشناس یا کارشناس دیگری انتخاب کنی.</div>`,
       action: { label: "پیدا کردن وقت دیگر", href: `${SITE}/specialists` },
     }),
   });

@@ -210,7 +210,7 @@ export default function MentorProfileForm({
 }) {
   // Ten minutes of typing must survive a dropped connection: see keepTheForm.
   const [state, action, pending] = useActionState(
-    keepTheForm(saveMentorProfile, "ذخیره نشد: اتصال قطع شد یا سرور جواب نداد. چیزی که نوشتی سر جایش است — دوباره روی «ذخیره» کلیک کن."),
+    keepTheForm(saveMentorProfile, "ذخیره نشد. دوباره امتحان کن."),
     undefined,
   );
   const [preview, setPreview] = useState(initialPhotoUrl);
@@ -459,8 +459,7 @@ export default function MentorProfileForm({
             className={FIELD_CLASS}
           />
           <p className="mt-1.5 text-xs leading-6 text-muted">
-            کنار سمتت روی پروفایل نوشته می‌شود. برای خیلی‌ها همین جای کار است
-            که نشان می‌دهد با چه کسی طرف‌اند.
+            کنار سمت، روی پروفایل نمایش داده می‌شود.
           </p>
         </div>
         </div>
@@ -630,7 +629,7 @@ export default function MentorProfileForm({
         step={3}
         done={skillsDone}
         title="مهارت‌ها و ابزارها"
-        description="چیزهایی که با آن‌ها کار می‌کنی. متقاضی‌ها معمولاً دنبال همین‌اند، نه فقط عنوان حوزه."
+        description="ابزارها و مهارت‌هایی که با آن‌ها کار می‌کنی."
       >
         <div>
           <div className={CHIP_FIELD_CLASS}>

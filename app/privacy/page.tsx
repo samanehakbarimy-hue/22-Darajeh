@@ -27,7 +27,7 @@ export default function PrivacyPage() {
     <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-12">
       <h1 className="text-2xl font-bold">حریم خصوصی</h1>
       <p className="mt-2 text-sm text-muted">
-        این صفحه دقیقاً همان چیزی را می‌گوید که سایت انجام می‌دهد.
+        چه اطلاعاتی ذخیره می‌شود و چه کسی آن را می‌بیند.
       </p>
 
       <Section title="چه اطلاعاتی ذخیره می‌کنیم">

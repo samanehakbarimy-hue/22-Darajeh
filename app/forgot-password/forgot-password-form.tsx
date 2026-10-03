@@ -15,10 +15,9 @@ export default function ForgotPasswordForm() {
   if (state?.sent) {
     return (
       <div className="mt-8 rounded-2xl border border-card-border bg-card p-5">
-        <p className="font-bold">اگر این ایمیل حساب داشته باشد، لینک رفت.</p>
+        <p className="font-bold">لینک بازیابی فرستاده شد.</p>
         <p className="mt-2 text-sm leading-7 text-muted">
-          صندوق ورودی را نگاه کن. اگر چیزی نیامد، پوشه اسپم را هم ببین — و
-          مطمئن شو همان ایمیلی را نوشته‌ای که با آن ثبت‌نام کرده‌ای.
+          اگر ایمیلی نیامد، پوشه اسپم را نگاه کن.
         </p>
       </div>
     );

@@ -6,9 +6,9 @@ export const metadata = { title: "فراموشی رمز عبور — جاب‌آ
 export default function ForgotPasswordPage() {
   return (
     <div className="mx-auto w-full max-w-sm flex-1 px-6 py-16">
-      <h1 className="text-2xl font-bold">رمزت را فراموش کرده‌ای؟</h1>
+      <h1 className="text-2xl font-bold">بازیابی رمز عبور</h1>
       <p className="mt-2 leading-7 text-muted">
-        ایمیلت را بنویس تا یک لینک برایت بفرستیم و از همان‌جا رمز تازه بگذاری.
+        ایمیلت را وارد کن تا لینک بازیابی فرستاده شود.
       </p>
 
       <ForgotPasswordForm />

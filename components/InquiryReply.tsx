@@ -21,7 +21,7 @@ export default function InquiryReply({ inquiryId }: { inquiryId: string }) {
   if (state?.sent) {
     return (
       <p className="mt-4 text-sm text-success">
-        جوابت فرستاده شد و برایش ایمیل رفت.
+        جوابت فرستاده شد.
       </p>
     );
   }

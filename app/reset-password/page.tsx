@@ -13,9 +13,8 @@ export default async function ResetPasswordPage() {
   if (!user) {
     return (
       <div className="mx-auto w-full max-w-sm flex-1 px-6 py-16">
-        <h1 className="text-2xl font-bold">این لینک دیگر کار نمی‌کند</h1>
+        <h1 className="text-2xl font-bold">این لینک منقضی شده است</h1>
         <p className="mt-2 leading-7 text-muted">
-          لینک‌های بازیابی رمز مدت کوتاهی معتبرند و یک بار بیشتر باز نمی‌شوند.
           یک لینک تازه بگیر.
         </p>
         <Link

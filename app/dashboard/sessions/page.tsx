@@ -396,10 +396,9 @@ export default async function MySessionsPage() {
 
       {expired.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-lg font-bold text-muted">فرصتشان گذشت</h2>
+          <h2 className="text-lg font-bold text-muted">زمانشان گذشته</h2>
           <p className="mt-1.5 text-sm leading-7 text-muted">
-            به این‌ها جواب داده نشد و زمانشان رسید و رد شد. دیگر نمی‌شود
-            قبولشان کرد؛ فقط می‌توانی از لیست پاکشان کنی.
+            زمان این درخواست‌ها گذشته است. می‌توانی آن‌ها را از لیست پاک کنی.
           </p>
           <ul className="mt-4 flex flex-col gap-3">
             {expired.map((b) => (
