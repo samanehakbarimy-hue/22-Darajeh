@@ -324,9 +324,18 @@ button:disabled {
   opacity: 0.62;
 }
 
-/* Both branches below drive the same two keyframes. The only difference is
-   what advances them: the reader's scroll where the browser supports it, and
-   a timer where it does not. */
+/* The withdrawal follows the reader's scroll everywhere. Two ways of getting
+   there, and exactly one is ever active:
+
+   - where the browser can tie an animation to the scroll position, the two
+     keyframes below are scrubbed by it, with no script involved;
+   - where it cannot (Safari, so every browser on an iPhone), HeroHands.tsx
+     sets data-scroll="js" on the box and keeps --hero-hands-progress between
+     0 and 1, and the same movement is written as a plain transform.
+
+   There used to be a third: a timer that withdrew the hands three seconds
+   after they met. It was the fallback for the second group, and it meant the
+   hands behaved differently on a phone than on a laptop. */
 @keyframes hero-hand-part-left {
   from {
     transform: translateX(0);
@@ -350,7 +359,7 @@ button:disabled {
 }
 
 @supports (animation-timeline: scroll()) {
-  .hero-hands__hand {
+  .hero-hands:not([data-scroll="js"]) .hero-hands__hand {
     animation-timeline: scroll(root block);
     animation-range: 0 var(--hero-hands-travel);
     /* Scrubbing follows the finger, so it has to be linear. Any easing here
@@ -359,33 +368,25 @@ button:disabled {
     animation-fill-mode: both;
   }
 
-  .hero-hands__hand--seeker {
+  .hero-hands:not([data-scroll="js"]) .hero-hands__hand--seeker {
     animation-name: hero-hand-part-left;
   }
 
-  .hero-hands__hand--specialist {
+  .hero-hands:not([data-scroll="js"]) .hero-hands__hand--specialist {
     animation-name: hero-hand-part-right;
   }
 }
 
-/* Browsers without scroll-driven animation get the same withdrawal on a timer,
-   after a pause long enough to see the hands meet. Without this they would sit
-   over the headline for as long as the page is open. */
-@supports not (animation-timeline: scroll()) {
-  .hero-hands__hand {
-    animation-duration: 1.6s;
-    animation-delay: 2.9s;
-    animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
-    animation-fill-mode: both;
-  }
+.hero-hands[data-scroll="js"] .hero-hands__hand {
+  opacity: calc(0.62 * (1 - var(--hero-hands-progress, 0)));
+}
 
-  .hero-hands__hand--seeker {
-    animation-name: hero-hand-part-left;
-  }
+.hero-hands[data-scroll="js"] .hero-hands__hand--seeker {
+  transform: translateX(calc(var(--hero-hands-progress, 0) * -58%));
+}
 
-  .hero-hands__hand--specialist {
-    animation-name: hero-hand-part-right;
-  }
+.hero-hands[data-scroll="js"] .hero-hands__hand--specialist {
+  transform: translateX(calc(var(--hero-hands-progress, 0) * 58%));
 }
 
 @media (prefers-reduced-motion: reduce) {

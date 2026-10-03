@@ -1,12 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Module scope, not state: the entry should survive a client-side navigation
 // back to the home page. It stays false on the server, where the effect never
 // runs, so it can never leak between requests.
 let hasEntered = false;
+
+// How far the reader scrolls to pull the hands fully apart. The same number as
+// --hero-hands-travel in globals.css; the two have to move together.
+const TRAVEL = 420;
 
 /**
  * The landing page's one piece of motion: two hands reach in from the edges of
@@ -21,13 +25,37 @@ export default function HeroHands() {
   // Decided during the first render rather than in an effect, so there is no
   // second render and nothing flashes.
   const [entering] = useState(() => !hasEntered);
+  const box = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     hasEntered = true;
+
+    // Where the browser can tie an animation to the scroll position, CSS does
+    // all of it. Safari cannot yet, and every browser on an iPhone is Safari
+    // underneath -- those used to get the hands withdrawing on a timer, three
+    // seconds after they met, whatever the reader was doing. That is not the
+    // same behaviour, and on a phone it read as broken. So there the scroll
+    // position is passed to CSS by hand instead, and the hands follow the
+    // finger exactly as they do everywhere else.
+    const el = box.current;
+    if (!el || CSS.supports("animation-timeline: scroll()")) return;
+
+    el.dataset.scroll = "js";
+    // Written straight from the scroll event. Browsers already deliver those
+    // once per frame, and one style property is cheap enough not to need
+    // batching on top.
+    const update = () => {
+      const progress = Math.min(1, Math.max(0, window.scrollY / TRAVEL));
+      el.style.setProperty("--hero-hands-progress", progress.toFixed(3));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
   return (
     <div
+      ref={box}
       aria-hidden
       className={`hero-hands${entering ? " hero-hands--entering" : ""}`}
     >
