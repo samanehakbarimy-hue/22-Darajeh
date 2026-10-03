@@ -15,7 +15,7 @@ export default function AccountForm({
   initialPhotoUrl: string;
 }) {
   const [state, action, pending] = useActionState(
-    keepTheForm(updateAccount, "ذخیره نشد: اتصال قطع شد یا سرور جواب نداد. چیزی که نوشتی سر جایش است — دوباره «ذخیره» را بزن."),
+    keepTheForm(updateAccount, "ذخیره نشد: اتصال قطع شد یا سرور جواب نداد. چیزی که نوشتی سر جایش است — دوباره روی «ذخیره» کلیک کن."),
     undefined,
   );
   const [preview, setPreview] = useState(initialPhotoUrl);
@@ -100,7 +100,7 @@ export default function AccountForm({
         <h2 className="font-bold text-danger">حذف حساب</h2>
         <p className="mt-2 text-sm text-muted">
           با حذف حساب، تمام اطلاعات تو (پروفایل، زمان‌های آزاد، رزروها) برای
-          همیشه پاک می‌شه. این کار غیرقابل بازگشته.
+          همیشه پاک می‌شود. این کار برگشت ندارد.
         </p>
 
         <label className="mt-4 flex items-center gap-2 text-sm">
@@ -110,13 +110,13 @@ export default function AccountForm({
             onChange={(e) => setConfirmDelete(e.target.checked)}
             className="accent-red-500"
           />
-          مطمئنم و می‌خوام حسابم کاملاً حذف بشه
+          مطمئنم و می‌خواهم حسابم کاملاً حذف شود
         </label>
 
         <form
           action={deleteAccount}
           onSubmit={(e) => {
-            if (!confirmDelete || !confirm("آخرین تأیید: حساب برای همیشه حذف بشه؟")) {
+            if (!confirmDelete || !confirm("آخرین تأیید: حساب برای همیشه حذف شود؟")) {
               e.preventDefault();
             }
           }}

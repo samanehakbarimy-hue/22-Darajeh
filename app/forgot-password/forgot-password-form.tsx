@@ -18,7 +18,7 @@ export default function ForgotPasswordForm() {
         <p className="font-bold">اگر این ایمیل حساب داشته باشد، لینک رفت.</p>
         <p className="mt-2 text-sm leading-7 text-muted">
           صندوق ورودی را نگاه کن. اگر چیزی نیامد، پوشه اسپم را هم ببین — و
-          مطمئن شو همان ایمیلی را نوشتی که باهاش ثبت‌نام کردی.
+          مطمئن شو همان ایمیلی را نوشته‌ای که با آن ثبت‌نام کرده‌ای.
         </p>
       </div>
     );

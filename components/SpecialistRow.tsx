@@ -149,7 +149,7 @@ export default function SpecialistRow({
               {heldSessions > 0 && (
                 <span className="flex items-center gap-2">
                   {facts.length > 0 && <span aria-hidden>·</span>}
-                  {heldSessions.toLocaleString("fa-IR")} گفت‌وگوی انجام‌شده
+                  {heldSessions.toLocaleString("fa-IR")} گفتگوی انجام‌شده
                 </span>
               )}
             </p>
@@ -186,7 +186,7 @@ export default function SpecialistRow({
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-card-border bg-brand-light/40 px-5 py-4">
         <div className="min-w-0">
           <div className="text-sm font-bold text-brand-deep">
-            گفت‌وگوی ۲۲ دقیقه‌ای رایگان
+            گفتگوی ۲۲ دقیقه‌ای رایگان
           </div>
           <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
             {startingPrice && <span>جلسات تخصصی از {startingPrice}</span>}

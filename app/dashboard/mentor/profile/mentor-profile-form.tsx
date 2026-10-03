@@ -210,7 +210,7 @@ export default function MentorProfileForm({
 }) {
   // Ten minutes of typing must survive a dropped connection: see keepTheForm.
   const [state, action, pending] = useActionState(
-    keepTheForm(saveMentorProfile, "ذخیره نشد: اتصال قطع شد یا سرور جواب نداد. چیزی که نوشتی سر جایش است — دوباره «ذخیره» را بزن."),
+    keepTheForm(saveMentorProfile, "ذخیره نشد: اتصال قطع شد یا سرور جواب نداد. چیزی که نوشتی سر جایش است — دوباره روی «ذخیره» کلیک کن."),
     undefined,
   );
   const [preview, setPreview] = useState(initialPhotoUrl);
@@ -372,7 +372,7 @@ export default function MentorProfileForm({
         step={1}
         done={introDone}
         title="معرفی"
-        description="این بخش روی پروفایل عمومی تو نمایش داده می‌شه."
+        description="این بخش روی پروفایل عمومی تو نمایش داده می‌شود."
       >
         <div className="flex items-center gap-5">
           {preview ? (
@@ -476,7 +476,7 @@ export default function MentorProfileForm({
             required
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            placeholder="در چند خط بنویس چه تجربه‌ای داری و توی این ۲۲ دقیقه می‌تونی به چه کسی کمک کنی."
+            placeholder="در چند خط بنویس چه تجربه‌ای داری و در این ۲۲ دقیقه می‌توانی به چه کسی کمک کنی."
             className={FIELD_CLASS}
           />
         </div>
@@ -546,7 +546,7 @@ export default function MentorProfileForm({
           </button>
         )}
           <p className="mt-1.5 text-xs leading-6 text-muted">
-            متقاضی‌ها با همین حوزه‌ها تو رو پیدا می‌کنن.
+            متقاضی‌ها با همین حوزه‌ها تو را پیدا می‌کنند.
           </p>
         </div>
 
@@ -630,7 +630,7 @@ export default function MentorProfileForm({
         step={3}
         done={skillsDone}
         title="مهارت‌ها و ابزارها"
-        description="چیزهایی که باهاشان کار می‌کنی. متقاضی‌ها معمولاً دنبال همین‌اند، نه فقط عنوان حوزه."
+        description="چیزهایی که با آن‌ها کار می‌کنی. متقاضی‌ها معمولاً دنبال همین‌اند، نه فقط عنوان حوزه."
       >
         <div>
           <div className={CHIP_FIELD_CLASS}>
@@ -695,7 +695,7 @@ export default function MentorProfileForm({
         done={contactDone}
         last
         title="راه‌های ارتباطی"
-        description="شماره تماست پیش ما می‌مونه و به کسی نشون داده نمی‌شه. لینک جلسه فقط بعد از رزرو، به همون متقاضی نشون داده می‌شه."
+        description="شماره تماست پیش ما می‌ماند و به کسی نشان داده نمی‌شود. لینک جلسه فقط بعد از رزرو، به همان متقاضی نشان داده می‌شود."
       >
         <div>
           <label
@@ -704,7 +704,7 @@ export default function MentorProfileForm({
           >
             لینک لینکدین
             <span className="mr-1 text-xs font-normal text-muted">
-              (روی پروفایل عمومی دیده می‌شه)
+              (روی پروفایل عمومی دیده می‌شود)
             </span>
           </label>
           <input

@@ -73,7 +73,7 @@ export default async function MentorProfilePage({
     <div className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
       <h1 className="text-2xl font-bold">پروفایل کارشناس</h1>
       <p className="mt-2 text-sm text-muted">
-        این اطلاعات بعد از تأیید ادمین، به‌صورت عمومی نمایش داده می‌شه.
+        این اطلاعات بعد از تأیید ادمین، به‌صورت عمومی نمایش داده می‌شود.
       </p>
 
       {/* The stage bar used to sit here, one step along from signup. It was
@@ -95,7 +95,7 @@ export default async function MentorProfilePage({
             </p>
           )}
           <p className="mt-3 text-xs leading-6 text-muted">
-            اصلاحش کن و ذخیره بزن — دوباره خودکار برای بررسی فرستاده می‌شود.
+            اصلاحش کن و ذخیره کن — دوباره خودکار برای بررسی فرستاده می‌شود.
           </p>
         </div>
       )}
@@ -129,7 +129,7 @@ export default async function MentorProfilePage({
                   {googleAccount.google_email}
                 </span>
                 . برای هر جلسه‌ای که قبول می‌کنی یک لینک تازه ساخته می‌شود و
-                توی تقویمت هم می‌آید.
+                در تقویمت هم می‌آید.
               </p>
               <a
                 href="/api/google/connect"

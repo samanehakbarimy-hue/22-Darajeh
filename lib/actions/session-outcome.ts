@@ -10,7 +10,7 @@ export type OutcomeState = { error?: string } | undefined;
  *
  * Until this existed, nothing did. A booking the specialist had accepted was
  * counted as held the moment its slot ended, so two people who never met still
- * produced «۱ گفت‌وگوی انجام‌شده» on a public page. The count is the main thing
+ * produced «۱ گفتگوی انجام‌شده» on a public page. The count is the main thing
  * a stranger has to go on, which makes overstating it the worst number on the
  * site to get wrong.
  *

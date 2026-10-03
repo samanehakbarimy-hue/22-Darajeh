@@ -21,7 +21,7 @@ export async function updateAccount(
 
   const fullName = String(formData.get("full_name") ?? "").trim();
   if (!fullName) {
-    return { error: "نام نمی‌تونه خالی باشه." };
+    return { error: "نام نمی‌تواند خالی باشد." };
   }
 
   const update: { full_name: string; photo_url?: string } = {

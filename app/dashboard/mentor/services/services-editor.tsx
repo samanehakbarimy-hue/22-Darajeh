@@ -205,7 +205,7 @@ export default function ServicesEditor({
                   {needsConfirm === session.key && (
                     <p className="rounded-xl border border-brand/40 bg-brand-light px-3 py-2 text-xs leading-6 text-brand-deep">
                       این قیمت خیلی از پیشنهاد فاصله دارد. اگر عمدی است، یک بار
-                      دیگر بزن تا ذخیره شود.
+                      دیگر ذخیره کن تا ثبت شود.
                     </p>
                   )}
 

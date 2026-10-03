@@ -28,7 +28,7 @@ export default function LoginForm({
             لینک تأیید ایمیل منقضی شده یا قبلاً استفاده شده.
           </p>
           <p className="mt-1 text-muted">
-            ایمیلت رو وارد کن تا یک لینک تازه برات بفرستیم:
+            ایمیلت را وارد کن تا یک لینک تازه برایت بفرستیم:
           </p>
           <form action={resendAction} className="mt-3 flex gap-2">
             <input
@@ -53,7 +53,7 @@ export default function LoginForm({
       )}
       {resendState?.success && (
         <p className="mt-6 text-sm text-brand-deep">
-          لینک تازه فرستاده شد، ایمیلت رو چک کن.
+          لینک تازه فرستاده شد؛ ایمیلت را نگاه کن.
         </p>
       )}
 
@@ -92,7 +92,7 @@ export default function LoginForm({
               href="/forgot-password"
               className="text-xs text-muted hover:text-brand-deep"
             >
-              فراموشش کردی؟
+              فراموشش کرده‌ای؟
             </Link>
           </div>
           <PasswordInput

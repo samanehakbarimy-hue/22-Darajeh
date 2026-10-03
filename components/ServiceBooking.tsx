@@ -219,7 +219,7 @@ export default function ServiceBooking({
                   <Included n={1} title="بگو دنبال چه هستی" />
                   <Included
                     n={2}
-                    title={`${fa(FREE_CALL.minutes)} دقیقه گفت‌وگوی ویدیویی`}
+                    title={`${fa(FREE_CALL.minutes)} دقیقه گفتگوی ویدیویی`}
                   />
                 </ul>
               </>
@@ -282,7 +282,7 @@ export default function ServiceBooking({
                   </>
                 ) : (
                   <p className="text-sm leading-7 text-muted">
-                    این کارشناس هنوز نرخ کار پروژه‌ای نگذاشته. گفت‌وگوی رایگان
+                    این کارشناس هنوز نرخ کار پروژه‌ای نگذاشته. گفتگوی رایگان
                     را رزرو کن و نیازت را با او در میان بگذار.
                   </p>
                 )}
@@ -306,7 +306,7 @@ export default function ServiceBooking({
               href={`/specialists/${specialistId}/book`}
               className="block rounded-full bg-booking px-5 py-3 text-center text-sm font-semibold text-booking-on transition hover:bg-booking-hover"
             >
-              رزرو گفت‌وگو
+              رزرو گفتگو
             </Link>
           ) : (
             <span
@@ -321,7 +321,7 @@ export default function ServiceBooking({
           {active === "sessions" && sessions.length > 0 && (
             <p className="mt-3 text-xs leading-6 text-muted">
               پرداخت آنلاین هنوز فعال نیست، برای همین این جلسه‌ها فعلاً رزرو
-              نمی‌شوند. گفت‌وگوی رایگان را رزرو کن و جزئیات را با کارشناس نهایی
+              نمی‌شوند. گفتگوی رایگان را رزرو کن و جزئیات را با کارشناس نهایی
               کن.
             </p>
           )}

@@ -30,10 +30,10 @@ export const metadata: Metadata = {
   // which is the one thing the curtain is for.
   title: IS_PRIVATE
     ? "جاب‌آموز"
-    : "جاب‌آموز — هر سؤال شغلی داری، از کسی بپرس که همان کار را می‌کنه",
+    : "جاب‌آموز — هر سؤال شغلی داری، از کسی بپرس که همان کار را می‌کند",
   description: IS_PRIVATE
     ? undefined
-    : "برای انتخاب مسیر شغلی، تغییر حوزه، مهاجرت کاری یا آمادگی مصاحبه، ۲۲ دقیقه رایگان با کارشناسی حرف بزن که همین حالا سرِ همان کاره.",
+    : "برای انتخاب مسیر شغلی، تغییر حوزه، مهاجرت کاری یا آمادگی مصاحبه، ۲۲ دقیقه رایگان با کارشناسی حرف بزن که همین حالا سرِ همان کار است.",
   // This is what actually keeps the site out of search results. robots.txt
   // deliberately lets crawlers in so they can read this tag; turning them away
   // there would mean they never see it. Only a request either way -- the proxy

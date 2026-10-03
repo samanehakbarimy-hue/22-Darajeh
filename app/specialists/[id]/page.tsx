@@ -239,7 +239,7 @@ export default async function SpecialistPage({
             <div className="min-w-0 flex-1">
               {typeof heldSessions === "number" && heldSessions > 0 && (
                 <span className="inline-block rounded-full bg-success-light px-3 py-1 text-xs text-success">
-                  {heldSessions.toLocaleString("fa-IR")} گفت‌وگوی انجام‌شده
+                  {heldSessions.toLocaleString("fa-IR")} گفتگوی انجام‌شده
                 </span>
               )}
 

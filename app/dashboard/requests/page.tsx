@@ -122,7 +122,7 @@ export default async function MyRequestsPage() {
     <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
       <h1 className="text-2xl font-bold">درخواست‌های من</h1>
       <p className="mt-2 text-muted">
-        هر درخواستی که فرستادی، برای چه کسی و چه زمانی، و جوابی که گرفتی.
+        هر درخواستی که فرستاده‌ای، برای چه کسی و چه زمانی، و جوابی که گرفته‌ای.
       </p>
 
       {briefs.length > 0 && (
@@ -206,7 +206,7 @@ export default async function MyRequestsPage() {
 
       {rows.length === 0 && briefs.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-card-border bg-card p-10 text-center">
-          <p className="text-muted">هنوز درخواستی نفرستادی.</p>
+          <p className="text-muted">هنوز درخواستی نفرستاده‌ای.</p>
           <Link
             href="/specialists"
             className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"

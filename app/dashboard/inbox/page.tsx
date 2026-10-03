@@ -118,8 +118,8 @@ export default async function InboxPage() {
       at: row.created_at as string,
       kind: "booking",
       title: mine
-        ? `گفت‌وگوی تو با ${other ?? "کارشناس"}`
-        : `${other ?? "یک متقاضی"} با تو گفت‌وگو گرفت`,
+        ? `گفتگوی تو با ${other ?? "کارشناس"}`
+        : `${other ?? "یک متقاضی"} با تو گفتگو گرفت`,
       detail: null,
       meta: slot ? `${when.format(new Date(slot.start_time))} — به وقت تهران` : null,
       reply: null,
@@ -135,14 +135,14 @@ export default async function InboxPage() {
     <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
       <h1 className="text-2xl font-bold">صندوق پیام</h1>
       <p className="mt-2 text-sm leading-7 text-muted">
-        پیام‌ها و گفت‌وگوها، به‌ترتیب تازگی. چیزی از اینجا پاک نمی‌شود.
+        پیام‌ها و گفتگوها، به‌ترتیب تازگی. چیزی از اینجا پاک نمی‌شود.
       </p>
 
       {items.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-card-border bg-card p-8 text-center">
           <p className="font-bold">هنوز چیزی اینجا نیست</p>
           <p className="mt-2 text-sm leading-7 text-muted">
-            وقتی کسی برایت پیام بگذارد یا گفت‌وگویی رزرو شود، همین‌جا می‌ماند.
+            وقتی کسی برایت پیام بگذارد یا گفتگویی رزرو شود، همین‌جا می‌ماند.
           </p>
           <Link
             href="/specialists"

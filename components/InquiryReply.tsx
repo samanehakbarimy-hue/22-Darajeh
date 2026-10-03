@@ -38,7 +38,7 @@ export default function InquiryReply({ inquiryId }: { inquiryId: string }) {
         rows={4}
         required
         maxLength={2000}
-        placeholder="کوتاه جواب بده. اگر حرف بیشتری هست، بگو گفت‌وگوی رایگان را رزرو کند."
+        placeholder="کوتاه جواب بده. اگر حرف بیشتری هست، بگو گفتگوی رایگان را رزرو کند."
         className="mt-1.5 w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm leading-7 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
       />
 
