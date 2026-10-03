@@ -15,17 +15,26 @@
      Every pairing below is measured. Nothing here is chosen by eye. */
   --background: #fffff0;
   --card: #ffffff;
-  --card-border: #e0ebe7;
-  --foreground: #16302b;
-  --muted: #476059;
+  /* Ink, secondary text and hairlines lean navy, to sit with the header.
+     On the ivory page: ink 15.8:1, muted 7.3:1. */
+  --card-border: #e1e6ee;
+  --foreground: #162238;
+  --muted: #4a566b;
 
   /* The header is its own small dark theme, so it needs its own tokens --
-     the page ones all invert against it. It is the deep green itself, which
-     is what the logo's leaves are nearly made of (#14413c in the artwork). */
-  --header: #1a4740;
+     the page ones all invert against it.
+
+     It was the deep green (#1a4740) until October 2026. The first outside
+     tester said it read as police-uniform green: it is a teal, not that
+     green, but it is exactly as dark, and on a phone screen the difference
+     did not survive. Navy keeps the weight and loses the association; the
+     green stays where it means "act here", on the buttons.
+
+     Header text on it is 12.5:1, the muted links 7.0:1. */
+  --header: #1c2b45;
   --header-foreground: #f4f1e6;
-  --header-muted: #a9c4bd;
-  --header-border: #2c5f56;
+  --header-muted: #aab7cf;
+  --header-border: #31456a;
 
   /* The mid green is rationed: primary CTAs, the selected state, and accents
      that genuinely need to pull the eye. Spreading it further would spend the
@@ -44,13 +53,13 @@
      it is not good enough. */
   --color-brand-on: #0a1c19;
 
-  /* The brand as TEXT or an icon on a light ground, at 10.31:1. This is the
-     deep green, so headings, chips and icons all land on the same colour the
-     header is -- one green doing the reading, one doing the acting. */
-  --color-brand-deep: #1a4740;
+  /* The brand as TEXT or an icon on a light ground, at 14.1:1. It is the
+     header's navy, so headings, chips and icons all land on the same colour
+     the header is -- navy doing the reading, green doing the acting. */
+  --color-brand-deep: #1c2b45;
 
-  /* The mid green mixed into white, for the selected chip. The deep green
-     clears AA on it easily at 9.23:1. */
+  /* The mid green mixed into white, for the selected chip. The navy clears
+     AA on it easily. */
   --color-brand-light: #e8f4f1;
 
   /* The booking button, and nothing else. It is the one place a third colour
