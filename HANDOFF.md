@@ -35,6 +35,10 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
 - #88 merged and deployed 2026-10-03: one voice, written Persian with «تو»,
   across the site, the emails and the template file. «گفتگو» is the only
   spelling. New copy must follow it: no «می‌کنه / رو / توی / بهمون».
+- #89 merged and deployed 2026-10-03: the homepage hands follow the scroll on
+  browsers without scroll-driven animations (Safari, so all of iOS) via a JS
+  progress variable; the old three-second timer fallback is gone. Verified by
+  patching `CSS.supports` in a desktop browser, not on a physical iPhone.
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
