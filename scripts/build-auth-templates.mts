@@ -21,6 +21,11 @@ import { emailLayout } from "@/lib/email/layout";
 const link = (type: string) =>
   `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=${type}&next={{ .RedirectTo }}`;
 
+// The reader's name, where Supabase has one. full_name is what the signup form
+// stores in the account's metadata; an invited address has none yet, and the
+// line has to read correctly either way.
+const GREETING = "سلام{{ if .Data.full_name }} {{ .Data.full_name }}{{ end }}،";
+
 const TEMPLATES: {
   file: string;
   dashboardName: string;
@@ -32,6 +37,7 @@ const TEMPLATES: {
     dashboardName: "Confirm sign up",
     subject: "تأیید ایمیل در جاب‌آموز",
     html: emailLayout({
+      greetingHtml: GREETING,
       heading: "تأیید ایمیل",
       body: "برای فعال شدن حساب، روی دکمه زیر کلیک کن.",
       action: { label: "تأیید ایمیل", href: link("email") },
@@ -44,6 +50,7 @@ const TEMPLATES: {
     dashboardName: "Reset password",
     subject: "بازیابی رمز عبور جاب‌آموز",
     html: emailLayout({
+      greetingHtml: GREETING,
       heading: "بازیابی رمز عبور",
       body: "برای انتخاب رمز عبور تازه، روی دکمه زیر کلیک کن.",
       action: { label: "انتخاب رمز تازه", href: link("recovery") },
@@ -56,6 +63,7 @@ const TEMPLATES: {
     dashboardName: "Magic link or OTP",
     subject: "ورود به جاب‌آموز",
     html: emailLayout({
+      greetingHtml: GREETING,
       heading: "ورود به حساب",
       body: "برای ورود به حساب، روی دکمه زیر کلیک کن.",
       action: { label: "ورود", href: link("magiclink") },
@@ -68,6 +76,7 @@ const TEMPLATES: {
     dashboardName: "Change email address",
     subject: "تأیید ایمیل تازه در جاب‌آموز",
     html: emailLayout({
+      greetingHtml: GREETING,
       heading: "تأیید ایمیل تازه",
       body: "برای تأیید تغییر ایمیل حساب به {{ .NewEmail }}، روی دکمه زیر کلیک کن.",
       action: { label: "تأیید ایمیل تازه", href: link("email_change") },
@@ -80,6 +89,7 @@ const TEMPLATES: {
     dashboardName: "Invite user",
     subject: "دعوت به جاب‌آموز",
     html: emailLayout({
+      greetingHtml: GREETING,
       heading: "دعوت به جاب‌آموز",
       body: "برای ساختن حساب، روی دکمه زیر کلیک کن.",
       action: { label: "پذیرفتن دعوت", href: link("invite") },
@@ -91,6 +101,7 @@ const TEMPLATES: {
     dashboardName: "Reauthentication",
     subject: "کد تأیید جاب‌آموز",
     html: emailLayout({
+      greetingHtml: GREETING,
       heading: "کد تأیید",
       body: `کد تأیید: <strong style="font-size:20px;letter-spacing:2px;direction:ltr;unicode-bidi:embed">{{ .Token }}</strong>`,
       note: "اگر این درخواست از تو نبوده است، این ایمیل را نادیده بگیر.",
