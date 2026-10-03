@@ -61,6 +61,19 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   first `vercel --prod` after this merge failed with a bare `"status":
   "error"` and the retry succeeded; that has happened twice, so retry once
   before investigating.
+- #94 and #95 merged and deployed 2026-10-03: emails greet by name
+  (`{{ if .Data.full_name }}` in the Supabase templates), sign off «با
+  احترام،», and centre through a wrapping table. All six templates were
+  regenerated, pasted again and read back. She confirmed a real reset email
+  arrived in the new design.
+- **Sender picture in Gmail (the round avatar) is not solved and cannot be
+  from code.** Checked 2026-10-03: the domain has NO DMARC record, and
+  `mail.jobamooz.com` (the sending subdomain) has no MX, so it cannot receive
+  mail; `jobamooz.com` receives through Cloudflare Email Routing. Two routes,
+  both needing Reza (he holds DNS): (a) free, Gmail only: make the sending
+  address receivable, create a Google account on it, set the logo as its
+  photo; (b) BIMI: DMARC at enforcement plus a paid certificate. A DMARC
+  record is worth adding regardless, for deliverability.
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.

@@ -28,7 +28,8 @@ replace the whole body with the file → Save.
 | Reauthentication | `reauthentication.html` | `کد تأیید جاب‌آموز` | Yes, 2026-10-03 |
 
 Each was read back from the dashboard after a reload and compared with its
-file by length and checksum. The dashboard's Site URL is `https://jobamooz.com`
+file by length and checksum. They were regenerated and pasted a second time
+that day (name in the greeting, sign-off, centring), and read back again. The dashboard's Site URL is `https://jobamooz.com`
 and `https://jobamooz.com/**` is in the redirect allow-list, which is what the
 links in these templates depend on.
 
