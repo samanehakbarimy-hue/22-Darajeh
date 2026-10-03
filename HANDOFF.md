@@ -48,10 +48,11 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
 - #92 merged and deployed 2026-10-03: one email shell (navy header with the
   logo, «سلام {name}،», button, sign-off) for the site's own notices, and
   `scripts/build-auth-templates.mts` generates all six Supabase auth templates
-  from it into `supabase/templates/`. **None of the six is pasted into the
-  dashboard yet**: she received the English default reset-password email on
-  2026-10-03 and called it embarrassing. Pasting all six is the most urgent
-  open item. `supabase/templates/README.md` has the table.
+  from it into `supabase/templates/`. All six were pasted into the dashboard
+  the same day. How: set the subject with the native input setter, replace the
+  Monaco model with `executeEdits`, then `form.requestSubmit()`; a JS
+  `.click()` on Save did nothing, and a cookie banner covered the real button
+  until optional cookies were declined. Read back after a reload every time.
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
@@ -102,13 +103,11 @@ Welcome email never went out for her (callback bailed before the claim).
 
 The site is open. These were skipped to open it, and still stand:
 
-1. **Six Supabase auth templates are not pasted** (confirm sign up, reset
-   password, magic link, change email, invite, reauthentication). The
-   dashboard still sends the old confirm-signup and five English defaults.
-   Subjects and files are in `supabase/templates/README.md`; paste each, save,
-   reload and read back, then tick the table. Needs her signed in to Supabase
-   in Chrome (extension unreachable since 2026-09-20) or in the browser pane;
-   Claude may not sign in for her.
+1. Done 2026-10-03: all six Supabase auth templates are pasted (through her
+   own Chrome, after she signed in) and verified against the files. A real
+   reset or signup email has not been received and looked at since; ask her
+   to request a password reset and confirm it arrives in Persian and that the
+   link opens the new-password page.
 2. **Google Search Console and Bing Webmaster Tools.** Verify the domain and
    submit `https://jobamooz.com/sitemap.xml`. Ownership proof needs her.
 3. **A real signed-in test.** A tester registered as a seeker on 2026-10-03
@@ -184,7 +183,7 @@ on the site find nobody; Google takes weeks; no guarantee of AI answers.
 
 ## First action for the next session
 
-Ask whether she has signed in to Supabase where Claude can reach it. If yes,
-paste the confirm-signup template first; it is the one known defect a new
-visitor can hit. (The logs from the 2026-09-29 stalled save have expired; the
+Ask whether the Persian reset-password email arrived and its link worked.
+Then Google Search Console: she has the steps and is to paste the HTML-tag
+line. (The logs from the 2026-09-29 stalled save have expired; the
 cause is unknowable and the fixes in #81 stand.)

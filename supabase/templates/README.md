@@ -20,12 +20,19 @@ replace the whole body with the file → Save.
 
 | Dashboard name | File | Subject | In the dashboard? |
 | --- | --- | --- | --- |
-| Confirm sign up | `confirm-signup.html` | `تأیید ایمیل در جاب‌آموز` | An older Persian version, pasted 2026-09-20. This one is not pasted yet. |
-| Reset password | `reset-password.html` | `بازیابی رمز عبور جاب‌آموز` | No — still the English default |
-| Magic link or OTP | `magic-link.html` | `ورود به جاب‌آموز` | No — still the English default |
-| Change email address | `change-email.html` | `تأیید ایمیل تازه در جاب‌آموز` | No — still the English default |
-| Invite user | `invite.html` | `دعوت به جاب‌آموز` | No — still the English default |
-| Reauthentication | `reauthentication.html` | `کد تأیید جاب‌آموز` | No — still the English default |
+| Confirm sign up | `confirm-signup.html` | `تأیید ایمیل در جاب‌آموز` | Yes, 2026-10-03 |
+| Reset password | `reset-password.html` | `بازیابی رمز عبور جاب‌آموز` | Yes, 2026-10-03 |
+| Magic link or OTP | `magic-link.html` | `ورود به جاب‌آموز` | Yes, 2026-10-03 |
+| Change email address | `change-email.html` | `تأیید ایمیل تازه در جاب‌آموز` | Yes, 2026-10-03 |
+| Invite user | `invite.html` | `دعوت به جاب‌آموز` | Yes, 2026-10-03 |
+| Reauthentication | `reauthentication.html` | `کد تأیید جاب‌آموز` | Yes, 2026-10-03 |
+
+Each was read back from the dashboard after a reload and compared with its
+file by length and checksum. The dashboard's Site URL is `https://jobamooz.com`
+and `https://jobamooz.com/**` is in the redirect allow-list, which is what the
+links in these templates depend on.
+
+If a file here is regenerated, the dashboard copy is stale until pasted again.
 
 Update the last column when one is pasted. Nothing in this repository can
 tell what the dashboard holds; this table is the only record.
