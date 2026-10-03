@@ -57,7 +57,12 @@ export async function sendEmail({
           // the tree. The name is written the way Supabase's own sender
           // setting has it, so the emails the site sends and the ones
           // Supabase sends for it arrive under one name instead of two.
-          "🌳 JobAmooz <no-reply@mail.jobamooz.com>",
+          //
+          // noreply@, with no hyphen, is the address Supabase sends from. It
+          // used to be no-reply@ here: two addresses for one sender, which
+          // would have needed two Google accounts to give both the logo as
+          // their picture in Gmail.
+          "🌳 JobAmooz <noreply@mail.jobamooz.com>",
         to: [to],
         subject,
         html,
