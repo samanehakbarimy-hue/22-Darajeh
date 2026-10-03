@@ -92,26 +92,19 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   Gmail draws as a shirt with a tie, asked for a tie-only emoji (none exists),
   and went back to the tree. Same value in `lib/email/send.ts` and in the
   Supabase SMTP sender name. Do not change it again without her asking.
-- **She wants the logo as the sender's round picture in Gmail.** Asked three
-  times. Plan (free, Gmail only, usually but not always honoured): in
-  Cloudflare, enable Email Routing for the subdomain `mail.jobamooz.com` and
-  forward `noreply@mail.jobamooz.com` to her inbox; she then creates a Google
-  account on that address ("use my current email address") and sets the logo
-  as its photo. Cloudflare was NOT signed in in her Chrome on 2026-10-03; the
-  DNS is Reza's. Claude cannot create the Google account. The only logo file
-  is 128px (`public/logo-mark.png`).
-- Vercel builds a preview for every pushed branch (behind its login wall);
-  production still deploys only by `vercel --prod --yes` from PowerShell.
-- Uncommitted, leave alone: `.claude/settings.local.json`, `CLAUDE.md` (has the
-  Session handoff section), this file.
-- Production is `jobamooz` on Vercel (`sama-9866`), aliased to `jobamooz.com`.
-  Deploy with `vercel --prod --yes` from **PowerShell** (the global CLI 59.1.3
-  is the authorised one; `npx vercel` fetches a newer unauthorised build; git
-  is not wired to auto-deploy).
-- `git push` works again — `gh` CLI is git's credential helper for github.com
-  and had `rsheikhyy` as the active account; fixed with
-  `gh auth switch --user samanehakbarimy-hue`. If pushes 403 again, that
-  switch got flipped back — re-run it.
+- **Sender picture in Gmail: waiting on Reza (he has the Cloudflare login).**
+  On 2026-10-03 she was given a Persian note to forward to him with three
+  steps: (1) Cloudflare → Email Routing → Settings → Subdomains → add
+  `mail.jobamooz.com`; (2) a custom address `noreply@mail.jobamooz.com`
+  forwarding to her Gmail; (3) a TXT record `_dmarc` = `v=DMARC1; p=none`.
+  Then she creates a Google account on `noreply@mail.jobamooz.com` ("use my
+  current email address") and sets the logo as its photo; a 512px image was
+  sent to her. Checked that day: DNS is on Cloudflare, `mail.jobamooz.com` has
+  no MX or TXT of its own, and Resend's records live on `send.mail.` and
+  `resend._domainkey.mail.`, so nothing collides. The site's sender address
+  was changed from `no-reply@` to `noreply@` (#101) so one account covers both
+  the site's and Supabase's emails. Gmail usually, not always, honours this;
+  other mail apps do not.
 
 ## Active: the first outside signup went badly (2026-09-29)
 
