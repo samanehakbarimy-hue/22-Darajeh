@@ -59,8 +59,7 @@ export default async function MessageSpecialistPage({
               reply field, no email on the way back, and no page where the
               sender could see their own message. All three exist now, so it
               points at the one that holds the answer. */}
-          پیامت رفت. وقتی جواب بدهد برایت ایمیل می‌شود، و جوابش در صندوق پیام
-          تو می‌ماند.
+          پیامت فرستاده شد. جواب کارشناس به ایمیل و صندوق پیامت می‌آید.
           <Link
             href="/dashboard/inbox"
             className="mt-3 block font-medium underline"
@@ -83,8 +82,7 @@ export default async function MessageSpecialistPage({
         // is needed and keeps the destination, so they land back here.
         <div className="mt-8 rounded-2xl border border-card-border bg-card px-6 py-6 shadow-sm">
           <p className="text-sm leading-8">
-            برای فرستادن پیام به یک حساب لازم است. حسابت را بساز و برگرد —
-            همین‌جا می‌آیی و پیامت را می‌نویسی.
+            برای فرستادن پیام باید وارد حساب شوی.
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <Link

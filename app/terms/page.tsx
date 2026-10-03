@@ -27,7 +27,7 @@ export default function TermsPage() {
     <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-12">
       <h1 className="text-2xl font-bold">قوانین استفاده</h1>
       <p className="mt-2 text-sm text-muted">
-        کوتاه و بدون پیچیدگی، چون قرار نیست کسی را غافلگیر کنیم.
+        آنچه از جاب‌آموز می‌توانی انتظار داشته باشی و آنچه از تو انتظار می‌رود.
       </p>
 
       <Section title="جاب‌آموز چیست">

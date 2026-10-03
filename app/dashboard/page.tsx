@@ -294,7 +294,7 @@ export default async function DashboardPage({
           <h2 className="font-bold">قدم بعدی</h2>
           <p className="mt-2 text-sm leading-7 text-muted">
             {!mentorStatus
-              ? "اول پروفایلت را کامل کن. تا وقتی نفرستی، چیزی برای بررسی وجود ندارد."
+              ? "پروفایلت را کامل کن تا برای بررسی فرستاده شود."
               : mentorStatus === "changes_requested"
                 ? "ادمین چیزی خواسته که اصلاح کنی — توضیحش بالای صفحه پروفایلت نوشته شده. بعد از ذخیره، دوباره خودکار برای بررسی می‌رود."
                 : mentorStatus === "rejected"

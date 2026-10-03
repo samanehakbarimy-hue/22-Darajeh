@@ -6,10 +6,10 @@ import { getCurrentUser } from "@/lib/auth";
 
 const GOOGLE_MESSAGE: Record<string, string> = {
   connected: "حساب گوگلت وصل شد. از این به بعد برای هر جلسه‌ای که قبول کنی لینک ساخته می‌شود.",
-  cancelled: "اتصال به گوگل انجام نشد. اشکالی ندارد — لینک ثابتت همچنان کار می‌کند.",
+  cancelled: "اتصال به گوگل انجام نشد. لینک ثابتت همچنان کار می‌کند.",
   failed: "اتصال به گوگل ناموفق بود. یک بار دیگر امتحان کن.",
   "no-calendar":
-    "موقع اتصال، تیک دسترسی به تقویم را نزدی. گوگل فقط ایمیلت را داد و بدون تقویم نمی‌شود لینک جلسه ساخت — چیزی ذخیره نشد. دوباره «وصل کردن حساب گوگل» را بزن و این بار کنار «View and edit events on all your calendars» تیک بزن.",
+    "دسترسی به تقویم داده نشد و اتصال ذخیره نشد. دوباره وصل کن و گزینه «View and edit events on all your calendars» را انتخاب کن.",
 };
 
 export default async function MentorProfilePage({

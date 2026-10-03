@@ -29,7 +29,7 @@ export async function leaveReview(
     return { error: "امتیازت را انتخاب کن." };
   }
   if (body.length < 10) {
-    return { error: "چند خط بنویس؛ یک کلمه به کسی کمک نمی‌کند." };
+    return { error: "لطفاً چند خط بنویس." };
   }
 
   const supabase = await createClient();

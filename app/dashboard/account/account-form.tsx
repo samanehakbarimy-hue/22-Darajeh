@@ -15,7 +15,7 @@ export default function AccountForm({
   initialPhotoUrl: string;
 }) {
   const [state, action, pending] = useActionState(
-    keepTheForm(updateAccount, "ذخیره نشد: اتصال قطع شد یا سرور جواب نداد. چیزی که نوشتی سر جایش است — دوباره روی «ذخیره» کلیک کن."),
+    keepTheForm(updateAccount, "ذخیره نشد. دوباره امتحان کن."),
     undefined,
   );
   const [preview, setPreview] = useState(initialPhotoUrl);
