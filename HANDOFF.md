@@ -24,6 +24,17 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   (`#1c2b45`), not green.** A tester said the old `#1a4740` read as
   police-uniform green; she compared four options on the real browse page and
   chose navy. The mid green stays on buttons only. Do not move it back.
+- **THE SITE IS PUBLIC AND INDEXABLE since 2026-10-03.** On her explicit
+  instruction ("I told you I want the site be published"), `SITE_PRIVATE` was
+  removed from Vercel Production and `ALLOW_INDEXING=true` was added, then a
+  forced redeploy. Checked live: the real homepage is served to strangers, no
+  `noindex`, robots.txt carries the sitemap and the disallow list, every
+  dashboard page sends a signed-out visitor only the shell and a redirect to
+  login, `/admin` redirects, the cron route still answers 401. Do not put the
+  holding page back unless she asks.
+- #88 merged and deployed 2026-10-03: one voice, written Persian with «تو»,
+  across the site, the emails and the template file. «گفتگو» is the only
+  spelling. New copy must follow it: no «می‌کنه / رو / توی / بهمون».
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
@@ -70,38 +81,27 @@ to it is a small follow-up, not done.
 
 Welcome email never went out for her (callback bailed before the claim).
 
-## The launch plan she agreed to on 2026-10-02
+## After the launch: what still needs her
 
-She wants to start the business slowly: tested, safe, then visible. Order:
+The site is open. These were skipped to open it, and still stand:
 
-1. Done: #83 and #84 merged and deployed.
-2. Done: #85 (visibility prep) merged and deployed.
-3. Needs her Chrome extension reconnected (unreachable since 2026-09-20) or
-   her sign-in to Supabase in the browser pane: paste the token_hash
-   confirm-signup template (#82's manual step, still pending). Neither the
-   Chrome extension nor the browser pane was signed in to Supabase on
-   2026-10-02; Claude may not sign in for her.
-4. One real end-to-end test by a person: register, confirm on a phone, save
-   a profile, book a session. Nobody has done this since the 09-29 fixes.
-   Signed-in pages have not been viewed at phone width either.
-5. Only then, on her explicit word: unset `SITE_PRIVATE`, set
-   `ALLOW_INDEXING=true`, deploy; verify the domain in Google Search Console
-   and Bing Webmaster Tools and submit the sitemap (needs her).
+1. **Supabase confirm-signup template is not pasted.** The dashboard still
+   sends the old PKCE link (confirmed in a tester's email on 2026-10-03), and
+   the old wording. `supabase/templates/confirm-signup.html` has the
+   token_hash link and the written-voice text. Needs her signed in to Supabase
+   in Chrome (extension unreachable since 2026-09-20) or in the browser pane;
+   Claude may not sign in for her.
+2. **Google Search Console and Bing Webmaster Tools.** Verify the domain and
+   submit `https://jobamooz.com/sitemap.xml`. Ownership proof needs her.
+3. **A real signed-in test.** A tester registered as a seeker on 2026-10-03
+   and confirmed fine; nobody has saved a specialist profile or booked a
+   session since the 2026-09-29 fixes, and no signed-in page has been viewed
+   at phone width.
+4. CAPTCHA on signup would need a provider account and secret from her plus a
+   code change; the trap field (#86) is what exists.
 
-Honest limits told to her: no guarantee against a determined attacker, no
-guarantee of appearing in AI answers, and one approved specialist in one
-field means most searches on the site find nobody.
-
-## Open decision: one voice for the Persian copy
-
-The same tester's main point (voice note, 2026-10-03): the text mixes
-colloquial and formal Persian, e.g. the FAQ asks «واقعاً رایگانه؟» and answers
-«هیچ هزینه‌ای ندارد»; the confirm email has «فعال شود» beside «بزن». He also
-called «رایگانه» a هکسره mistake, which it is not (the ه is «است»). She was
-asked to choose: colloquial throughout (like the homepage headline) or simple
-written Persian with «تو» throughout (Claude's recommendation). No copy has
-been changed. Whichever she picks applies to the site, the emails in
-`lib/email/`, and the Supabase template file.
+Told to her plainly: one approved specialist in one field, so most searches
+on the site find nobody; Google takes weeks; no guarantee of AI answers.
 
 ## Recently shipped (do not redo)
 
@@ -166,6 +166,7 @@ been changed. Whichever she picks applies to the site, the emails in
 
 ## First action for the next session
 
-If it is still before ~13:45 UTC on 2026-09-30: Supabase dashboard → Logs →
-API, window 13:45–14:15 UTC on the 29th, find the call that stalled. After
-that the logs are gone and the cause stays unknown; the fixes stand anyway.
+Ask whether she has signed in to Supabase where Claude can reach it. If yes,
+paste the confirm-signup template first; it is the one known defect a new
+visitor can hit. (The logs from the 2026-09-29 stalled save have expired; the
+cause is unknowable and the fixes in #81 stand.)
