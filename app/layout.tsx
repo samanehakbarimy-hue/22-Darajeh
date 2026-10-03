@@ -24,11 +24,16 @@ export const metadata: Metadata = {
   // path; without a base, Next cannot turn "/og.png" into a full URL and a
   // shared link arrives with no picture.
   metadataBase: new URL(siteUrl()),
-  // Proves to Google Search Console that whoever added jobamooz.com there
-  // also controls the site. It is not a secret -- it is printed in every
-  // page's source by design -- but removing it un-verifies the property, and
-  // Search Console stops reporting.
-  verification: { google: "i-zTIQZkXXj2Uqq7zvf7SPipWse8CdpcGXYMGBroNc8" },
+  // Proves to Google Search Console and Bing Webmaster Tools that whoever
+  // added jobamooz.com there also controls the site. Neither is a secret --
+  // both are printed in every page's source by design -- but removing one
+  // un-verifies the site there, and that console stops reporting.
+  verification: {
+    google: "i-zTIQZkXXj2Uqq7zvf7SPipWse8CdpcGXYMGBroNc8",
+    // The same proof for Bing Webmaster Tools, whose index is also what
+    // Copilot and ChatGPT search draw on.
+    other: { "msvalidate.01": "88144CAA76A1A305D11D713ACD82DDB3" },
+  },
   // The public title is the pitch, and login, privacy and terms have to stay
   // open for people to sign in and for Google to verify the OAuth app. Leaving
   // the tagline in the tab of those pages hands the idea to anyone who looks,
