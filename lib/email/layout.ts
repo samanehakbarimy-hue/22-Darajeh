@@ -67,13 +67,14 @@ export function emailLayout({
     ? `<tr><td style="padding:12px 32px 0;font-size:13px;line-height:1.8;color:${MUTED}">${note}</td></tr>`
     : "";
 
+  // The card sits in a full-width table whose one cell centres it. Mail
+  // clients drop the body tag and do not reliably honour "margin: 0 auto" on
+  // a table; align="center" on a cell is the centring every client obeys.
+  // (Said here and not in the markup: a comment in the HTML would be sent to
+  // every reader.)
   return `<!doctype html>
 <html lang="fa" dir="rtl">
 <body dir="rtl" style="margin:0;padding:0;background:#f3f4f7;font-family:Tahoma,Arial,sans-serif;color:${INK}">
-  <!-- A full-width table whose one cell centres the card. Gmail drops the
-       body tag and ignores "margin: 0 auto" on a table inside a right-to-left
-       block, which left the card pushed against the right edge of a wide
-       window. align="center" on a cell is the one thing every client obeys. -->
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#f3f4f7"><tr><td align="center" style="padding:24px 12px">
   <table role="presentation" dir="rtl" cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%;max-width:520px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;text-align:right;font-family:Tahoma,Arial,sans-serif">
     <tr><td style="background:${HEADER};padding:18px 32px">
