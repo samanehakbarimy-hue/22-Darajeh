@@ -84,7 +84,22 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   page. The request for `/specialists` did not go through (the inspection box
   would not take input through the browser tool); the sitemap lists it.
   Check the sitemap status and the Pages report in a few days.
-- No open PRs.
+- #99 merged and deployed 2026-10-03: the sender name is `👔 JobAmooz` (she
+  preferred the tie to the tree), in `lib/email/send.ts` and in the Supabase
+  SMTP sender name.
+- **Open PR #98 `emails/roomier-design`**: the email shell redesigned as a
+  roomy letter on the site's ivory (she said ours looked low quality beside
+  MentorCruise's). She was sent a rendered preview and has not said "ship it".
+  After merge: deploy, regenerate nothing (files are in the PR), and paste the
+  six templates into Supabase again.
+- **She wants the logo as the sender's round picture in Gmail.** Asked three
+  times. Plan (free, Gmail only, usually but not always honoured): in
+  Cloudflare, enable Email Routing for the subdomain `mail.jobamooz.com` and
+  forward `noreply@mail.jobamooz.com` to her inbox; she then creates a Google
+  account on that address ("use my current email address") and sets the logo
+  as its photo. Cloudflare was NOT signed in in her Chrome on 2026-10-03; the
+  DNS is Reza's. Claude cannot create the Google account. The only logo file
+  is 128px (`public/logo-mark.png`).
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
 - Uncommitted, leave alone: `.claude/settings.local.json`, `CLAUDE.md` (has the
