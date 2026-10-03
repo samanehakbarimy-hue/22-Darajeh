@@ -45,6 +45,13 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   happened and the next step, then stop.** No narrating the mechanism, no
   reassurance. The forgot-password confirmation is the same either way and
   must stay so (it must not reveal whether an address is registered).
+- #92 merged and deployed 2026-10-03: one email shell (navy header with the
+  logo, «سلام {name}،», button, sign-off) for the site's own notices, and
+  `scripts/build-auth-templates.mts` generates all six Supabase auth templates
+  from it into `supabase/templates/`. **None of the six is pasted into the
+  dashboard yet**: she received the English default reset-password email on
+  2026-10-03 and called it embarrassing. Pasting all six is the most urgent
+  open item. `supabase/templates/README.md` has the table.
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
@@ -95,10 +102,11 @@ Welcome email never went out for her (callback bailed before the claim).
 
 The site is open. These were skipped to open it, and still stand:
 
-1. **Supabase confirm-signup template is not pasted.** The dashboard still
-   sends the old PKCE link (confirmed in a tester's email on 2026-10-03), and
-   the old wording. `supabase/templates/confirm-signup.html` has the
-   token_hash link and the written-voice text. Needs her signed in to Supabase
+1. **Six Supabase auth templates are not pasted** (confirm sign up, reset
+   password, magic link, change email, invite, reauthentication). The
+   dashboard still sends the old confirm-signup and five English defaults.
+   Subjects and files are in `supabase/templates/README.md`; paste each, save,
+   reload and read back, then tick the table. Needs her signed in to Supabase
    in Chrome (extension unreachable since 2026-09-20) or in the browser pane;
    Claude may not sign in for her.
 2. **Google Search Console and Bing Webmaster Tools.** Verify the domain and
