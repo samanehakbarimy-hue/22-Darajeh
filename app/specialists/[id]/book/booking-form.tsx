@@ -58,7 +58,7 @@ export default function BookingForm({
 
       <div>
         <label htmlFor="message" className="mb-2 block text-sm font-medium">
-          خودت رو معرفی کن و بگو چرا می‌خوای این گفتگو رو داشته باشی
+          خودت را معرفی کن و بگو چرا این گفتگو را می‌خواهی
         </label>
         {/* Controlled, so a rejected submission doesn't erase what was
             written — React resets uncontrolled fields after a form action. */}
@@ -70,7 +70,7 @@ export default function BookingForm({
           required
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="سلام! من ... هستم و در حال حاضر روی ... کار می‌کنم. دوست دارم درباره ... باهات صحبت کنم چون ..."
+          placeholder="سلام! من ... هستم و در حال حاضر روی ... کار می‌کنم. می‌خواهم درباره ... صحبت کنم چون ..."
           className="w-full rounded-lg border border-card-border bg-background px-4 py-3 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
         />
         {/* Only the ceiling is a rule, so only mention it when it is close. */}

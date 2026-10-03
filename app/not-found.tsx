@@ -6,7 +6,7 @@ export default function NotFound() {
       <span className="text-5xl font-bold text-brand-deep">۴۰۴</span>
       <h1 className="mt-4 text-2xl font-bold">این صفحه پیدا نشد</h1>
       <p className="mt-3 leading-7 text-muted">
-        شاید لینک اشتباه باشه یا این صفحه دیگه وجود نداشته باشه.
+        شاید لینک اشتباه باشد یا این صفحه دیگر وجود نداشته باشد.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link

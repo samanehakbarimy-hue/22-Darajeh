@@ -86,7 +86,7 @@ export default async function MentorAvailabilityPage() {
 
       <ul className="mt-8 flex flex-col gap-3">
         {(!slots || slots.length === 0) && (
-          <p className="text-muted">هنوز زمانی اضافه نکردی.</p>
+          <p className="text-muted">هنوز زمانی اضافه نکرده‌ای.</p>
         )}
         {groups.map((group) => {
           const first = new Date(group[0].start_time);

@@ -150,7 +150,7 @@ export default function AddSlotForm({
               )}
 
               <p className="mb-2 text-xs text-muted">
-                ساعت شروع را انتخاب کن؛ جلسه ۲۲ دقیقه بعد تمام می‌شه.
+                ساعت شروع را انتخاب کن؛ جلسه ۲۲ دقیقه بعد تمام می‌شود.
               </p>
               <div
                 dir="ltr"

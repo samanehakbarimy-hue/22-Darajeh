@@ -390,7 +390,7 @@ export default async function SpecialistsPage({
         <h1 className="text-3xl font-bold">پیدا کردن کارشناس</h1>
         <p className="mt-2 max-w-2xl leading-7 text-muted">
           حوزه سؤالت را انتخاب کن و ۲۲ دقیقه رایگان با کسی حرف بزن که همین حالا
-          توی همان حوزه کار می‌کنه.
+          در همان حوزه کار می‌کند.
         </p>
       </header>
 
@@ -495,7 +495,7 @@ export default async function SpecialistsPage({
               <p className="mt-2 text-sm leading-7 text-muted">
                 {isFiltered
                   ? "جستجو یا فیلترها را عوض کن و دوباره ببین."
-                  : "به‌زودی اینجا پر می‌شه!"}
+                  : "به‌زودی اینجا پر می‌شود."}
               </p>
               {isFiltered && (
                 <Link
@@ -515,7 +515,7 @@ export default async function SpecialistsPage({
             <section className="mt-8">
               <h2 className="text-base font-bold">کارشناس‌های دیگر</h2>
               <p className="mt-1 text-sm text-muted">
-                شاید یکی از این‌ها به سؤالت نزدیک باشه.
+                شاید یکی از این‌ها به سؤالت نزدیک باشد.
               </p>
               <div className="mt-4 flex flex-col gap-4">
                 {suggestions.map((row) => (

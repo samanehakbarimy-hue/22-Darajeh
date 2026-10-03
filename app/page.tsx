@@ -112,7 +112,7 @@ export default async function Home({
             reach across, which is why the paragraph starts so far down. */}
         <section className="mx-auto max-w-3xl pt-8 text-center sm:pt-14">
           <h1 className="text-4xl font-bold leading-[1.25] tracking-tight sm:text-5xl">
-            هر سؤال شغلی داری، از کسی بپرس که واقعاً اون کار رو انجام می‌ده.
+            هر سؤال شغلی داری، از کسی بپرس که واقعاً همان کار را انجام می‌دهد.
           </h1>
 
           {/* Tighter on a phone, where this wraps to two lines and the second
@@ -120,8 +120,8 @@ export default async function Home({
               at. A few pixels, but they are the few that decide whether a
               sentence is above the hands or between them. */}
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted sm:mt-5 sm:text-lg sm:leading-8">
-            قبل از یک تصمیم شغلی مهم، با کسی حرف بزن که خودش داخل همون حرفه کار
-            می‌کنه.
+            قبل از یک تصمیم شغلی مهم، با کسی حرف بزن که خودش داخل همان حرفه کار
+            می‌کند.
           </p>
 
           {/* The band the hands reach across, and the reason the next thing
@@ -157,7 +157,7 @@ export default async function Home({
             </button>
           </form>
 
-          <p className="mt-4 text-sm text-muted">۲۲ دقیقه گفت‌وگوی رایگان</p>
+          <p className="mt-4 text-sm text-muted">۲۲ دقیقه گفتگوی رایگان</p>
         </section>
 
 
@@ -168,7 +168,7 @@ export default async function Home({
               <div>
                 <h2 className="text-2xl font-bold">کارشناس‌های جاب‌آموز</h2>
                 <p className="mt-2 text-sm text-muted">
-                  کسی را انتخاب کن که توی حوزه سؤال تو کار می‌کنه.
+                  کسی را انتخاب کن که در حوزه سؤال تو کار می‌کند.
                 </p>
               </div>
               <Link

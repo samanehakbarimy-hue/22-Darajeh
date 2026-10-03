@@ -11,9 +11,9 @@ export default function Error({
 }) {
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-6 py-24 text-center">
-      <h1 className="text-2xl font-bold">یک مشکلی پیش اومد</h1>
+      <h1 className="text-2xl font-bold">مشکلی پیش آمد</h1>
       <p className="mt-3 leading-7 text-muted">
-        از سمت ما بود، نه تو. دوباره امتحان کن؛ اگر باز هم تکرار شد بهمون خبر
+        از سمت ما بود، نه تو. دوباره امتحان کن؛ اگر باز هم تکرار شد به ما خبر
         بده.
       </p>
 

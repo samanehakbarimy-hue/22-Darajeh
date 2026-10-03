@@ -55,7 +55,7 @@ export default function BriefForm({ mentorId }: { mentorId: string }) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setUploadError("انگار از حسابت خارج شدی. دوباره وارد شو.");
+      setUploadError("از حسابت خارج شده‌ای. دوباره وارد شو.");
       setUploading(false);
       return;
     }
@@ -151,7 +151,7 @@ export default function BriefForm({ mentorId }: { mentorId: string }) {
       </button>
 
       <p className="text-xs leading-6 text-muted">
-        تا وقتی جواب نگرفتی می‌تونی پسش بگیری. پرداخت آنلاین هنوز فعال نیست، پس
+        تا وقتی جواب نگرفته‌ای می‌توانی آن را پس بگیری. پرداخت آنلاین هنوز فعال نیست، پس
         این فقط توافق روی کار و نرخ است.
       </p>
     </form>

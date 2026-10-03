@@ -163,7 +163,7 @@ export default async function MySessionsPage() {
     <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
       <h1 className="text-2xl font-bold">جلسات من</h1>
       <p className="mt-2 text-muted">
-        درخواست‌هایی که برات فرستاده شده و جلسه‌هایی که قبول کردی.
+        درخواست‌هایی که برایت فرستاده شده و جلسه‌هایی که قبول کرده‌ای.
       </p>
 
       {/* Only shout when a session genuinely has nowhere to go. A booking
@@ -210,7 +210,7 @@ export default async function MySessionsPage() {
 
       {rows.length === 0 && (
         <div className="mt-8 rounded-2xl border border-card-border bg-card p-10 text-center">
-          <p className="text-muted">هنوز کسی ازت درخواست جلسه نکرده.</p>
+          <p className="text-muted">هنوز کسی از تو درخواست جلسه نکرده است.</p>
           <Link
             href="/dashboard/mentor/availability"
             className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"

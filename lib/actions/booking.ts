@@ -23,7 +23,7 @@ export async function createBooking(
   const message = String(formData.get("message") ?? "").trim();
 
   if (!slotId) {
-    return { error: "یک زمان رو انتخاب کن." };
+    return { error: "یک زمان را انتخاب کن." };
   }
 
   // No minimum: how much someone writes to introduce themselves is their call.
@@ -31,10 +31,10 @@ export async function createBooking(
     return { error: "لطفاً یک معرفی بنویس." };
   }
   if (message.length > 2000) {
-    return { error: "پیامت خیلی بلنده. کوتاه‌ترش کن." };
+    return { error: "پیامت خیلی بلند است. کوتاه‌ترش کن." };
   }
   if (message.split(/\s+/).filter(Boolean).length > 120) {
-    return { error: "متن معرفی باید حداکثر ۱۲۰ کلمه باشه." };
+    return { error: "متن معرفی باید حداکثر ۱۲۰ کلمه باشد." };
   }
 
   // Whose slot it is comes from the slot, never from the form. The database
@@ -62,7 +62,7 @@ export async function createBooking(
 
   if (error) {
     if (error.code === "23505") {
-      return { error: "این زمان همین الان توسط شخص دیگه‌ای رزرو شد." };
+      return { error: "این زمان همین حالا توسط شخص دیگری رزرو شد." };
     }
     // Raised by the trigger in 0039. The cap lives in the database, so this
     // branch is the message rather than the rule.

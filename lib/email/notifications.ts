@@ -81,7 +81,7 @@ export async function notifyNewRequest(bookingId: string): Promise<void> {
     to: p.mentor_email,
     subject: "یک درخواست جلسه تازه داری",
     html: emailLayout({
-      heading: `${esc(p.seeker_name ?? "یک متقاضی")} ازت وقت خواسته`,
+      heading: `${esc(p.seeker_name ?? "یک متقاضی")} از تو وقت خواسته است`,
       body: `
         <div>زمان درخواستی: <strong>${whenLine(p.starts_at)}</strong></div>
         ${p.message ? `<div style="margin-top:12px;padding:12px;background:#f6f4f2;border-radius:10px">${esc(p.message)}</div>` : ""}
@@ -129,12 +129,12 @@ export async function notifyDeclined(bookingId: string): Promise<void> {
 
   await sendEmail({
     to: p.seeker_email,
-    subject: "درخواستت این بار جور نشد",
+    subject: "درخواستت این بار پذیرفته نشد",
     html: emailLayout({
       heading: `${esc(p.mentor_name ?? "کارشناس")} نتوانست این وقت را قبول کند`,
       body: `
         <div>زمان درخواستی: ${whenLine(p.starts_at)}</div>
-        <div style="margin-top:12px">این یعنی همان ساعت جور نبوده، نه اینکه سؤالت اشکالی داشته. وقت دیگری از همین کارشناس یا یک کارشناس دیگر انتخاب کن.</div>`,
+        <div style="margin-top:12px">این یعنی آن ساعت مناسب نبوده است، نه اینکه سؤالت اشکالی داشته باشد. وقت دیگری از همین کارشناس یا یک کارشناس دیگر انتخاب کن.</div>`,
       action: { label: "پیدا کردن وقت دیگر", href: `${SITE}/specialists` },
     }),
   });
@@ -169,7 +169,7 @@ export async function notifyCancelled(
         ${reason ? `<div style="margin-top:12px">دلیلی که نوشته: ${esc(reason)}</div>` : ""}
         <div style="margin-top:12px">${
           mentorCancelled
-            ? "این وقت دوباره آزاد شد. می‌تونی زمان دیگری انتخاب کنی."
+            ? "این وقت دوباره آزاد شد. می‌توانی زمان دیگری انتخاب کنی."
             : "این زمان دوباره روی تقویمت آزاد شد."
         }</div>`,
       action: mentorCancelled

@@ -42,7 +42,7 @@ export type MentorService = {
 // Three ways to work with somebody, cheapest first — and the first one is
 // free, which is the whole proposition of the site rather than a tier of it.
 export const TABS: { tab: ServiceTab; label: string; note?: string }[] = [
-  { tab: "intro", label: "گفت‌وگوی مشاوره‌ای" },
+  { tab: "intro", label: "گفتگوی مشاوره‌ای" },
   { tab: "sessions", label: "جلسات تخصصی" },
   { tab: "projects", label: "کار پروژه", note: "(نفر-ساعت)" },
 ];

@@ -31,7 +31,7 @@ export default async function AccountPage({
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center px-6 py-16">
       <h1 className="text-2xl font-bold">تنظیمات حساب</h1>
       <p className="mt-2 text-sm text-muted">
-        اطلاعات پایه حساب خودت رو اینجا مدیریت کن.
+        اطلاعات پایه حساب را اینجا مدیریت کن.
       </p>
 
       {error === "delete_failed" && (
@@ -54,7 +54,7 @@ export default async function AccountPage({
         ) : (
           <>
             <p className="text-sm text-muted">
-              با وصل کردن لینکدین، عکس و اسمت خودکار از اونجا میاد — لازم
+              با وصل کردن لینکدین، عکس و اسمت خودکار از آنجا می‌آید — لازم
               نیست دستی پر کنی.
             </p>
             <form action={linkLinkedIn} className="mt-3">

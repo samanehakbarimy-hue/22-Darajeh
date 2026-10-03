@@ -18,12 +18,12 @@ export async function editBookingMessage(
   const message = String(formData.get("message") ?? "").trim();
 
   if (!bookingId) return { error: "درخواست پیدا نشد." };
-  if (!message) return { error: "متن پیام نمی‌تونه خالی باشه." };
+  if (!message) return { error: "متن پیام نمی‌تواند خالی باشد." };
   if (message.length > 2000) {
-    return { error: "پیامت خیلی بلنده. کوتاه‌ترش کن." };
+    return { error: "پیامت خیلی بلند است. کوتاه‌ترش کن." };
   }
   if (message.split(/\s+/).filter(Boolean).length > 120) {
-    return { error: "پیامت باید حداکثر ۱۲۰ کلمه باشه." };
+    return { error: "پیامت باید حداکثر ۱۲۰ کلمه باشد." };
   }
 
   const supabase = await createClient();
@@ -45,7 +45,7 @@ export async function editBookingMessage(
   });
 
   if (error) {
-    return { error: "این درخواست دیگه قابل ویرایش نیست." };
+    return { error: "این درخواست دیگر قابل ویرایش نیست." };
   }
 
   revalidatePath("/dashboard");

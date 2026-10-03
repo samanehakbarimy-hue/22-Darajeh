@@ -212,7 +212,7 @@ export default async function DashboardPage({
           ? "نیاز به اصلاح — توضیحش در پروفایل"
           : mentorStatus === "pending"
             ? "در انتظار تأیید ادمین"
-            : "هنوز پروفایل کارشناس‌ت رو تکمیل نکردی";
+            : "هنوز پروفایل کارشناس را کامل نکرده‌ای";
 
   // Both counts are of things still to come. Counting sessions that already
   // happened made the number climb forever and told the specialist nothing
@@ -299,7 +299,7 @@ export default async function DashboardPage({
                 ? "ادمین چیزی خواسته که اصلاح کنی — توضیحش بالای صفحه پروفایلت نوشته شده. بعد از ذخیره، دوباره خودکار برای بررسی می‌رود."
                 : mentorStatus === "rejected"
                   ? "پروفایلت تأیید نشد. اگر فکر می‌کنی اشتباهی شده، از صفحه تماس با ما بنویس."
-                  : "پروفایلت فرستاده شد و در نوبت بررسی است. تا آن موقع می‌تونی بقیه کارها را جلو ببری تا بعد از تأیید آماده باشی."}
+                  : "پروفایلت فرستاده شد و در نوبت بررسی است. تا آن موقع می‌توانی بقیه کارها را جلو ببری تا بعد از تأیید آماده باشی."}
           </p>
 
           <ul className="mt-4 flex flex-col gap-2 text-sm">
@@ -403,7 +403,7 @@ export default async function DashboardPage({
 
           {seekerBookings.length === 0 ? (
             <div className="mt-4 rounded-2xl border border-card-border bg-card p-8 text-center">
-              <p className="text-muted">هنوز جلسه‌ای رزرو نکردی.</p>
+              <p className="text-muted">هنوز جلسه‌ای رزرو نکرده‌ای.</p>
               <Link
                 href="/specialists"
                 className="mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-on hover:bg-brand-hover"
@@ -498,8 +498,8 @@ export default async function DashboardPage({
                     <>
                       <p className="mt-4 border-t border-card-border pt-4 text-sm text-muted">
                         {b.seenAt
-                          ? "کارشناس درخواستت رو دیده. منتظر جوابش باش."
-                          : "هنوز دیده نشده. تا وقتی باز نشده می‌تونی پیامت رو عوض کنی."}
+                          ? "کارشناس درخواستت را دیده است. منتظر جوابش باش."
+                          : "هنوز دیده نشده. تا وقتی باز نشده می‌توانی پیامت را عوض کنی."}
                       </p>
                       <CancelBooking bookingId={b.id} kind="request" />
                     </>
@@ -519,7 +519,7 @@ export default async function DashboardPage({
                     <div className="mt-4 border-t border-card-border pt-4">
                       <p className="text-sm text-muted">
                         این کارشناس هنوز لینک جلسه ثبت نکرده. به‌زودی اینجا نمایش
-                        داده می‌شه.
+                        داده می‌شود.
                       </p>
                       <CancelBooking bookingId={b.id} kind="session" />
                     </div>
