@@ -87,11 +87,13 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
 - #99 merged and deployed 2026-10-03: the sender name is `👔 JobAmooz` (she
   preferred the tie to the tree), in `lib/email/send.ts` and in the Supabase
   SMTP sender name.
-- **Open PR #98 `emails/roomier-design`**: the email shell redesigned as a
-  roomy letter on the site's ivory (she said ours looked low quality beside
-  MentorCruise's). She was sent a rendered preview and has not said "ship it".
-  After merge: deploy, regenerate nothing (files are in the PR), and paste the
-  six templates into Supabase again.
+- #98 merged and deployed 2026-10-03 on her "ship it": the email shell is a
+  roomy letter on the site's ivory (30px headline, 17px text, no card, quiet
+  fallback link). The six Supabase templates were pasted a third time and read
+  back against the files. No open PRs.
+- She asked for a tie-only emoji in the sender name; none exists (👔 is the
+  only necktie emoji and most platforms draw it with a shirt). She was offered
+  👔, 🌳 or no emoji and has not chosen; it is 👔 now.
 - **She wants the logo as the sender's round picture in Gmail.** Asked three
   times. Plan (free, Gmail only, usually but not always honoured): in
   Cloudflare, enable Email Routing for the subdomain `mail.jobamooz.com` and
