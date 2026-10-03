@@ -25,5 +25,7 @@ test("a link is repeated as text only when asked for", () => {
   const plain = emailLayout({ heading: "ع", body: "م", action });
   const withText = emailLayout({ heading: "ع", body: "م", action, showLinkAsText: true });
   assert.equal(plain.split("https://jobamooz.com/x").length - 1, 1);
-  assert.equal(withText.split("https://jobamooz.com/x").length - 1, 2);
+  // The button, plus the address as a quiet link: once as its target, once as
+  // the words a reader can copy.
+  assert.equal(withText.split("https://jobamooz.com/x").length - 1, 3);
 });
