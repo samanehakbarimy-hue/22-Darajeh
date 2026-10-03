@@ -74,6 +74,16 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   address receivable, create a Google account on it, set the logo as its
   photo; (b) BIMI: DMARC at enforcement plus a paid certificate. A DMARC
   record is worth adding regardless, for deliverability.
+- **Google Search Console is set up (2026-10-03, in her Chrome, at her
+  request).** Property `https://jobamooz.com` (URL prefix), verified by the
+  HTML tag in `app/layout.tsx` (`metadata.verification.google`, #96) — do not
+  remove it. `sitemap.xml` submitted; its status read "Couldn't fetch" right
+  after submitting, which is normal for the first minutes, and the sitemap
+  answers 200 to Googlebot from outside. Indexing was requested for the
+  homepage, whose last crawl (2026-09-30) had seen the old `noindex` holding
+  page. The request for `/specialists` did not go through (the inspection box
+  would not take input through the browser tool); the sitemap lists it.
+  Check the sitemap status and the Pages report in a few days.
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
@@ -129,8 +139,9 @@ The site is open. These were skipped to open it, and still stand:
    reset or signup email has not been received and looked at since; ask her
    to request a password reset and confirm it arrives in Persian and that the
    link opens the new-password page.
-2. **Google Search Console and Bing Webmaster Tools.** Verify the domain and
-   submit `https://jobamooz.com/sitemap.xml`. Ownership proof needs her.
+2. Search Console is done (see above). Bing Webmaster Tools is not; it can
+   import the verified site from Search Console in a few clicks and feeds
+   Copilot and ChatGPT search.
 3. **A real signed-in test.** A tester registered as a seeker on 2026-10-03
    and confirmed fine; nobody has saved a specialist profile or booked a
    session since the 2026-09-29 fixes, and no signed-in page has been viewed
