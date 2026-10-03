@@ -82,25 +82,26 @@ export default function LoginForm({
           />
         </div>
         <div>
-          <div className="mb-1 flex items-baseline justify-between gap-3">
-            <label htmlFor="password" className="block text-sm font-medium">
-              رمز عبور
-            </label>
-            {/* The way back in has to live where people notice they cannot
-                get in, which is here, not on some other page. */}
-            <Link
-              href="/forgot-password"
-              className="text-xs text-muted hover:text-brand-deep"
-            >
-              فراموشش کرده‌ای؟
-            </Link>
-          </div>
+          <label htmlFor="password" className="mb-1 block text-sm font-medium">
+            رمز عبور
+          </label>
           <PasswordInput
             id="password"
             name="password"
             required
             className="w-full rounded-lg border border-card-border bg-card px-4 py-2 outline-none focus:border-brand-deep focus:ring-2 focus:ring-brand/20"
           />
+          {/* The way back in has to live where people notice they cannot get
+              in. Under the box, where most sites put it and where the eye is
+              after a wrong password -- it used to sit on the label's row,
+              small, and Samaneh did not find it there. It names the password
+              itself now that the label is no longer beside it. */}
+          <Link
+            href="/forgot-password"
+            className="mt-1 inline-block py-1 text-sm text-muted hover:text-brand-deep"
+          >
+            رمز عبور را فراموش کرده‌ای؟
+          </Link>
         </div>
 
         {state?.error && <p className="text-sm text-danger">{state.error}</p>}
