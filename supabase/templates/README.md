@@ -1,42 +1,47 @@
 # The auth emails Supabase sends
 
 Everything the *site* sends goes through `lib/email/` and deploys with the
-code. These do not. Supabase sends them itself, from templates stored in the
-project dashboard, and there is no API for them — so a copy lives here and gets
-pasted in by hand.
+code. These do not. Supabase sends them itself, from templates stored in its
+dashboard, and there is no API for them — so the files here have to be pasted
+in by hand.
 
-**Where:** Supabase → Authentication → Emails → the template, then paste the
-subject and the HTML and save.
+**Do not edit these files.** They are written by a script from the same shell
+the site's own emails use, so the two always look alike:
 
-| File | Template | Subject | Pasted in |
+    node --experimental-strip-types --import ./scripts/register-alias.mjs scripts/build-auth-templates.mts
+
+Change the wording in `scripts/build-auth-templates.mts`, or the look in
+`lib/email/layout.ts`, run that, and paste again.
+
+## Pasting
+
+Supabase → Authentication → Emails → pick the template → set the subject and
+replace the whole body with the file → Save.
+
+| Dashboard name | File | Subject | In the dashboard? |
 | --- | --- | --- | --- |
-| `confirm-signup.html` | Confirm signup | `تأیید ایمیل در جاب‌آموز` | 2026-09-20; link changed 2026-09-29 (see below) |
+| Confirm sign up | `confirm-signup.html` | `تأیید ایمیل در جاب‌آموز` | An older Persian version, pasted 2026-09-20. This one is not pasted yet. |
+| Reset password | `reset-password.html` | `بازیابی رمز عبور جاب‌آموز` | No — still the English default |
+| Magic link or OTP | `magic-link.html` | `ورود به جاب‌آموز` | No — still the English default |
+| Change email address | `change-email.html` | `تأیید ایمیل تازه در جاب‌آموز` | No — still the English default |
+| Invite user | `invite.html` | `دعوت به جاب‌آموز` | No — still the English default |
+| Reauthentication | `reauthentication.html` | `کد تأیید جاب‌آموز` | No — still the English default |
 
-Editing a file here changes nothing on its own. Whatever is in the dashboard is
-what gets sent, so a change to one of these has to be pasted in again.
+Update the last column when one is pasted. Nothing in this repository can
+tell what the dashboard holds; this table is the only record.
 
-The link appears twice — once on the button and once as text, because a mail
-client that strips the button still leaves somebody a link they can copy — and
-both must be identical:
+## Why the links do not use `{{ .ConfirmationURL }}`
 
-    {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}
+That default goes through Supabase's own verify endpoint and comes back to
+`/auth/callback` with a one-time code that only the browser that started the
+flow can redeem (PKCE). Register on a laptop, open the email on a phone, and
+the link lands on the login page with an error. The first outside specialist
+did exactly this on 2026-09-29.
 
-**Why not `{{ .ConfirmationURL }}`, the default.** That one goes through
-Supabase's own verify endpoint and comes back to `/auth/callback` with a
-one-time code that can only be exchanged by the browser that started the
-signup (PKCE). Somebody who registers on a laptop and opens the email on
-their phone — the first outside specialist did exactly this on 2026-09-29 —
-lands on the login page with an error, never gets the welcome email, and has
-to sign in by hand. The `token_hash` form is verified by our own
-`/auth/confirm` route on whatever device opens it. `{{ .RedirectTo }}` is the
-callback URL signUp() asked for; the route unwraps the destination inside it.
+Every link here goes to our own `/auth/confirm` with `{{ .TokenHash }}`, which
+is verified on whatever device opens it. `{{ .RedirectTo }}` is the callback
+URL the app asked for; the route unwraps the destination inside it
+(`destinationFromConfirmLink` in `lib/next-path.ts`).
 
-The three template variables are Supabase's and must stay exactly as written.
-
-The styling is `lib/email/layout.ts` written out flat. If that shell changes —
-the wordmark, the colours, the footer line — this file is the one place that
-will not follow on its own.
-
-**Still English defaults:** Invite user, Magic Link, Change Email Address,
-Reset Password, Reauthentication. Reset Password is the one a real person is
-most likely to meet next.
+`{{ .SiteURL }}`, `{{ .TokenHash }}`, `{{ .RedirectTo }}`, `{{ .NewEmail }}`
+and `{{ .Token }}` are Supabase's and must stay exactly as written.

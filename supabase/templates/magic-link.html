@@ -9,16 +9,16 @@
       </tr></table>
     </td></tr>
     <tr><td style="padding:28px 32px 0;font-size:15px;line-height:1.9;color:#162238">سلام،</td></tr>
-    <tr><td style="padding:10px 32px 6px;font-size:17px;font-weight:bold;color:#162238">تأیید ایمیل</td></tr>
-    <tr><td style="padding:0 32px 16px;font-size:15px;line-height:1.9;color:#162238">برای فعال شدن حساب، روی دکمه زیر کلیک کن.</td></tr>
+    <tr><td style="padding:10px 32px 6px;font-size:17px;font-weight:bold;color:#162238">ورود به حساب</td></tr>
+    <tr><td style="padding:0 32px 16px;font-size:15px;line-height:1.9;color:#162238">برای ورود به حساب، روی دکمه زیر کلیک کن.</td></tr>
     <tr><td style="padding:4px 32px 8px">
-         <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}" style="display:inline-block;background:#20917e;color:#0a1c19;text-decoration:none;padding:12px 28px;border-radius:999px;font-weight:bold;font-size:15px">تأیید ایمیل</a>
+         <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=magiclink&next={{ .RedirectTo }}" style="display:inline-block;background:#20917e;color:#0a1c19;text-decoration:none;padding:12px 28px;border-radius:999px;font-weight:bold;font-size:15px">ورود</a>
        </td></tr>
     <tr><td style="padding:8px 32px 0;font-size:13px;line-height:1.8;color:#4a566b">
            اگر دکمه کار نکرد، این آدرس را در مرورگر باز کن:
-           <div style="margin-top:4px;font-size:12px;word-break:break-all;direction:ltr;text-align:left">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}</div>
+           <div style="margin-top:4px;font-size:12px;word-break:break-all;direction:ltr;text-align:left">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=magiclink&next={{ .RedirectTo }}</div>
          </td></tr>
-    <tr><td style="padding:12px 32px 0;font-size:13px;line-height:1.8;color:#4a566b">اگر در جاب‌آموز ثبت‌نام نکرده‌ای، این ایمیل را نادیده بگیر.</td></tr>
+    <tr><td style="padding:12px 32px 0;font-size:13px;line-height:1.8;color:#4a566b">اگر این درخواست از تو نبوده است، این ایمیل را نادیده بگیر.</td></tr>
     <tr><td style="padding:24px 32px 0;font-size:15px;line-height:1.9;color:#162238">جاب‌آموز</td></tr>
     <tr><td style="padding:20px 32px 28px">
       <div style="border-top:1px solid #e1e6ee;padding-top:14px;font-size:12px;line-height:1.8;color:#4a566b">
