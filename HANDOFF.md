@@ -139,9 +139,10 @@ The site is open. These were skipped to open it, and still stand:
    reset or signup email has not been received and looked at since; ask her
    to request a password reset and confirm it arrives in Persian and that the
    link opens the new-password page.
-2. Search Console is done (see above). Bing Webmaster Tools is not; it can
-   import the verified site from Search Console in a few clicks and feeds
-   Copilot and ChatGPT search.
+2. Search Console and Bing Webmaster Tools are both done (2026-10-03). Bing:
+   she signed in and added the site herself; verified by the `msvalidate.01`
+   tag in `app/layout.tsx` (#97, do not remove); `sitemap.xml` submitted,
+   status Processing. Look at both consoles in a few days for crawl errors.
 3. **A real signed-in test.** A tester registered as a seeker on 2026-10-03
    and confirmed fine; nobody has saved a specialist profile or booked a
    session since the 2026-09-29 fixes, and no signed-in page has been viewed
