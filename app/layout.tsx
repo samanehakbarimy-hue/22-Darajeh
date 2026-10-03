@@ -69,7 +69,7 @@ export const viewport: Viewport = {
   // rather than sitting on top of it in a different shade. This is the one
   // place the palette is repeated as a literal -- a meta tag cannot read a CSS
   // variable -- so it has to be changed by hand when --header changes.
-  themeColor: "#1a4740",
+  themeColor: "#1c2b45",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
