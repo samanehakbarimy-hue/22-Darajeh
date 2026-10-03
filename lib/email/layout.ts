@@ -24,6 +24,7 @@ const RULE = "#e1e6ee";
 
 export function emailLayout({
   greetingName,
+  greetingHtml,
   heading,
   body,
   action,
@@ -32,6 +33,11 @@ export function emailLayout({
 }: {
   /** The reader's name, already escaped. Without one the greeting stands alone. */
   greetingName?: string | null;
+  /**
+   * The whole greeting line, for the Supabase templates: there the name is a
+   * placeholder Supabase fills in, and the line has to cope with no name.
+   */
+  greetingHtml?: string;
   heading: string;
   body: string;
   action?: { label: string; href: string };
@@ -40,7 +46,8 @@ export function emailLayout({
   /** One quiet line under the button, e.g. what to do if this was not you. */
   note?: string;
 }): string {
-  const greeting = greetingName?.trim() ? `سلام ${greetingName.trim()}،` : "سلام،";
+  const greeting =
+    greetingHtml ?? (greetingName?.trim() ? `سلام ${greetingName.trim()}،` : "سلام،");
 
   const button = action
     ? `<tr><td style="padding:4px 32px 8px">
@@ -62,8 +69,13 @@ export function emailLayout({
 
   return `<!doctype html>
 <html lang="fa" dir="rtl">
-<body dir="rtl" style="margin:0;padding:24px 12px;background:#f3f4f7;font-family:Tahoma,Arial,sans-serif;color:${INK}">
-  <table role="presentation" dir="rtl" cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%;max-width:520px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden">
+<body dir="rtl" style="margin:0;padding:0;background:#f3f4f7;font-family:Tahoma,Arial,sans-serif;color:${INK}">
+  <!-- A full-width table whose one cell centres the card. Gmail drops the
+       body tag and ignores "margin: 0 auto" on a table inside a right-to-left
+       block, which left the card pushed against the right edge of a wide
+       window. align="center" on a cell is the one thing every client obeys. -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#f3f4f7"><tr><td align="center" style="padding:24px 12px">
+  <table role="presentation" dir="rtl" cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%;max-width:520px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;text-align:right;font-family:Tahoma,Arial,sans-serif">
     <tr><td style="background:${HEADER};padding:18px 32px">
       <table role="presentation" dir="rtl" cellpadding="0" cellspacing="0" border="0"><tr>
         <td style="vertical-align:middle"><img src="${siteUrl()}/logo-mark.png" width="40" height="40" alt="" style="display:block;border:0;border-radius:8px"></td>
@@ -76,7 +88,7 @@ export function emailLayout({
     ${button}
     ${linkAsText}
     ${noteRow}
-    <tr><td style="padding:24px 32px 0;font-size:15px;line-height:1.9;color:${INK}">جاب‌آموز</td></tr>
+    <tr><td style="padding:24px 32px 0;font-size:15px;line-height:1.9;color:${INK}">با احترام،<br>جاب‌آموز</td></tr>
     <tr><td style="padding:20px 32px 28px">
       <div style="border-top:1px solid ${RULE};padding-top:14px;font-size:12px;line-height:1.8;color:${MUTED}">
         این ایمیل به دلیل حساب تو در جاب‌آموز فرستاده شده است.
@@ -84,6 +96,7 @@ export function emailLayout({
       </div>
     </td></tr>
   </table>
+  </td></tr></table>
 </body>
 </html>`;
 }
