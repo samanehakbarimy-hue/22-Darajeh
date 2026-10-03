@@ -39,6 +39,12 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   browsers without scroll-driven animations (Safari, so all of iOS) via a JS
   progress variable; the old three-second timer fallback is gone. Verified by
   patching `CSS.supports` in a desktop browser, not on a physical iPhone.
+- #90 and #91 merged and deployed 2026-10-03: the forgot-password link sits
+  under the password box, and over-explaining copy was cut down across 16
+  files after she said "the receiver is not stupid". **Copy rule: say what
+  happened and the next step, then stop.** No narrating the mechanism, no
+  reassurance. The forgot-password confirmation is the same either way and
+  must stay so (it must not reveal whether an address is registered).
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
