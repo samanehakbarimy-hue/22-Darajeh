@@ -48,7 +48,13 @@ export async function sendEmail({
         from: process.env.EMAIL_FROM ??
           // The verified sending domain is the mail. subdomain, not the bare
           // one — sending as no-reply@jobamooz.com would be rejected.
-          "جاب‌آموز <no-reply@mail.jobamooz.com>",
+          //
+          // The tree is the logo's stand-in in an inbox list, where a real
+          // image next to the sender needs a paid certificate. The name is
+          // written the way Supabase's own sender setting has it, so the
+          // emails the site sends and the ones Supabase sends for it arrive
+          // under one name instead of two.
+          "🌳 JobAmooz <no-reply@mail.jobamooz.com>",
         to: [to],
         subject,
         html,
