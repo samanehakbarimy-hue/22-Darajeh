@@ -53,6 +53,14 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   Monaco model with `executeEdits`, then `form.requestSubmit()`; a JS
   `.click()` on Save did nothing, and a cookie banner covered the real button
   until optional cookies were declined. Read back after a reload every time.
+- #93 merged and deployed 2026-10-03: the sender name is `🌳 JobAmooz` for
+  the site's own emails (`lib/email/send.ts`) and, in the Supabase dashboard's
+  SMTP settings, for the auth emails. Only the Sender name field was changed
+  there; the SMTP form keeps the stored password when its field is left empty
+  ("Stored password is hidden. Enter a new password to replace it."). The
+  first `vercel --prod` after this merge failed with a bare `"status":
+  "error"` and the retry succeeded; that has happened twice, so retry once
+  before investigating.
 - No open PRs.
 - Vercel builds a preview for every pushed branch (behind its login wall);
   production still deploys only by `vercel --prod --yes` from PowerShell.
