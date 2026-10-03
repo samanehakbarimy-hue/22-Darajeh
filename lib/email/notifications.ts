@@ -81,6 +81,7 @@ export async function notifyNewRequest(bookingId: string): Promise<void> {
     to: p.mentor_email,
     subject: "یک درخواست جلسه تازه داری",
     html: emailLayout({
+      greetingName: p.mentor_name ? esc(p.mentor_name) : null,
       heading: `${esc(p.seeker_name ?? "یک متقاضی")} از تو وقت خواسته است`,
       body: `
         <div>زمان درخواستی: <strong>${whenLine(p.starts_at)}</strong></div>
@@ -100,6 +101,7 @@ export async function notifyAccepted(bookingId: string): Promise<void> {
     to: p.seeker_email,
     subject: "درخواستت قبول شد",
     html: emailLayout({
+      greetingName: p.seeker_name ? esc(p.seeker_name) : null,
       heading: `${esc(p.mentor_name ?? "کارشناس")} درخواستت را قبول کرد`,
       body: `
         <div>زمان جلسه: <strong>${whenLine(p.starts_at)}</strong> (به وقت تهران)</div>
@@ -131,6 +133,7 @@ export async function notifyDeclined(bookingId: string): Promise<void> {
     to: p.seeker_email,
     subject: "درخواستت این بار پذیرفته نشد",
     html: emailLayout({
+      greetingName: p.seeker_name ? esc(p.seeker_name) : null,
       heading: `${esc(p.mentor_name ?? "کارشناس")} نتوانست این وقت را قبول کند`,
       body: `
         <div>زمان درخواستی: ${whenLine(p.starts_at)}</div>
@@ -163,6 +166,9 @@ export async function notifyCancelled(
     to,
     subject: "جلسه لغو شد",
     html: emailLayout({
+      greetingName: mentorCancelled
+        ? p.seeker_name && esc(p.seeker_name)
+        : p.mentor_name && esc(p.mentor_name),
       heading: `${who} این جلسه را لغو کرد`,
       body: `
         <div>زمان جلسه: ${whenLine(p.starts_at)}</div>
@@ -241,6 +247,7 @@ export async function notifyNewInquiry(inquiryId: string): Promise<void> {
     to: p.mentor_email,
     subject: "یک پیام تازه در جاب‌آموز داری",
     html: emailLayout({
+      greetingName: p.mentor_name ? esc(p.mentor_name) : null,
       heading: `${esc(p.seeker_name ?? "یک متقاضی")} برایت پیام گذاشت`,
       body: "پیام و جای نوشتن جوابش در صندوق پیام توست.",
       action: { label: "دیدن پیام", href: `${SITE}/dashboard/inbox` },
@@ -281,7 +288,8 @@ export async function sendWelcomeToSpecialist(
       to: claim.email,
       subject: "به جاب‌آموز خوش آمدی",
       html: emailLayout({
-        heading: name ? `${esc(name)} خوش آمدی` : "خوش آمدی",
+        greetingName: name ? esc(name) : null,
+        heading: "به جاب‌آموز خوش آمدی",
         body: `
           <div>حساب کارشناس ساخته شد. قدم بعدی پروفایل است: کاری که می‌کنی، جایی که کار می‌کنی، و تجربه‌ای که داری.</div>
           <div style="margin-top:12px">وقتی پروفایل را فرستادی، یک نفر آن را می‌خواند و تأیید می‌کند. تا آن موقع روی فهرست کارشناس‌ها دیده نمی‌شوی.</div>
@@ -310,6 +318,7 @@ export async function notifyInquiryReply(inquiryId: string): Promise<void> {
     to: p.seeker_email,
     subject: "جواب پیامت آمد",
     html: emailLayout({
+      greetingName: p.seeker_name ? esc(p.seeker_name) : null,
       heading: `${esc(p.mentor_name ?? "کارشناس")} به پیامت جواب داد`,
       body: "جوابش در صندوق پیام توست.",
       action: { label: "خواندن جواب", href: `${SITE}/dashboard/inbox` },
