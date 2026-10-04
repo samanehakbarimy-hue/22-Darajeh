@@ -386,8 +386,10 @@ export default async function DashboardPage({
         </section>
       )}
 
-      {/* Shown whenever there is something to show, whatever the role. */}
-      {(profile?.role === "seeker" || seekerBookings.length > 0) && (
+      {/* Shown whenever there is something to show, whatever the role. An
+          admin with no bookings gets the empty state too: without it their
+          page was a name and two rules with nothing between them. */}
+      {(profile?.role !== "mentor" || seekerBookings.length > 0) && (
         <section className="mt-8">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-lg font-bold">درخواست‌های من</h2>
