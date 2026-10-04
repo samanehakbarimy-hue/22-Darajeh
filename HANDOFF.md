@@ -66,14 +66,6 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   احترام،», and centre through a wrapping table. All six templates were
   regenerated, pasted again and read back. She confirmed a real reset email
   arrived in the new design.
-- **Sender picture in Gmail (the round avatar) is not solved and cannot be
-  from code.** Checked 2026-10-03: the domain has NO DMARC record, and
-  `mail.jobamooz.com` (the sending subdomain) has no MX, so it cannot receive
-  mail; `jobamooz.com` receives through Cloudflare Email Routing. Two routes,
-  both needing Reza (he holds DNS): (a) free, Gmail only: make the sending
-  address receivable, create a Google account on it, set the logo as its
-  photo; (b) BIMI: DMARC at enforcement plus a paid certificate. A DMARC
-  record is worth adding regardless, for deliverability.
 - **Google Search Console is set up (2026-10-03, in her Chrome, at her
   request).** Property `https://jobamooz.com` (URL prefix), verified by the
   HTML tag in `app/layout.tsx` (`metadata.verification.google`, #96) — do not
@@ -92,19 +84,21 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   Gmail draws as a shirt with a tie, asked for a tie-only emoji (none exists),
   and went back to the tree. Same value in `lib/email/send.ts` and in the
   Supabase SMTP sender name. Do not change it again without her asking.
-- **Sender picture in Gmail: waiting on Reza (he has the Cloudflare login).**
-  On 2026-10-03 she was given a Persian note to forward to him with three
-  steps: (1) Cloudflare → Email Routing → Settings → Subdomains → add
-  `mail.jobamooz.com`; (2) a custom address `noreply@mail.jobamooz.com`
-  forwarding to her Gmail; (3) a TXT record `_dmarc` = `v=DMARC1; p=none`.
-  Then she creates a Google account on `noreply@mail.jobamooz.com` ("use my
-  current email address") and sets the logo as its photo; a 512px image was
-  sent to her. Checked that day: DNS is on Cloudflare, `mail.jobamooz.com` has
-  no MX or TXT of its own, and Resend's records live on `send.mail.` and
-  `resend._domainkey.mail.`, so nothing collides. The site's sender address
-  was changed from `no-reply@` to `noreply@` (#101) so one account covers both
-  the site's and Supabase's emails. Gmail usually, not always, honours this;
-  other mail apps do not.
+- **Sender picture in Gmail (the round avatar): the DNS side is done
+  (2026-10-04), the photo is hers to upload.** It cannot be set from code; the
+  free route is a Google account on the sending address with the logo as its
+  photo. In Reza's Cloudflare (signed in in her Chrome): the Email Routing
+  subdomain `mail.jobamooz.com` was added (MX answers from outside), she
+  saved the rule `noreply@mail.jobamooz.com` → her Gmail herself (the app's
+  safety check refused to let Claude create a forwarding rule), and the TXT
+  record `_dmarc` = `v=DMARC1; p=none` is published. Resend's records live on
+  `send.mail.` and `resend._domainkey.mail.`, so nothing collides. She then
+  created the Google account on `noreply@mail.jobamooz.com`. Not yet
+  confirmed: that she uploaded `Downloads\jobamooz-profile-photo.png` as its
+  photo, and that the logo shows on a real email. Gmail usually, not always,
+  honours this, and it can take a day or two; other mail apps do not. The
+  site's sender address is `noreply@` everywhere (#101) so the one account
+  covers both the site's and Supabase's emails.
 
 ## Active: the first outside signup went badly (2026-09-29)
 
