@@ -93,10 +93,13 @@ _Written 2026-10-03. The repo is the source of truth; where this disagrees, beli
   safety check refused to let Claude create a forwarding rule), and the TXT
   record `_dmarc` = `v=DMARC1; p=none` is published. Resend's records live on
   `send.mail.` and `resend._domainkey.mail.`, so nothing collides. She then
-  created the Google account on `noreply@mail.jobamooz.com`. Not yet
-  confirmed: that she uploaded `Downloads\jobamooz-profile-photo.png` as its
-  photo, and that the logo shows on a real email. Gmail usually, not always,
-  honours this, and it can take a day or two; other mail apps do not. The
+  created the Google account on `noreply@mail.jobamooz.com` (it lives in its
+  own Chrome profile, "JobAmooz", which Claude's extension cannot see) and
+  uploaded the logo. Confirmed that night on a real reset email in her Gmail:
+  the tree logo shows as the sender picture. That account must never get a
+  Gmail address added ("Add Gmail to your Google Account" appears whenever
+  Gmail is clicked there; she was told not to submit it). Other mail apps do
+  not show the picture. The
   site's sender address is `noreply@` everywhere (#101) so the one account
   covers both the site's and Supabase's emails.
 
